@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TagKart Digital Commerce & Solutions</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+        }
+
+        /* HEADER & NAVBAR */
+        header {
+            background: linear-gradient(135deg, #0d5c34, #1b8a4f);
+            padding: 15px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .logo img {
+            height: 50px;
+            background: #fff;
+            padding: 5px 12px;
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+
+        .logo img:hover {
+            transform: scale(1.05);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 15px;
+            align-items: center;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 6px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #c2f0d2;
+        }
+
+        .lang-select {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* HERO BANNER */
+        .hero {
+            background: #eef7f2;
+            text-align: center;
+            padding: 70px 20px;
+            animation: fadeIn 1.2s ease-in-out;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            color: #0d5c34;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        /* SERVICES SECTION */
+        .services-container {
+            padding: 60px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .services-container h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #222;
+            position: relative;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 30px 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid #e0e0e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 25px rgba(13, 92, 52, 0.2);
+            border-color: #1b8a4f;
+        }
+
+        .card i {
+            font-size: 2.5rem;
+            color: #1b8a4f;
+            margin-bottom: 15px;
+            transition: transform 0.3s;
+        }
+
+        .card:hover i {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        .card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #111;
+        }
+
+        .card p {
+            font-size: 0.88rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* MODAL POPUP (DYNAMIC CLICK RESPONSE) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            animation: popup 0.3s ease-out;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 12px; right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #111;
+            color: #fff;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .social-links {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .social-links a:hover {
+            color: #25d366;
+        }
+
+        /* FLOATING CHAT WIDGET */
+        .chat-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #25d366;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+            z-index: 999;
+        }
+
+        .chat-btn:hover {
+            transform: scale(1.08);
+        }
+
+        /* KEYFRAME ANIMATIONS */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes popup {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header>
+        <div class="logo">
+            <h2 style="color: #fff; font-weight:700;">TagKart</h2>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about" onclick="openModal('About Us', 'Welcome to TagKart Digital Commerce & Solutions. We drive innovation with cloud and ERP integrations.')">About Us</a></li>
+                <li><a href="#product" onclick="openModal('Products', 'Explore our next-gen digital commerce products.')">Product</a></li>
+                <li><a href="#partners" onclick="openModal('Our Partners', 'We partner with Salesforce, SAP, and leading tech giants.')">Our Partners</a></li>
+                <li><a href="#services">Our Services</a></li>
+                <li><a href="#contact" onclick="openModal('Contact Us', 'Reach out via email or live chat for quick assistance.')">Contact</a></li>
+                <li><a href="#enquire" onclick="openModal('Enquiry Form', 'Send us your requirements for custom enterprise solutions.')">Enquire</a></li>
+                <li><a href="#support" onclick="openModal('Support 24/7', 'Our technical support team is always available to resolve your queries.')">Support</a></li>
+                <li><a href="#career" onclick="openModal('Careers', 'Join our dynamic team! Send your resume to careers@tagkart.com.')">Career</a></li>
+                <li>
+                    <select class="lang-select">
+                        <option>English</option>
+                        <option>Hindi</option>
+                    </select>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="home">
+        <h1>Welcome to TagKart</h1>
+        <p>Salesforce • SAP B1 • Website Support • Environment Projects</p>
+    </section>
+
+    <!-- SERVICES GRID SECTION -->
+    <div class="services-container" id="services">
+        <h2>Our Services</h2>
+        <div class="services-grid">
+            
+            <div class="card" onclick="openModal('Salesforce Services', 'We offer full-scale Salesforce Implementation, ongoing Technical Support, and Workflow Automation tailored for your growth.')">
+                <i class="fa-brands fa-salesforce"></i>
+                <h3>Salesforce Services</h3>
+                <p>Implementation, Support, Automation</p>
+            </div>
+
+            <div class="card" onclick="openModal('SAP Business One', 'Complete SAP B1 setup, workflow optimization, and 24/7 technical assistance for enterprises.')">
+                <i class="fa-solid fa-chart-line"></i>
+                <h3>SAP Business One</h3>
+                <p>Setup, Optimization, Technical Support</p>
+            </div>
+
+            <div class="card" onclick="openModal('Website Support', 'Keep your web apps bulletproof with enterprise-grade security patches, performance tuning, and 99.9% uptime maintenance.')">
+                <i class="fa-solid fa-code"></i>
+                <h3>Website Support</h3>
+                <p>Security, Maintenance, Performance</p>
+            </div>
+
+            <div class="card" onclick="openModal('Environmental Work', 'Driving sustainable IT infrastructure initiatives and eco-friendly digital solutions awareness.')">
+                <i class="fa-solid fa-leaf"></i>
+                <h3>Environmental Work</h3>
+                <p>Sustainability Initiatives & Awareness</p>
+            </div>
+
+            <div class="card" onclick="openModal('Avernus', 'Creative publishing platform focusing on tech books, poetry, and thoughtful architectural writing.')">
+                <i class="fa-solid fa-book-open"></i>
+                <h3>Avernus</h3>
+                <p>Books, Poetry & Thoughtful Writing</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- POPUP MODAL -->
+    <div class="modal" id="infoModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle" style="color: #0d5c34; margin-bottom: 15px;"></h2>
+            <p id="modalDesc" style="color: #555; line-height: 1.6;"></p>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2026 TagKart Digital Commerce & Solutions. All Rights Reserved.</p>
+        <div class="social-links">
+            <a href="#">Facebook</a>
+            <a href="#">Instagram</a>
+            <a href="#">YouTube</a>
+            <a href="#">LinkedIn</a>
+            <a href="#">X (Twitter)</a>
+        </div>
+    </footer>
+
+    <!-- FLOATING CHAT BUTTON -->
+    <a href="https://wa.me/?text=Hello%20TagKart,%20I%20want%20to%20know%20more%20about%20your%20services." class="chat-btn" target="_blank">
+        <i class="fa-brands fa-whatsapp" style="font-size: 20px;"></i> Chat
+    </a>
+
+    <!-- JAVASCRIPT FOR INTERACTIVITY -->
+    <script>
+        function openModal(title, desc) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = desc;
+            document.getElementById('infoModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('infoModal').style.display = 'none';
+        }
+
+        // Close modal on background click
+        window.onclick = function(event) {
+            let modal = document.getElementById('infoModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
