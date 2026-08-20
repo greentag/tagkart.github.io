@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dhami Group Digital Commerce & Solutions</title>
-    <!-- FontAwesome for Icons -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -19,8 +19,39 @@
         }
 
         body {
-            background-color: #f4f7f6;
+            background-color: #f0f7f3;
             color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* FLOATING LEAVES BACKGROUND */
+        .leaf-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .leaf {
+            position: absolute;
+            color: rgba(27, 138, 79, 0.25);
+            font-size: 20px;
+            animation: fallAndRotate 12s linear infinite;
+        }
+
+        .leaf:nth-child(1) { left: 10%; animation-duration: 10s; }
+        .leaf:nth-child(2) { left: 30%; animation-duration: 14s; font-size: 28px; }
+        .leaf:nth-child(3) { left: 55%; animation-duration: 11s; }
+        .leaf:nth-child(4) { left: 75%; animation-duration: 16s; font-size: 24px; }
+        .leaf:nth-child(5) { left: 90%; animation-duration: 13s; }
+
+        @keyframes fallAndRotate {
+            0% { top: -10%; transform: translateX(0) rotate(0deg); opacity: 0.8; }
+            50% { transform: translateX(50px) rotate(180deg); }
+            100% { top: 110%; transform: translateX(-30px) rotate(360deg); opacity: 0.2; }
         }
 
         /* HEADER & NAVBAR */
@@ -36,36 +67,43 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
-        .logo img {
-            height: 50px;
-            background: #fff;
-            padding: 5px 12px;
-            border-radius: 8px;
-            transition: transform 0.3s;
+        .logo h2 {
+            color: #fff;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .logo img:hover {
-            transform: scale(1.05);
+        .logo i {
+            color: #a3f3c4;
+            animation: spinGlobe 8s linear infinite;
+        }
+
+        @keyframes spinGlobe {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         nav ul {
             display: flex;
             list-style: none;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
         }
 
         nav ul li a {
             color: #fff;
             text-decoration: none;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             padding: 6px 10px;
             border-radius: 4px;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
-        nav ul li a:hover {
+        nav ul li a:hover, nav ul li a.active-link {
             background: rgba(255, 255, 255, 0.2);
             color: #c2f0d2;
         }
@@ -74,17 +112,48 @@
             padding: 4px 8px;
             border-radius: 4px;
             border: none;
-            outline: none;
             cursor: pointer;
             font-weight: 600;
         }
 
-        /* HERO BANNER */
+        /* HERO SECTION */
         .hero {
-            background: #eef7f2;
+            background: linear-gradient(180deg, #e4f5eb 0%, #f0f7f3 100%);
             text-align: center;
-            padding: 70px 20px;
-            animation: fadeIn 1.2s ease-in-out;
+            padding: 60px 20px 30px 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-nature-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .swaying-tree {
+            font-size: 4rem;
+            color: #1b8a4f;
+            transform-origin: bottom center;
+            animation: swayTree 3.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes swayTree {
+            0% { transform: rotate(-6deg); }
+            100% { transform: rotate(6deg); }
+        }
+
+        .floating-space {
+            font-size: 3rem;
+            color: #0d5c34;
+            animation: floatSpace 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSpace {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
         }
 
         .hero h1 {
@@ -96,46 +165,126 @@
 
         .hero p {
             font-size: 1.1rem;
-            color: #555;
+            color: #444;
             font-weight: 500;
         }
 
-        /* SERVICES SECTION */
-        .services-container {
-            padding: 60px 5%;
-            max-width: 1400px;
-            margin: 0 auto;
+        /* ---------------- DYNAMIC TAB CONTAINER FOR HEADER LINKS ---------------- */
+        .dynamic-tab-section {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 5%;
+            position: relative;
+            z-index: 2;
         }
 
-        .services-container h2 {
-            font-size: 2rem;
-            margin-bottom: 30px;
-            color: #222;
+        .tab-menu-bar {
+            display: flex;
+            gap: 8px;
+            border-bottom: 3px solid #1b8a4f;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .tab-menu-btn {
+            background: #e2f2e8;
+            color: #0d5c34;
+            border: none;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px 6px 0 0;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-menu-btn.active {
+            background: #1b8a4f;
+            color: #ffffff;
+        }
+
+        .tab-panel {
+            display: none;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 0 10px 10px 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+            border: 1px solid #dbe8e0;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .tab-panel h3 {
+            color: #0d5c34;
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .tab-panel p {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #555;
+        }
+
+        /* CONTACT FORM IN TAB */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .contact-form input, .contact-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .contact-form button {
+            background: #1b8a4f;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* SERVICES CARDS */
+        .services-container {
+            padding: 40px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
             position: relative;
+            z-index: 2;
         }
 
         .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
             gap: 20px;
+            margin-top: 20px;
         }
 
         .card {
-            background: #fff;
+            background: #ffffff;
             padding: 30px 20px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.04);
             text-align: center;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid #e0e0e0;
-            position: relative;
-            overflow: hidden;
+            transition: all 0.4s ease;
+            border: 1px solid #e1ebe5;
         }
 
         .card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 12px 25px rgba(13, 92, 52, 0.2);
+            box-shadow: 0 15px 30px rgba(13, 92, 52, 0.18);
             border-color: #1b8a4f;
         }
 
@@ -143,136 +292,66 @@
             font-size: 2.5rem;
             color: #1b8a4f;
             margin-bottom: 15px;
-            transition: transform 0.3s;
-        }
-
-        .card:hover i {
-            transform: scale(1.15) rotate(5deg);
-        }
-
-        .card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: #111;
-        }
-
-        .card p {
-            font-size: 0.88rem;
-            color: #666;
-            line-height: 1.4;
-        }
-
-        /* MODAL POPUP (DYNAMIC CLICK RESPONSE) */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .modal-content {
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            position: relative;
-            animation: popup 0.3s ease-out;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 12px; right: 15px;
-            font-size: 20px;
-            cursor: pointer;
-            color: #888;
         }
 
         /* FOOTER */
         footer {
-            background: #111;
+            background: #0d1e15;
             color: #fff;
             padding: 30px 20px;
             text-align: center;
             margin-top: 50px;
+            position: relative;
+            z-index: 2;
         }
 
-        .social-links {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .social-links a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.3s;
-        }
-
-        .social-links a:hover {
-            color: #25d366;
-        }
-
-        /* FLOATING CHAT WIDGET */
         .chat-btn {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 20px; right: 20px;
             background: #25d366;
             color: white;
-            padding: 12px 18px;
+            padding: 12px 20px;
             border-radius: 30px;
             display: flex;
             align-items: center;
             gap: 8px;
             text-decoration: none;
             font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transition: transform 0.3s;
             z-index: 999;
         }
 
-        .chat-btn:hover {
-            transform: scale(1.08);
-        }
-
-        /* KEYFRAME ANIMATIONS */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
+            from { opacity: 0; transform: translateY(-8px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes popup {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-    <!-- NAVBAR -->
+    <div class="leaf-container">
+        <i class="fa-solid fa-leaf leaf"></i>
+        <i class="fa-solid fa-leaf leaf"></i>
+        <i class="fa-solid fa-leaf leaf"></i>
+        <i class="fa-solid fa-leaf leaf"></i>
+        <i class="fa-solid fa-leaf leaf"></i>
+    </div>
+
+    <!-- HEADER MENU LINKS LINKED DIRECTLY TO TABS -->
     <header>
         <div class="logo">
-            <h2 style="color: #fff; font-weight:700;">Dhami Group</h2>
+            <h2><i class="fa-solid fa-earth-americas"></i> Dhami Group</h2>
         </div>
         <nav>
             <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about" onclick="openModal('About Us', 'Welcome to Dhami Group Digital Commerce & Solutions. We drive innovation with cloud and ERP integrations.')">About Us</a></li>
-                <li><a href="#product" onclick="openModal('Products', 'Explore our next-gen digital commerce products.')">Product</a></li>
-                <li><a href="#partners" onclick="openModal('Our Partners', 'We partner with Salesforce, SAP, and leading tech giants.')">Our Partners</a></li>
-                <li><a href="#services">Our Services</a></li>
-                <li><a href="#contact" onclick="openModal('Contact Us', 'Reach out via email or live chat for quick assistance.')">Contact</a></li>
-                <li><a href="#enquire" onclick="openModal('Enquiry Form', 'Send us your requirements for custom enterprise solutions.')">Enquire</a></li>
-                <li><a href="#support" onclick="openModal('Support 24/7', 'Our technical support team is always available to resolve your queries.')">Support</a></li>
-                <li><a href="#career" onclick="openModal('Careers', 'Join our dynamic team! Send your resume to careers@dhamigroup.com.')">Career</a></li>
+                <li><a onclick="selectTab('about')">Home</a></li>
+                <li><a onclick="selectTab('about')">About Us</a></li>
+                <li><a onclick="selectTab('product')">Product</a></li>
+                <li><a onclick="selectTab('partners')">Our Partners</a></li>
+                <li><a onclick="selectTab('services-tab')">Our Services</a></li>
+                <li><a onclick="selectTab('contact')">Contact</a></li>
+                <li><a onclick="selectTab('enquire')">Enquire</a></li>
+                <li><a onclick="selectTab('support')">Support</a></li>
+                <li><a onclick="selectTab('career')">Career</a></li>
                 <li>
                     <select class="lang-select">
                         <option>English</option>
@@ -285,91 +364,152 @@
 
     <!-- HERO SECTION -->
     <section class="hero" id="home">
+        <div class="hero-nature-wrapper">
+            <i class="fa-solid fa-globe floating-space"></i>
+            <i class="fa-solid fa-tree swaying-tree"></i>
+        </div>
         <h1>Welcome to Dhami Group</h1>
         <p>Salesforce • SAP B1 • Website Support • Environment Projects</p>
     </section>
 
-    <!-- SERVICES GRID SECTION -->
-    <div class="services-container" id="services">
-        <h2>Our Services</h2>
+    <!-- HEADER CLICK VIEW (TAB-WISE CONTENT SECTION) -->
+    <div class="dynamic-tab-section" id="tabContainer">
+        <div class="tab-menu-bar">
+            <button class="tab-menu-btn active" id="btn-about" onclick="selectTab('about')">About Us</button>
+            <button class="tab-menu-btn" id="btn-product" onclick="selectTab('product')">Product</button>
+            <button class="tab-menu-btn" id="btn-partners" onclick="selectTab('partners')">Our Partners</button>
+            <button class="tab-menu-btn" id="btn-services-tab" onclick="selectTab('services-tab')">Our Services</button>
+            <button class="tab-menu-btn" id="btn-contact" onclick="selectTab('contact')">Contact</button>
+            <button class="tab-menu-btn" id="btn-enquire" onclick="selectTab('enquire')">Enquire</button>
+            <button class="tab-menu-btn" id="btn-support" onclick="selectTab('support')">Support</button>
+            <button class="tab-menu-btn" id="btn-career" onclick="selectTab('career')">Career</button>
+        </div>
+
+        <!-- ABOUT TAB -->
+        <div id="panel-about" class="tab-panel active">
+            <h3>About Dhami Group</h3>
+            <p><strong>Dhami Group</strong> provides sustainable and eco-friendly engineering & digital solutions aligned with modern industrial standards.</p>
+            <p style="margin-top: 10px;">We focus on quality, safety, compliance, and long-term value delivery across industrial, ERP, cloud, and automation projects.</p>
+        </div>
+
+        <!-- PRODUCT TAB -->
+        <div id="panel-product" class="tab-panel">
+            <h3>Our Products</h3>
+            <p>Explore our next-gen digital commerce products, ERP toolkits, and sustainability automation modules designed for high performance.</p>
+        </div>
+
+        <!-- PARTNERS TAB -->
+        <div id="panel-partners" class="tab-panel">
+            <h3>Our Partners</h3>
+            <p>We work closely with global tech giants including Salesforce, SAP, AWS, and modern green technology alliances to deliver reliable enterprise solutions.</p>
+        </div>
+
+        <!-- SERVICES TAB -->
+        <div id="panel-services-tab" class="tab-panel">
+            <h3>Our Sustainable Services</h3>
+            <p>We specialize in Salesforce integration, SAP Business One, Website technical support, and green infrastructure initiatives.</p>
+        </div>
+
+        <!-- CONTACT TAB -->
+        <div id="panel-contact" class="tab-panel">
+            <h3>Contact Us</h3>
+            <div class="contact-grid">
+                <div>
+                    <p><strong>Email:</strong> support@dhamigroup.com</p>
+                    <p><strong>Phone:</strong> +91 9716583334</p>
+                    <p><strong>Address:</strong> East Delhi, Delhi 110092</p>
+                </div>
+                <form class="contact-form" onsubmit="event.preventDefault(); alert('Message Sent Successfully!');">
+                    <input type="text" placeholder="Name" required>
+                    <input type="email" placeholder="Email" required>
+                    <textarea rows="3" placeholder="Message" required></textarea>
+                    <button type="submit">Send Message</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ENQUIRE TAB -->
+        <div id="panel-enquire" class="tab-panel">
+            <h3>Enquiry Form</h3>
+            <p>Submit your requirements for custom enterprise solutions, cloud integrations, or sustainability audits.</p>
+        </div>
+
+        <!-- SUPPORT TAB -->
+        <div id="panel-support" class="tab-panel">
+            <h3>24/7 Technical Support</h3>
+            <p>Our dedicated support team is available round-the-clock to handle system maintenance, patch updates, and site uptime.</p>
+        </div>
+
+        <!-- CAREER TAB -->
+        <div id="panel-career" class="tab-panel">
+            <h3>Careers at Dhami Group</h3>
+            <p>Join our dynamic green tech team! Send your updated CV to <strong>careers@dhamigroup.com</strong>.</p>
+        </div>
+    </div>
+
+    <!-- MAIN SERVICES GRID -->
+    <div class="services-container">
+        <h2 style="color: #0d5c34;">Core Offerings</h2>
         <div class="services-grid">
-            
-            <div class="card" onclick="openModal('Salesforce Services', 'We offer full-scale Salesforce Implementation, ongoing Technical Support, and Workflow Automation tailored for your growth.')">
+            <div class="card" onclick="selectTab('services-tab')">
                 <i class="fa-brands fa-salesforce"></i>
                 <h3>Salesforce Services</h3>
                 <p>Implementation, Support, Automation</p>
             </div>
-
-            <div class="card" onclick="openModal('SAP Business One', 'Complete SAP B1 setup, workflow optimization, and 24/7 technical assistance for enterprises.')">
+            <div class="card" onclick="selectTab('services-tab')">
                 <i class="fa-solid fa-chart-line"></i>
                 <h3>SAP Business One</h3>
                 <p>Setup, Optimization, Technical Support</p>
             </div>
-
-            <div class="card" onclick="openModal('Website Support', 'Keep your web apps bulletproof with enterprise-grade security patches, performance tuning, and 99.9% uptime maintenance.')">
+            <div class="card" onclick="selectTab('services-tab')">
                 <i class="fa-solid fa-code"></i>
                 <h3>Website Support</h3>
                 <p>Security, Maintenance, Performance</p>
             </div>
-
-            <div class="card" onclick="openModal('Environmental Work', 'Driving sustainable IT infrastructure initiatives and eco-friendly digital solutions awareness.')">
-                <i class="fa-solid fa-leaf"></i>
+            <div class="card" onclick="selectTab('about')">
+                <i class="fa-solid fa-seedling"></i>
                 <h3>Environmental Work</h3>
                 <p>Sustainability Initiatives & Awareness</p>
             </div>
-
-            <div class="card" onclick="openModal('Avernus', 'Creative publishing platform focusing on tech books, poetry, and thoughtful architectural writing.')">
+            <div class="card" onclick="selectTab('product')">
                 <i class="fa-solid fa-book-open"></i>
                 <h3>Avernus</h3>
                 <p>Books, Poetry & Thoughtful Writing</p>
             </div>
-
-        </div>
-    </div>
-
-    <!-- POPUP MODAL -->
-    <div class="modal" id="infoModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <h2 id="modalTitle" style="color: #0d5c34; margin-bottom: 15px;"></h2>
-            <p id="modalDesc" style="color: #555; line-height: 1.6;"></p>
         </div>
     </div>
 
     <!-- FOOTER -->
     <footer>
         <p>&copy; 2026 Dhami Group Digital Commerce & Solutions. All Rights Reserved.</p>
-        <div class="social-links">
-            <a href="#">Facebook</a>
-            <a href="#">Instagram</a>
-            <a href="#">YouTube</a>
-            <a href="#">LinkedIn</a>
-            <a href="#">X (Twitter)</a>
-        </div>
     </footer>
 
-    <!-- FLOATING CHAT BUTTON -->
-    <a href="https://wa.me/?text=Hello%20Dhami%20Group,%20I%20want%20to%20know%20more%20about%20your%20services." class="chat-btn" target="_blank">
+    <!-- WHATSAPP CHAT BUTTON -->
+    <a href="https://wa.me/?text=Hello%20Dhami%20Group,%20I%20want%20to%20know%20more." class="chat-btn" target="_blank">
         <i class="fa-brands fa-whatsapp" style="font-size: 20px;"></i> Chat
     </a>
 
-    <!-- JAVASCRIPT FOR INTERACTIVITY -->
+    <!-- JAVASCRIPT FOR DYNAMIC HEADER TABS -->
     <script>
-        function openModal(title, desc) {
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalDesc').innerText = desc;
-            document.getElementById('infoModal').style.display = 'flex';
-        }
+        function selectTab(tabName) {
+            // Remove active from all buttons
+            let btns = document.querySelectorAll('.tab-menu-btn');
+            btns.forEach(b => b.classList.remove('active'));
 
-        function closeModal() {
-            document.getElementById('infoModal').style.display = 'none';
-        }
+            // Hide all panels
+            let panels = document.querySelectorAll('.tab-panel');
+            panels.forEach(p => p.classList.remove('active'));
 
-        // Close modal on background click
-        window.onclick = function(event) {
-            let modal = document.getElementById('infoModal');
-            if (event.target == modal) {
-                modal.style.display = "none";
+            // Activate target button and panel
+            let activeBtn = document.getElementById('btn-' + tabName);
+            let activePanel = document.getElementById('panel-' + tabName);
+
+            if(activeBtn && activePanel) {
+                activeBtn.classList.add('active');
+                activePanel.classList.add('active');
+                
+                // Smooth scroll down to tab view
+                document.getElementById('tabContainer').scrollIntoView({ behavior: 'smooth' });
             }
         }
     </script>
