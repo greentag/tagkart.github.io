@@ -67,22 +67,30 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
-        .logo h2 {
-            color: #fff;
-            font-weight: 700;
+        /* LOGO IMAGE STYLING */
+        .logo {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 15px;
+            cursor: pointer;
         }
 
-        .logo i {
-            color: #a3f3c4;
-            animation: spinGlobe 8s linear infinite;
+        .logo-icon {
+            height: 55px; 
+            width: auto;
+            animation: pulseGlow 4s infinite alternate;
         }
 
-        @keyframes spinGlobe {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .logo-text {
+            height: 40px; 
+            width: auto;
+            /* Adds a soft white glow so the dark green text is visible on the dark green header */
+            filter: drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.8)); 
+        }
+
+        @keyframes pulseGlow {
+            0% { filter: drop-shadow(0 0 2px #a3f3c4); }
+            100% { filter: drop-shadow(0 0 10px #a3f3c4); }
         }
 
         nav ul {
@@ -339,7 +347,8 @@
     <!-- HEADER MENU LINKS LINKED DIRECTLY TO TABS -->
     <header>
         <div class="logo">
-            <h2><i class="fa-solid fa-earth-americas"></i> <div class="logo"> <img src="Dhami group name.png" alt="Dhami group logo.png" class="logo-icon"> <img src="Dhami group name.png" alt="Dhami Group" class="logo-text"> </div></h2>
+            <img src="Dhami group logo.png" alt="Dhami Group Logo" class="logo-icon">
+            <img src="Dhami group name.png" alt="Dhami Group Text" class="logo-text">
         </div>
         <nav>
             <ul>
