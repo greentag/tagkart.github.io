@@ -67,30 +67,38 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
-        /* LOGO IMAGE STYLING */
+        /* LOGO STYLING - WHITE BADGE FIX & ANIMATED EARTH */
         .logo {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             cursor: pointer;
+            /* White pill background to hide the white background of the images */
+            background: #ffffff; 
+            padding: 5px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .earth-icon {
+            color: #1b8a4f; /* Green color to match the theme */
+            font-size: 24px;
+            animation: spinGlobe 8s linear infinite;
         }
 
         .logo-icon {
-            height: 55px; 
+            height: 40px; 
             width: auto;
-            animation: pulseGlow 4s infinite alternate;
         }
 
         .logo-text {
-            height: 40px; 
+            height: 30px; 
             width: auto;
-            /* Adds a soft white glow so the dark green text is visible on the dark green header */
-            filter: drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.8)); 
         }
 
-        @keyframes pulseGlow {
-            0% { filter: drop-shadow(0 0 2px #a3f3c4); }
-            100% { filter: drop-shadow(0 0 10px #a3f3c4); }
+        @keyframes spinGlobe {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         nav ul {
@@ -347,6 +355,9 @@
     <!-- HEADER MENU LINKS LINKED DIRECTLY TO TABS -->
     <header>
         <div class="logo">
+            <!-- Animated Earth Icon -->
+            <i class="fa-solid fa-earth-americas earth-icon"></i>
+            <!-- Images -->
             <img src="Dhami group logo.png" alt="Dhami Group Logo" class="logo-icon">
             <img src="Dhami group name.png" alt="Dhami Group Text" class="logo-text">
         </div>
