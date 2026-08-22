@@ -67,33 +67,31 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
-        /* /* LOGO STYLING - TRANSPARENT FIX */
+        /* LOGO STYLING - SIZED UP & ANIMATION FIXED */
         .logo {
             display: flex;
             align-items: center;
             gap: 12px;
             cursor: pointer;
-            /* Yahan se white background aur shadow hata diya gaya hai */
             padding: 5px 0px; 
         }
 
         .earth-icon {
-            color: #a3f3c4; /* Ise wapas light green kar diya taaki dark header par dikhe */
-            font-size: 24px;
+            color: #a3f3c4; 
+            font-size: 32px; /* Earth icon ko bhi thoda bada kiya hai */
             animation: spinGlobe 8s linear infinite;
         }
 
         .logo-icon {
-            height: 45px; 
+            height: 60px; /* Logo ki height badha di gayi hai */
             width: auto;
         }
 
         .logo-text {
-            height: 35px; 
+            height: 45px; /* Text ki height badha di gayi hai */
             width: auto;
-            /* Ye drop-shadow aapke dark green text ko dark green header par highlight karega */
             filter: drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.8)); 
-        }        }
+        }
 
         @keyframes spinGlobe {
             0% { transform: rotate(0deg); }
