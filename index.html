@@ -67,34 +67,33 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
-        /* LOGO STYLING - WHITE BADGE FIX & ANIMATED EARTH */
+        /* /* LOGO STYLING - TRANSPARENT FIX */
         .logo {
             display: flex;
             align-items: center;
             gap: 12px;
             cursor: pointer;
-            /* White pill background to hide the white background of the images */
-            background: #ffffff; 
-            padding: 5px 20px;
-            border-radius: 50px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            /* Yahan se white background aur shadow hata diya gaya hai */
+            padding: 5px 0px; 
         }
 
         .earth-icon {
-            color: #1b8a4f; /* Green color to match the theme */
+            color: #a3f3c4; /* Ise wapas light green kar diya taaki dark header par dikhe */
             font-size: 24px;
             animation: spinGlobe 8s linear infinite;
         }
 
         .logo-icon {
-            height: 40px; 
+            height: 45px; 
             width: auto;
         }
 
         .logo-text {
-            height: 30px; 
+            height: 35px; 
             width: auto;
-        }
+            /* Ye drop-shadow aapke dark green text ko dark green header par highlight karega */
+            filter: drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.8)); 
+        }        }
 
         @keyframes spinGlobe {
             0% { transform: rotate(0deg); }
