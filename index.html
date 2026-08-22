@@ -87,7 +87,6 @@
             width: auto;
         }
 
-        /* New CSS for Text Logo */
         .logo-text-container {
             display: flex;
             flex-direction: column;
@@ -338,6 +337,7 @@
             z-index: 2;
         }
 
+        /* FLOATING BUTTONS */
         .chat-btn {
             position: fixed;
             bottom: 20px; right: 20px;
@@ -351,6 +351,30 @@
             text-decoration: none;
             font-weight: 600;
             z-index: 999;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* SCROLL TO TOP BUTTON */
+        #scrollTopBtn {
+            display: none; /* Default hidden, JS show karega */
+            position: fixed;
+            bottom: 80px; /* WhatsApp button ke theek upar */
+            right: 20px;
+            z-index: 999;
+            background-color: #1b8a4f;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 12px 15px;
+            border-radius: 50%;
+            font-size: 18px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #scrollTopBtn:hover {
+            background-color: #0d5c34;
+            transform: translateY(-5px);
         }
 
         @keyframes fadeIn {
@@ -369,9 +393,10 @@
         <i class="fa-solid fa-leaf leaf"></i>
     </div>
 
-    <!-- HEADER MENU LINKS LINKED DIRECTLY TO TABS -->
+    <!-- HEADER MENU LINKS -->
     <header>
-        <div class="logo">
+        <!-- ADDED ONCLICK FUNCTION TO LOGO FOR HOME SCROLL -->
+        <div class="logo" onclick="scrollToTop()">
             <i class="fa-solid fa-earth-americas earth-icon"></i>
             <img src="Dhami group logo.png" alt="Dhami Group Logo" class="logo-icon">
             <div class="logo-text-container">
@@ -381,7 +406,7 @@
         </div>
         <nav>
             <ul>
-                <li><a onclick="selectTab('about')" data-i18n="nav_home">Home</a></li>
+                <li><a onclick="scrollToTop()" data-i18n="nav_home">Home</a></li>
                 <li><a onclick="selectTab('about')" data-i18n="nav_about">About Us</a></li>
                 <li><a onclick="selectTab('product')" data-i18n="nav_product">Product</a></li>
                 <li><a onclick="selectTab('partners')" data-i18n="nav_partners">Our Partners</a></li>
@@ -391,7 +416,6 @@
                 <li><a onclick="selectTab('support')" data-i18n="nav_support">Support</a></li>
                 <li><a onclick="selectTab('career')" data-i18n="nav_career">Career</a></li>
                 <li>
-                    <!-- MULTI-LANGUAGE SELECTOR ADDED HERE -->
                     <select class="lang-select" onchange="changeLanguage(this.value)">
                         <option value="en">English</option>
                         <option value="hi">Hindi</option>
@@ -458,7 +482,7 @@
             <h3 data-i18n="tab_cont_h3">Contact Us</h3>
             <div class="contact-grid">
                 <div>
-                    <p data-i18n="cont_email"><strong>Email:</strong> support@dhamigroup.com</p>
+                    <p data-i18n="cont_email"><strong>Email:</strong> pspujari88@gmail.com</p>
                     <p data-i18n="cont_phone"><strong>Phone:</strong> +91 9716583334</p>
                     <p data-i18n="cont_add"><strong>Address:</strong> East Delhi, Delhi 110092</p>
                 </div>
@@ -524,7 +548,7 @@
 
     <!-- FOOTER -->
     <footer>
-        <p data-i18n="footer_text">&copy; 2026 Dhami Group Digital Commerce & Solutions. All Rights Reserved.</p>
+        <p data-i18n="footer_text">&copy; 2026 Dhami Digital Solutions. All Rights Reserved.</p>
     </footer>
 
     <!-- WHATSAPP CHAT BUTTON -->
@@ -532,7 +556,12 @@
         <i class="fa-brands fa-whatsapp" style="font-size: 20px;"></i> <span data-i18n="chat">Chat</span>
     </a>
 
-    <!-- JAVASCRIPT FOR DYNAMIC HEADER TABS AND MULTI-LANGUAGE -->
+    <!-- SCROLL TO TOP BUTTON (ADDED) -->
+    <button id="scrollTopBtn" onclick="scrollToTop()">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <!-- JAVASCRIPT LOGIC -->
     <script>
         function selectTab(tabName) {
             let btns = document.querySelectorAll('.tab-menu-btn');
@@ -549,6 +578,22 @@
                 activePanel.classList.add('active');
                 document.getElementById('tabContainer').scrollIntoView({ behavior: 'smooth' });
             }
+        }
+
+        // --- SCROLL TO TOP LOGIC ---
+        let topBtn = document.getElementById("scrollTopBtn");
+
+        window.onscroll = function() {
+            // Show button if user scrolls down 300px
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                topBtn.style.display = "block";
+            } else {
+                topBtn.style.display = "none";
+            }
+        };
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // --- GLOBAL TRANSLATION DICTIONARY ---
@@ -705,9 +750,7 @@
             }
         };
 
-        // --- CHANGE LANGUAGE FUNCTION ---
         function changeLanguage(lang) {
-            // Translate all elements with data-i18n attribute
             const textElements = document.querySelectorAll('[data-i18n]');
             textElements.forEach(el => {
                 const key = el.getAttribute('data-i18n');
@@ -716,7 +759,6 @@
                 }
             });
 
-            // Translate placeholders for the form inputs
             const inputElements = document.querySelectorAll('[data-i18n-placeholder]');
             inputElements.forEach(el => {
                 const key = el.getAttribute('data-i18n-placeholder');
