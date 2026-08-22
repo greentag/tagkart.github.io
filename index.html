@@ -67,7 +67,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
-        /* LOGO STYLING - SIZED UP & ANIMATION FIXED */
+        /* LOGO STYLING - CSS TEXT LOGO */
         .logo {
             display: flex;
             align-items: center;
@@ -78,19 +78,39 @@
 
         .earth-icon {
             color: #a3f3c4; 
-            font-size: 32px; /* Earth icon ko bhi thoda bada kiya hai */
+            font-size: 32px;
             animation: spinGlobe 8s linear infinite;
         }
 
         .logo-icon {
-            height: 60px; /* Logo ki height badha di gayi hai */
+            height: 60px; 
             width: auto;
         }
 
-        .logo-text {
-            height: 45px; /* Text ki height badha di gayi hai */
-            width: auto;
-            filter: drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.8)); 
+        /* New CSS for Text Logo */
+        .logo-text-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .logo-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff; /* White to pop on maroon background */
+            letter-spacing: 2px;
+            line-height: 1.1;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .logo-subtitle {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #a3f3c4; /* Light green to match the earth icon */
+            letter-spacing: 2.5px;
+            line-height: 1;
+            text-transform: uppercase;
         }
 
         @keyframes spinGlobe {
@@ -354,9 +374,14 @@
         <div class="logo">
             <!-- Animated Earth Icon -->
             <i class="fa-solid fa-earth-americas earth-icon"></i>
-            <!-- Images -->
+            <!-- Main Graphical Icon -->
             <img src="Dhami group logo.png" alt="Dhami Group Logo" class="logo-icon">
-            <img src="Dhami group name.png" alt="Dhami Group Text" class="logo-text">
+            
+            <!-- Pure CSS Text Logo -->
+            <div class="logo-text-container">
+                <span class="logo-title">DHAMI GROUP</span>
+                <span class="logo-subtitle">DHAMI DIGITAL SOLUTION</span>
+            </div>
         </div>
         <nav>
             <ul>
