@@ -201,7 +201,7 @@
             font-weight: 500;
         }
 
-        /* ---------------- DYNAMIC TAB CONTAINER FOR HEADER LINKS ---------------- */
+        /* ---------------- DYNAMIC TAB CONTAINER FOR INNER PAGES ---------------- */
         .dynamic-tab-section {
             max-width: 1200px;
             margin: 30px auto;
@@ -210,37 +210,11 @@
             z-index: 2;
         }
 
-        .tab-menu-bar {
-            display: flex;
-            gap: 8px;
-            border-bottom: 3px solid #1b8a4f;
-            overflow-x: auto;
-            padding-bottom: 2px;
-        }
-
-        .tab-menu-btn {
-            background: #e2f2e8;
-            color: #0d5c34;
-            border: none;
-            padding: 10px 18px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 6px 6px 0 0;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .tab-menu-btn.active {
-            background: #1b8a4f;
-            color: #ffffff;
-        }
-
         .tab-panel {
             display: none;
             background: #ffffff;
-            padding: 30px;
-            border-radius: 0 10px 10px 10px;
+            padding: 40px;
+            border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.06);
             border: 1px solid #dbe8e0;
         }
@@ -249,6 +223,18 @@
         .tab-panel.active {
             display: block;
             animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .tab-panel h3 {
+            color: #0d5c34;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .tab-panel p {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #555;
         }
 
         /* ---------------- ABOUT US SPECIFIC ANIMATIONS ---------------- */
@@ -278,7 +264,7 @@
             align-items: center;
             overflow: hidden;
             opacity: 0;
-            animation: fadeUp 0.8s ease-out 1s forwards; /* Comes up last */
+            animation: fadeUp 0.8s ease-out 1s forwards; 
         }
 
         .icon-group {
@@ -480,7 +466,8 @@
 
     <!-- HEADER MENU LINKS -->
     <header>
-        <div class="logo" onclick="scrollToTop()">
+        <!-- CLICKING LOGO GOES TO HOME -->
+        <div class="logo" onclick="showHome()">
             <i class="fa-solid fa-earth-americas earth-icon"></i>
             <img src="Dhami group logo.png" alt="Dhami Group Logo" class="logo-icon">
             <div class="logo-text-container">
@@ -490,7 +477,8 @@
         </div>
         <nav>
             <ul>
-                <li><a onclick="scrollToTop()" data-i18n="nav_home">Home</a></li>
+                <!-- MAIN NAVIGATION LINKS -->
+                <li><a onclick="showHome()" data-i18n="nav_home">Home</a></li>
                 <li><a onclick="selectTab('about')" data-i18n="nav_about">About Us</a></li>
                 <li><a onclick="selectTab('product')" data-i18n="nav_product">Product</a></li>
                 <li><a onclick="selectTab('partners')" data-i18n="nav_partners">Our Partners</a></li>
@@ -513,35 +501,64 @@
         </nav>
     </header>
 
-    <!-- HERO SECTION -->
-    <section class="hero" id="home">
-        <div class="hero-nature-wrapper">
-            <i class="fa-solid fa-globe floating-space"></i>
-            <i class="fa-solid fa-tree swaying-tree"></i>
-        </div>
-        <h1 data-i18n="hero_h1">Welcome to Dhami Group</h1>
-        <p data-i18n="hero_p">Salesforce • SAP B1 • Website Support • Environment Projects</p>
-    </section>
+    <!-- ============================================== -->
+    <!-- HOME PAGE SECTION (Visible by Default)         -->
+    <!-- ============================================== -->
+    <div id="homePage">
+        <!-- HERO SECTION -->
+        <section class="hero" id="home">
+            <div class="hero-nature-wrapper">
+                <i class="fa-solid fa-globe floating-space"></i>
+                <i class="fa-solid fa-tree swaying-tree"></i>
+            </div>
+            <h1 data-i18n="hero_h1">Welcome to Dhami Group</h1>
+            <p data-i18n="hero_p">Salesforce • SAP B1 • Website Support • Environment Projects</p>
+        </section>
 
-    <!-- HEADER CLICK VIEW (TAB-WISE CONTENT SECTION) -->
-    <div class="dynamic-tab-section" id="tabContainer">
-        <div class="tab-menu-bar">
-            <button class="tab-menu-btn active" id="btn-about" onclick="selectTab('about')" data-i18n="btn_about">About Us</button>
-            <button class="tab-menu-btn" id="btn-product" onclick="selectTab('product')" data-i18n="btn_product">Product</button>
-            <button class="tab-menu-btn" id="btn-partners" onclick="selectTab('partners')" data-i18n="btn_partners">Our Partners</button>
-            <button class="tab-menu-btn" id="btn-services-tab" onclick="selectTab('services-tab')" data-i18n="btn_services">Our Services</button>
-            <button class="tab-menu-btn" id="btn-contact" onclick="selectTab('contact')" data-i18n="btn_contact">Contact</button>
-            <button class="tab-menu-btn" id="btn-enquire" onclick="selectTab('enquire')" data-i18n="btn_enquire">Enquire</button>
-            <button class="tab-menu-btn" id="btn-support" onclick="selectTab('support')" data-i18n="btn_support">Support</button>
-            <button class="tab-menu-btn" id="btn-career" onclick="selectTab('career')" data-i18n="btn_career">Career</button>
+        <!-- MAIN SERVICES GRID (CORE OFFERINGS) -->
+        <div class="services-container">
+            <h2 style="color: #0d5c34;" data-i18n="core_offerings">Core Offerings</h2>
+            <div class="services-grid">
+                <!-- Clicking these cards will also open the Services page -->
+                <div class="card" onclick="selectTab('services-tab')">
+                    <i class="fa-brands fa-salesforce"></i>
+                    <h3 data-i18n="card_sf_h3">Salesforce Services</h3>
+                    <p data-i18n="card_sf_p">Implementation, Support, Automation</p>
+                </div>
+                <div class="card" onclick="selectTab('services-tab')">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <h3 data-i18n="card_sap_h3">SAP Business One</h3>
+                    <p data-i18n="card_sap_p">Setup, Optimization, Technical Support</p>
+                </div>
+                <div class="card" onclick="selectTab('services-tab')">
+                    <i class="fa-solid fa-code"></i>
+                    <h3 data-i18n="card_web_h3">Website Support</h3>
+                    <p data-i18n="card_web_p">Security, Maintenance, Performance</p>
+                </div>
+                <div class="card" onclick="selectTab('about')">
+                    <i class="fa-solid fa-seedling"></i>
+                    <h3 data-i18n="card_env_h3">Environmental Work</h3>
+                    <p data-i18n="card_env_p">Sustainability Initiatives & Awareness</p>
+                </div>
+                <div class="card" onclick="selectTab('product')">
+                    <i class="fa-solid fa-book-open"></i>
+                    <h3 data-i18n="card_av_h3">Avernus</h3>
+                    <p data-i18n="card_av_p">Books, Poetry & Thoughtful Writing</p>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <!-- ABOUT TAB (ANIMATED & GRAPHICS ADDED) -->
-        <div id="panel-about" class="tab-panel active">
-            <h3 class="animate-text" style="margin-bottom: 15px; color: #0d5c34;">About Dhami Group</h3>
-            <p class="animate-text"><strong>Dhami Group Digital Commerce & Solutions</strong> was established in 2025 with a vision to provide practical, reliable, and technology-driven solutions for businesses and organizations.</p>
-            <p class="animate-text delay-1" style="margin-top: 10px;">Founded and led by <strong>Prakash</strong>, Dhami Group focuses on helping businesses improve their operations through ERP, CRM, digital solutions, website support, and business process automation.</p>
-            <p class="animate-text delay-1" style="margin-top: 10px;">We work with businesses to understand their actual requirements, simplify processes, improve system utilization, and provide solutions that are practical, scalable, and cost-effective.</p>
+    <!-- ============================================== -->
+    <!-- INNER PAGES SECTION (Hidden by Default)        -->
+    <!-- ============================================== -->
+    <div class="dynamic-tab-section" id="tabContainer" style="display: none;">
+        
+        <!-- ABOUT US PAGE -->
+        <div id="panel-about" class="tab-panel">
+            <h3 class="animate-text" data-i18n="tab_about_h3">About Dhami Group</h3>
+            <p class="animate-text" data-i18n="tab_about_p1"><strong>Dhami Group</strong> provides sustainable and eco-friendly engineering & digital solutions aligned with modern industrial standards.</p>
+            <p class="animate-text delay-1" style="margin-top: 10px;" data-i18n="tab_about_p2">We focus on quality, safety, compliance, and long-term value delivery across industrial, ERP, cloud, and automation projects.</p>
 
             <h4 class="animate-text delay-2" style="margin-top: 25px; margin-bottom: 10px; color: #1b8a4f; font-size: 18px;">What We Do</h4>
             <p class="animate-text delay-2">Our key areas of services include:</p>
@@ -586,25 +603,25 @@
             </div>
         </div>
 
-        <!-- PRODUCT TAB -->
+        <!-- PRODUCT PAGE -->
         <div id="panel-product" class="tab-panel">
             <h3 data-i18n="tab_prod_h3">Our Products</h3>
             <p data-i18n="tab_prod_p">Explore our next-gen digital commerce products, ERP toolkits, and sustainability automation modules designed for high performance.</p>
         </div>
 
-        <!-- PARTNERS TAB -->
+        <!-- PARTNERS PAGE -->
         <div id="panel-partners" class="tab-panel">
             <h3 data-i18n="tab_part_h3">Our Partners</h3>
             <p data-i18n="tab_part_p">We work closely with global tech giants including Salesforce, SAP, AWS, and modern green technology alliances to deliver reliable enterprise solutions.</p>
         </div>
 
-        <!-- SERVICES TAB -->
+        <!-- SERVICES PAGE -->
         <div id="panel-services-tab" class="tab-panel">
             <h3 data-i18n="tab_serv_h3">Our Sustainable Services</h3>
             <p data-i18n="tab_serv_p">We specialize in Salesforce integration, SAP Business One, Website technical support, and green infrastructure initiatives.</p>
         </div>
 
-        <!-- CONTACT TAB -->
+        <!-- CONTACT PAGE -->
         <div id="panel-contact" class="tab-panel">
             <h3 data-i18n="tab_cont_h3">Contact Us</h3>
             <div class="contact-grid">
@@ -622,54 +639,22 @@
             </div>
         </div>
 
-        <!-- ENQUIRE TAB -->
+        <!-- ENQUIRE PAGE -->
         <div id="panel-enquire" class="tab-panel">
             <h3 data-i18n="tab_enq_h3">Enquiry Form</h3>
             <p data-i18n="tab_enq_p">Submit your requirements for custom enterprise solutions, cloud integrations, or sustainability audits.</p>
         </div>
 
-        <!-- SUPPORT TAB -->
+        <!-- SUPPORT PAGE -->
         <div id="panel-support" class="tab-panel">
             <h3 data-i18n="tab_sup_h3">24/7 Technical Support</h3>
             <p data-i18n="tab_sup_p">Our dedicated support team is available round-the-clock to handle system maintenance, patch updates, and site uptime.</p>
         </div>
 
-        <!-- CAREER TAB -->
+        <!-- CAREER PAGE -->
         <div id="panel-career" class="tab-panel">
             <h3 data-i18n="tab_car_h3">Careers at Dhami Group</h3>
             <p data-i18n="tab_car_p">Join our dynamic green tech team! Send your updated CV to <strong>careers@dhamigroup.com</strong>.</p>
-        </div>
-    </div>
-
-    <!-- MAIN SERVICES GRID -->
-    <div class="services-container">
-        <h2 style="color: #0d5c34;" data-i18n="core_offerings">Core Offerings</h2>
-        <div class="services-grid">
-            <div class="card" onclick="selectTab('services-tab')">
-                <i class="fa-brands fa-salesforce"></i>
-                <h3 data-i18n="card_sf_h3">Salesforce Services</h3>
-                <p data-i18n="card_sf_p">Implementation, Support, Automation</p>
-            </div>
-            <div class="card" onclick="selectTab('services-tab')">
-                <i class="fa-solid fa-chart-line"></i>
-                <h3 data-i18n="card_sap_h3">SAP Business One</h3>
-                <p data-i18n="card_sap_p">Setup, Optimization, Technical Support</p>
-            </div>
-            <div class="card" onclick="selectTab('services-tab')">
-                <i class="fa-solid fa-code"></i>
-                <h3 data-i18n="card_web_h3">Website Support</h3>
-                <p data-i18n="card_web_p">Security, Maintenance, Performance</p>
-            </div>
-            <div class="card" onclick="selectTab('about')">
-                <i class="fa-solid fa-seedling"></i>
-                <h3 data-i18n="card_env_h3">Environmental Work</h3>
-                <p data-i18n="card_env_p">Sustainability Initiatives & Awareness</p>
-            </div>
-            <div class="card" onclick="selectTab('product')">
-                <i class="fa-solid fa-book-open"></i>
-                <h3 data-i18n="card_av_h3">Avernus</h3>
-                <p data-i18n="card_av_p">Books, Poetry & Thoughtful Writing</p>
-            </div>
         </div>
     </div>
 
@@ -690,18 +675,29 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        function selectTab(tabName) {
-            let btns = document.querySelectorAll('.tab-menu-btn');
-            btns.forEach(b => b.classList.remove('active'));
+        // --- 1. SHOW HOME PAGE LOGIC ---
+        function showHome() {
+            // Show Home Page content, hide inner pages
+            document.getElementById('homePage').style.display = 'block';
+            document.getElementById('tabContainer').style.display = 'none';
+            
+            // Scroll back to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
+        // --- 2. SHOW INNER PAGES LOGIC ---
+        function selectTab(tabName) {
+            // Hide Home Page, show inner pages container
+            document.getElementById('homePage').style.display = 'none';
+            document.getElementById('tabContainer').style.display = 'block';
+
+            // Hide all panels
             let panels = document.querySelectorAll('.tab-panel');
             panels.forEach(p => p.classList.remove('active'));
 
-            let activeBtn = document.getElementById('btn-' + tabName);
+            // Show active panel
             let activePanel = document.getElementById('panel-' + tabName);
-
-            if(activeBtn && activePanel) {
-                activeBtn.classList.add('active');
+            if(activePanel) {
                 activePanel.classList.add('active');
                 
                 // Re-trigger animation logic for About Us when clicked
@@ -714,11 +710,12 @@
                     });
                 }
                 
-                document.getElementById('tabContainer').scrollIntoView({ behavior: 'smooth' });
+                // Scroll back to top after page switch
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
-        // --- SCROLL TO TOP LOGIC ---
+        // --- 3. SCROLL TO TOP BUTTON LOGIC ---
         let topBtn = document.getElementById("scrollTopBtn");
 
         window.onscroll = function() {
@@ -733,12 +730,14 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // --- GLOBAL TRANSLATION DICTIONARY ---
+        // --- 4. GLOBAL TRANSLATION DICTIONARY ---
         const translations = {
             en: {
                 nav_home: "Home", nav_about: "About Us", nav_product: "Product", nav_partners: "Our Partners", nav_services: "Our Services", nav_contact: "Contact", nav_enquire: "Enquire", nav_support: "Support", nav_career: "Career",
-                btn_about: "About Us", btn_product: "Product", btn_partners: "Our Partners", btn_services: "Our Services", btn_contact: "Contact", btn_enquire: "Enquire", btn_support: "Support", btn_career: "Career",
                 hero_h1: "Welcome to Dhami Group", hero_p: "Salesforce • SAP B1 • Website Support • Environment Projects",
+                tab_about_h3: "About Dhami Group", 
+                tab_about_p1: "<strong>Dhami Group</strong> provides sustainable and eco-friendly engineering & digital solutions aligned with modern industrial standards.",
+                tab_about_p2: "We focus on quality, safety, compliance, and long-term value delivery across industrial, ERP, cloud, and automation projects.",
                 tab_prod_h3: "Our Products", tab_prod_p: "Explore our next-gen digital commerce products, ERP toolkits, and sustainability automation modules designed for high performance.",
                 tab_part_h3: "Our Partners", tab_part_p: "We work closely with global tech giants including Salesforce, SAP, AWS, and modern green technology alliances to deliver reliable enterprise solutions.",
                 tab_serv_h3: "Our Sustainable Services", tab_serv_p: "We specialize in Salesforce integration, SAP Business One, Website technical support, and green infrastructure initiatives.",
@@ -759,8 +758,10 @@
             },
             hi: {
                 nav_home: "होम", nav_about: "हमारे बारे में", nav_product: "उत्पाद", nav_partners: "हमारे भागीदार", nav_services: "हमारी सेवाएँ", nav_contact: "संपर्क", nav_enquire: "पूछताछ", nav_support: "समर्थन", nav_career: "करियर",
-                btn_about: "हमारे बारे में", btn_product: "उत्पाद", btn_partners: "हमारे भागीदार", btn_services: "हमारी सेवाएँ", btn_contact: "संपर्क", btn_enquire: "पूछताछ", btn_support: "समर्थन", btn_career: "करियर",
                 hero_h1: "धामी ग्रुप में आपका स्वागत है", hero_p: "सेल्सफोर्स • SAP B1 • वेबसाइट सपोर्ट • पर्यावरण प्रोजेक्ट्स",
+                tab_about_h3: "धामी ग्रुप के बारे में", 
+                tab_about_p1: "<strong>धामी ग्रुप</strong> आधुनिक औद्योगिक मानकों के अनुरूप टिकाऊ और पर्यावरण के अनुकूल इंजीनियरिंग और डिजिटल समाधान प्रदान करता है।",
+                tab_about_p2: "हम औद्योगिक, ईआरपी, क्लाउड और ऑटोमेशन परियोजनाओं में गुणवत्ता, सुरक्षा, अनुपालन और दीर्घकालिक मूल्य वितरण पर ध्यान केंद्रित करते हैं।",
                 tab_prod_h3: "हमारे उत्पाद", tab_prod_p: "उच्च प्रदर्शन के लिए डिज़ाइन किए गए हमारे नेक्स्ट-जेन डिजिटल कॉमर्स उत्पाद, ईआरपी टूलकिट और सस्टेनेबिलिटी ऑटोमेशन मॉड्यूल एक्सप्लोर करें।",
                 tab_part_h3: "हमारे भागीदार", tab_part_p: "हम विश्वसनीय एंटरप्राइज समाधान प्रदान करने के लिए सेल्सफोर्स, SAP, AWS और आधुनिक ग्रीन टेक्नोलॉजी गठबंधनों सहित वैश्विक तकनीकी दिग्गजों के साथ मिलकर काम करते हैं।",
                 tab_serv_h3: "हमारी टिकाऊ सेवाएँ", tab_serv_p: "हम सेल्सफोर्स एकीकरण, SAP Business One, वेबसाइट तकनीकी सहायता और हरित बुनियादी ढांचा पहलों के विशेषज्ञ हैं।",
@@ -781,8 +782,10 @@
             },
             es: {
                 nav_home: "Inicio", nav_about: "Sobre Nosotros", nav_product: "Producto", nav_partners: "Socios", nav_services: "Servicios", nav_contact: "Contacto", nav_enquire: "Consultar", nav_support: "Soporte", nav_career: "Carrera",
-                btn_about: "Sobre Nosotros", btn_product: "Producto", btn_partners: "Socios", btn_services: "Servicios", btn_contact: "Contacto", btn_enquire: "Consultar", btn_support: "Soporte", btn_career: "Carrera",
                 hero_h1: "Bienvenido a Dhami Group", hero_p: "Salesforce • SAP B1 • Soporte Web • Proyectos Ambientales",
+                tab_about_h3: "Sobre Dhami Group", 
+                tab_about_p1: "<strong>Dhami Group</strong> proporciona soluciones digitales y de ingeniería sostenibles y ecológicas alineadas con los estándares industriales modernos.",
+                tab_about_p2: "Nos centramos en la calidad, la seguridad, el cumplimiento y la entrega de valor a largo plazo en proyectos industriales, ERP, en la nube y de automatización.",
                 tab_prod_h3: "Nuestros Productos", tab_prod_p: "Explore nuestros productos de comercio digital de próxima generación, kits de herramientas ERP y módulos de automatización de sostenibilidad diseñados para un alto rendimiento.",
                 tab_part_h3: "Nuestros Socios", tab_part_p: "Trabajamos en estrecha colaboración con gigantes tecnológicos globales, incluidos Salesforce, SAP, AWS y alianzas de tecnología verde para ofrecer soluciones empresariales confiables.",
                 tab_serv_h3: "Nuestros Servicios Sostenibles", tab_serv_p: "Nos especializamos en la integración de Salesforce, SAP Business One, soporte técnico de sitios web e iniciativas de infraestructura ecológica.",
@@ -803,8 +806,10 @@
             },
             fr: {
                 nav_home: "Accueil", nav_about: "À Propos", nav_product: "Produit", nav_partners: "Partenaires", nav_services: "Services", nav_contact: "Contact", nav_enquire: "Se Renseigner", nav_support: "Support", nav_career: "Carrière",
-                btn_about: "À Propos", btn_product: "Produit", btn_partners: "Partenaires", btn_services: "Services", btn_contact: "Contact", btn_enquire: "Se Renseigner", btn_support: "Support", btn_career: "Carrière",
                 hero_h1: "Bienvenue chez Dhami Group", hero_p: "Salesforce • SAP B1 • Support Web • Projets Environnementaux",
+                tab_about_h3: "À Propos de Dhami Group", 
+                tab_about_p1: "<strong>Dhami Group</strong> fournit des solutions numériques et d'ingénierie durables et respectueuses de l'environnement, conformes aux normes industrielles modernes.",
+                tab_about_p2: "Nous nous concentrons sur la qualité, la sécurité, la conformité et la création de valeur à long terme à travers des projets industriels, ERP, cloud et d'automatisation.",
                 tab_prod_h3: "Nos Produits", tab_prod_p: "Découvrez nos produits de commerce numérique de nouvelle génération, nos boîtes à outils ERP et nos modules d'automatisation de la durabilité conçus pour de hautes performances.",
                 tab_part_h3: "Nos Partenaires", tab_part_p: "Nous travaillons en étroite collaboration avec des géants mondiaux de la technologie tels que Salesforce, SAP, AWS et des alliances technologiques vertes pour fournir des solutions fiables.",
                 tab_serv_h3: "Nos Services Durables", tab_serv_p: "Nous sommes spécialisés dans l'intégration de Salesforce, SAP Business One, le support technique de sites Web et les initiatives d'infrastructure verte.",
@@ -825,8 +830,10 @@
             },
             de: {
                 nav_home: "Startseite", nav_about: "Über Uns", nav_product: "Produkt", nav_partners: "Partner", nav_services: "Dienste", nav_contact: "Kontakt", nav_enquire: "Anfragen", nav_support: "Support", nav_career: "Karriere",
-                btn_about: "Über Uns", btn_product: "Produkt", btn_partners: "Partner", btn_services: "Dienste", btn_contact: "Kontakt", btn_enquire: "Anfragen", btn_support: "Support", btn_career: "Karriere",
                 hero_h1: "Willkommen bei der Dhami Group", hero_p: "Salesforce • SAP B1 • Website-Support • Umweltprojekte",
+                tab_about_h3: "Über die Dhami Group", 
+                tab_about_p1: "Die <strong>Dhami Group</strong> bietet nachhaltige und umweltfreundliche Engineering- und Digitallösungen, die auf moderne Industriestandards abgestimmt sind.",
+                tab_about_p2: "Wir konzentrieren uns auf Qualität, Sicherheit, Compliance und langfristige Wertschöpfung bei Industrie-, ERP-, Cloud- und Automatisierungsprojekten.",
                 tab_prod_h3: "Unsere Produkte", tab_prod_p: "Entdecken Sie unsere hochmodernen Digital Commerce-Produkte, ERP-Toolkits und Nachhaltigkeits-Automatisierungsmodule für hohe Leistung.",
                 tab_part_h3: "Unsere Partner", tab_part_p: "Wir arbeiten eng mit globalen Technologiegiganten wie Salesforce, SAP, AWS und Allianzen für grüne Technologien zusammen, um zuverlässige Unternehmenslösungen bereitzustellen.",
                 tab_serv_h3: "Unsere Nachhaltigen Dienste", tab_serv_p: "Wir sind spezialisiert auf Salesforce-Integration, SAP Business One, technischen Website-Support und grüne Infrastrukturinitiativen.",
@@ -847,8 +854,10 @@
             },
             zh: {
                 nav_home: "首页", nav_about: "关于我们", nav_product: "产品", nav_partners: "合作伙伴", nav_services: "我们的服务", nav_contact: "联系我们", nav_enquire: "咨询", nav_support: "支持", nav_career: "职业",
-                btn_about: "关于我们", btn_product: "产品", btn_partners: "合作伙伴", btn_services: "我们的服务", btn_contact: "联系我们", btn_enquire: "咨询", btn_support: "支持", btn_career: "职业",
                 hero_h1: "欢迎来到 Dhami Group", hero_p: "Salesforce • SAP B1 • 网站支持 • 环保项目",
+                tab_about_h3: "关于 Dhami Group", 
+                tab_about_p1: "<strong>Dhami Group</strong> 提供符合现代工业标准的可持续环保工程与数字化解决方案。",
+                tab_about_p2: "我们专注于在工业、ERP、云和自动化项目中提供质量、安全、合规性及长期价值。",
                 tab_prod_h3: "我们的产品", tab_prod_p: "探索我们专为高性能设计的新一代数字商务产品、ERP工具包以及可持续自动化模块。",
                 tab_part_h3: "我们的合作伙伴", tab_part_p: "我们与 Salesforce、SAP、AWS 等全球科技巨头及现代绿色技术联盟紧密合作，提供可靠的企业解决方案。",
                 tab_serv_h3: "我们的可持续服务", tab_serv_p: "我们专注于 Salesforce 集成、SAP Business One、网站技术支持及绿色基础设施计划。",
