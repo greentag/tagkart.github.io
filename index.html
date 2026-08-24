@@ -25,7 +25,7 @@
             position: relative;
         }
 
-        /* FLOATING LEAVES BACKGROUND */
+        /* FLOATING LEAVES BACKGROUND (Global) */
         .leaf-container {
             position: fixed;
             top: 0; left: 0;
@@ -67,7 +67,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
-        /* LOGO STYLING - CSS TEXT LOGO */
         .logo {
             display: flex;
             align-items: center;
@@ -148,60 +147,293 @@
             font-weight: 600; 
         }
 
-        /* HERO SECTION */
+        /* ---------------- ADVANCED HERO SECTION (HOME) ---------------- */
         .hero {
-            background: linear-gradient(180deg, #e4f5eb 0%, #f0f7f3 100%);
+            /* Deeper gradient to make animations pop */
+            background: radial-gradient(circle at center, #e4f5eb 0%, #c2f0d2 40%, #a3f3c4 100%);
             text-align: center;
-            padding: 60px 20px 30px 20px;
+            padding: 100px 20px;
             position: relative;
             z-index: 2;
-        }
-
-        .hero-nature-wrapper {
+            overflow: hidden;
+            min-height: 550px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 30px;
-            margin-bottom: 20px;
+            justify-content: center;
         }
 
-        .swaying-tree {
-            font-size: 4rem;
-            color: #1b8a4f;
-            transform-origin: bottom center;
-            animation: swayTree 3.5s ease-in-out infinite alternate;
+        /* --- HIGH GRAPHICAL BACKGROUND ANIMATIONS --- */
+        .advanced-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        @keyframes swayTree {
-            0% { transform: rotate(-6deg); }
-            100% { transform: rotate(6deg); }
+        /* 1. Huge Earth Background */
+        .huge-earth {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48rem;
+            color: rgba(27, 138, 79, 0.05); /* very faint */
+            animation: spinGlobe 120s linear infinite;
         }
 
-        .floating-space {
-            font-size: 3rem;
-            color: #0d5c34;
-            animation: floatSpace 4s ease-in-out infinite;
+        /* 2. ERP Gears */
+        .gear-1 {
+            position: absolute; top: 10%; left: 8%; font-size: 8rem;
+            color: rgba(30, 58, 138, 0.08); animation: spinGear 20s linear infinite;
+        }
+        .gear-2 {
+            position: absolute; bottom: 10%; right: 8%; font-size: 10rem;
+            color: rgba(116, 27, 71, 0.08); animation: spinGear reverse 25s linear infinite;
         }
 
-        @keyframes floatSpace {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
+        /* 3. Falling Binary Math */
+        .binary-stream {
+            position: absolute; font-family: monospace; font-size: 1.5rem; font-weight: bold;
+            color: rgba(27, 138, 79, 0.4); text-shadow: 0 0 8px rgba(27, 138, 79, 0.6);
+            writing-mode: vertical-rl; text-orientation: upright; letter-spacing: -5px;
+            animation: binaryFall 12s linear infinite;
+        }
+        .b1 { left: 15%; animation-duration: 14s; }
+        .b2 { left: 85%; animation-duration: 18s; animation-delay: 3s; font-size: 2rem; color: rgba(30, 58, 138, 0.3); }
+        .b3 { left: 50%; animation-duration: 16s; animation-delay: 6s; opacity: 0.2; }
+
+        /* 4. Network & Environment Nodes */
+        .net-1 {
+            position: absolute; top: 20%; right: 25%; font-size: 6rem;
+            color: rgba(5, 102, 100, 0.15); animation: pulseFloat 6s infinite;
+        }
+        .plant-1 {
+            position: absolute; bottom: 20%; left: 25%; font-size: 6rem;
+            color: rgba(27, 138, 79, 0.15); animation: pulseFloat 8s infinite alternate-reverse;
+        }
+
+        /* Keyframes for Advanced BG */
+        @keyframes spinGear { 100% { transform: rotate(360deg); } }
+        @keyframes binaryFall {
+            0% { top: -20%; opacity: 0; }
+            10% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { top: 110%; opacity: 0; }
+        }
+        @keyframes pulseFloat {
+            0% { transform: translateY(0) scale(1); opacity: 0.1; }
+            50% { transform: translateY(-25px) scale(1.1); opacity: 0.3; filter: drop-shadow(0 0 15px rgba(5,102,100,0.5)); }
+            100% { transform: translateY(0) scale(1); opacity: 0.1; }
+        }
+
+        /* Glassmorphism Box for Text */
+        .hero-content-box {
+            position: relative;
+            z-index: 2; /* Keeps above the animated background */
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            max-width: 800px;
+            width: 100%;
+            animation: fadeIn 1s ease-out;
         }
 
         .hero h1 {
-            font-size: 2.8rem;
+            font-size: 3.5rem;
             color: #0d5c34;
-            margin-bottom: 10px;
+            margin-bottom: 25px;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* --- NEW DYNAMIC HERO SLIDER --- */
+        .animated-services-container {
+            position: relative;
+            height: 160px; /* Fixed height to prevent layout jumps */
+            margin-top: 10px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+        }
+
+        .service-slide {
+            position: absolute;
+            top: 0; 
+            width: 100%;
+            opacity: 0;
+            transform: translateY(40px) scale(0.85);
+            transition: all 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Bouncy Pop-up effect */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .service-slide.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .service-slide i {
+            font-size: 3.5rem;
+            margin-bottom: 12px;
+            animation: iconPop 2.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes iconPop {
+            0% { transform: scale(1); filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.1)); }
+            100% { transform: scale(1.15); filter: drop-shadow(0px 15px 15px rgba(0,0,0,0.25)); }
+        }
+
+        .service-slide h2 {
+            font-size: 1.6rem;
+            color: #0d5c34;
             font-weight: 700;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .hero p {
+        .service-slide p {
             font-size: 1.1rem;
-            color: #444;
-            font-weight: 500;
+            color: #555;
+            font-weight: 600;
         }
 
-        /* ---------------- DYNAMIC TAB CONTAINER FOR INNER PAGES ---------------- */
+        /* Dynamic Colors for slider icons */
+        .color-sf { color: #00a1e0; }
+        .color-sap { color: #f0ab00; }
+        .color-web { color: #333; }
+        .color-env { color: #25d366; }
+        .color-erp { color: #741B47; }
+
+
+        /* ---------------- MODERN SLIDER FOR CORE OFFERINGS ---------------- */
+        .slider-wrapper {
+            max-width: 1200px;
+            margin: 40px auto;
+            position: relative;
+            padding: 0 50px;
+            z-index: 2;
+        }
+
+        .slider-wrapper h2 {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            color: #0d5c34;
+        }
+
+        .slider-container {
+            overflow: hidden;
+            border-radius: 15px;
+            padding: 15px 0;
+        }
+
+        .slider-track {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            padding: 10px;
+        }
+
+        /* Hide scrollbar for clean look */
+        .slider-track::-webkit-scrollbar { display: none; }
+        .slider-track { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .slide-card {
+            background: #ffffff;
+            min-width: calc(33.333% - 14px); /* Show 3 cards on desktop */
+            scroll-snap-align: start;
+            padding: 40px 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            border: 1px solid #e1ebe5;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Slide Card Hover Animation */
+        .slide-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(27, 138, 79, 0.05), transparent);
+            transition: 0.5s;
+        }
+
+        .slide-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(13, 92, 52, 0.15);
+            border-color: #1b8a4f;
+        }
+
+        .slide-card:hover::before {
+            left: 100%;
+        }
+
+        .slide-card i {
+            font-size: 3rem;
+            color: #1b8a4f;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .slide-card:hover i {
+            transform: scale(1.2);
+        }
+
+        .slide-card h3 { color: #333; margin-bottom: 10px; }
+        .slide-card p { font-size: 14px; color: #666; }
+
+        /* Slider Controls */
+        .slider-btn {
+            position: absolute;
+            top: 55%;
+            transform: translateY(-50%);
+            background: #1b8a4f;
+            color: #fff;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: 0.3s;
+            z-index: 10;
+        }
+
+        .slider-btn:hover { background: #0d5c34; transform: translateY(-50%) scale(1.1); }
+        .prev-btn { left: 0; }
+        .next-btn { right: 0; }
+
+        @media(max-width: 900px) {
+            .slide-card { min-width: calc(50% - 10px); }
+        }
+        @media(max-width: 600px) {
+            .slide-card { min-width: 100%; }
+            .slider-wrapper { padding: 0 20px; }
+            .slider-btn { width: 35px; height: 35px; font-size: 16px; }
+            .prev-btn { left: -10px; }
+            .next-btn { right: -10px; }
+        }
+
+        /* ---------------- PAGE SECTION LOGIC ---------------- */
+        .page-section { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .page-section.active { display: block; }
+
         .dynamic-tab-section {
             max-width: 1200px;
             margin: 30px auto;
@@ -219,30 +451,12 @@
             border: 1px solid #dbe8e0;
         }
 
-        /* Basic Fade In for all tabs */
-        .tab-panel.active {
-            display: block;
-            animation: fadeIn 0.4s ease-in-out;
-        }
-
-        .tab-panel h3 {
-            color: #0d5c34;
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
-
-        .tab-panel p {
-            font-size: 15px;
-            line-height: 1.8;
-            color: #555;
-        }
+        .tab-panel.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+        .tab-panel h3 { color: #0d5c34; font-size: 24px; margin-bottom: 15px; }
+        .tab-panel p { font-size: 15px; line-height: 1.8; color: #555; }
 
         /* ---------------- ABOUT US SPECIFIC ANIMATIONS ---------------- */
-        .animate-text {
-            opacity: 0;
-            animation: fadeUp 0.8s ease-out forwards;
-        }
-        
+        .animate-text { opacity: 0; animation: fadeUp 0.8s ease-out forwards; }
         .delay-1 { animation-delay: 0.2s; }
         .delay-2 { animation-delay: 0.4s; }
         .delay-3 { animation-delay: 0.6s; }
@@ -255,64 +469,29 @@
 
         /* IT + Environment Graphical End Section */
         .about-graphics {
-            position: relative;
-            margin-top: 40px;
-            padding: 40px 0 20px 0;
-            border-top: 2px dashed #c2f0d2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            opacity: 0;
-            animation: fadeUp 0.8s ease-out 1s forwards; 
+            position: relative; margin-top: 40px; padding: 40px 0 20px 0;
+            border-top: 2px dashed #c2f0d2; display: flex; justify-content: center;
+            align-items: center; overflow: hidden; opacity: 0;
+            animation: fadeUp 0.8s ease-out 1s forwards;
         }
 
-        .icon-group {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .it-part, .env-part {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #0d5c34;
-        }
-
+        .icon-group { display: flex; align-items: center; gap: 25px; position: relative; z-index: 2; }
+        .it-part, .env-part { display: flex; flex-direction: column; align-items: center; color: #0d5c34; }
         .it-part i { font-size: 3rem; color: #1e3a8a; animation: floatIt 3s ease-in-out infinite; }
         .env-part i { font-size: 3rem; color: #1b8a4f; animation: floatEnv 3.5s ease-in-out infinite alternate; }
         
         .it-part span, .env-part span {
-            margin-top: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #555;
-            background: #fff;
-            padding: 2px 8px;
-            border-radius: 4px;
+            margin-top: 8px; font-size: 13px; font-weight: 600; color: #555;
+            background: #fff; padding: 2px 8px; border-radius: 4px;
         }
 
-        .connection-line {
-            font-size: 1.5rem;
-            color: #888;
-            animation: pulseGlow 2s infinite;
-        }
-
-        /* Flying Paper Airplane */
+        .connection-line { font-size: 1.5rem; color: #888; animation: pulseGlow 2s infinite; }
         .paper-plane {
-            position: absolute;
-            font-size: 2rem;
-            color: #1b8a4f;
-            bottom: 40px;
-            left: -10%;
-            z-index: 10;
-            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
-            animation: flyAcross 8s linear infinite;
+            position: absolute; font-size: 2rem; color: #1b8a4f; bottom: 40px; left: -10%;
+            z-index: 10; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2)); animation: flyAcross 8s linear infinite;
         }
 
+        @keyframes pulseGlow { 0%, 100% { color: #888; transform: scale(1); } 50% { color: #1b8a4f; transform: scale(1.2); } }
         @keyframes flyAcross {
             0% { left: -10%; transform: translateY(0) rotate(15deg) scale(0.8); opacity: 0; }
             10% { opacity: 1; }
@@ -322,136 +501,21 @@
             90% { opacity: 1; }
             100% { left: 110%; transform: translateY(-50px) rotate(25deg) scale(0.8); opacity: 0; }
         }
-
-        @keyframes floatIt {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); color: #2563eb; }
-        }
-        
-        @keyframes floatEnv {
-            0% { transform: translateY(0px); }
-            100% { transform: translateY(-12px); color: #25d366; }
-        }
+        @keyframes floatIt { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); color: #2563eb; } }
+        @keyframes floatEnv { 0% { transform: translateY(0px); } 100% { transform: translateY(-12px); color: #25d366; } }
 
         /* CONTACT FORM IN TAB */
-        .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-        }
+        .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
+        .contact-form input, .contact-form textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; }
+        .contact-form button { background: #1b8a4f; color: #fff; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; }
 
-        .contact-form input, .contact-form textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
+        /* FOOTER & BUTTONS */
+        footer { background: #0d1e15; color: #fff; padding: 30px 20px; text-align: center; margin-top: 50px; position: relative; z-index: 2; }
+        .chat-btn { position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; padding: 12px 20px; border-radius: 30px; display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600; z-index: 999; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        #scrollTopBtn { display: none; position: fixed; bottom: 80px; right: 20px; z-index: 999; background-color: #1b8a4f; color: white; border: none; cursor: pointer; padding: 12px 15px; border-radius: 50%; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background-color 0.3s, transform 0.3s; }
+        #scrollTopBtn:hover { background-color: #0d5c34; transform: translateY(-5px); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 
-        .contact-form button {
-            background: #1b8a4f;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        /* SERVICES CARDS */
-        .services-container {
-            padding: 40px 5%;
-            max-width: 1400px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 2;
-        }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .card {
-            background: #ffffff;
-            padding: 30px 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.04);
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            border: 1px solid #e1ebe5;
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(13, 92, 52, 0.18);
-            border-color: #1b8a4f;
-        }
-
-        .card i {
-            font-size: 2.5rem;
-            color: #1b8a4f;
-            margin-bottom: 15px;
-        }
-
-        /* FOOTER */
-        footer {
-            background: #0d1e15;
-            color: #fff;
-            padding: 30px 20px;
-            text-align: center;
-            margin-top: 50px;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* FLOATING BUTTONS */
-        .chat-btn {
-            position: fixed;
-            bottom: 20px; right: 20px;
-            background: #25d366;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            z-index: 999;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        /* SCROLL TO TOP BUTTON */
-        #scrollTopBtn {
-            display: none; 
-            position: fixed;
-            bottom: 80px; 
-            right: 20px;
-            z-index: 999;
-            background-color: #1b8a4f;
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 12px 15px;
-            border-radius: 50%;
-            font-size: 18px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: background-color 0.3s, transform 0.3s;
-        }
-
-        #scrollTopBtn:hover {
-            background-color: #0d5c34;
-            transform: translateY(-5px);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
     </style>
 </head>
 <body>
@@ -466,7 +530,6 @@
 
     <!-- HEADER MENU LINKS -->
     <header>
-        <!-- CLICKING LOGO GOES TO HOME -->
         <div class="logo" onclick="showHome()">
             <i class="fa-solid fa-earth-americas earth-icon"></i>
             <img src="Dhami group logo.png" alt="Dhami Group Logo" class="logo-icon">
@@ -477,7 +540,6 @@
         </div>
         <nav>
             <ul>
-                <!-- MAIN NAVIGATION LINKS -->
                 <li><a onclick="showHome()" data-i18n="nav_home">Home</a></li>
                 <li><a onclick="selectTab('about')" data-i18n="nav_about">About Us</a></li>
                 <li><a onclick="selectTab('product')" data-i18n="nav_product">Product</a></li>
@@ -505,45 +567,107 @@
     <!-- HOME PAGE SECTION (Visible by Default)         -->
     <!-- ============================================== -->
     <div id="homePage">
-        <!-- HERO SECTION -->
+        
+        <!-- ADVANCED HERO SECTION -->
         <section class="hero" id="home">
-            <div class="hero-nature-wrapper">
-                <i class="fa-solid fa-globe floating-space"></i>
-                <i class="fa-solid fa-tree swaying-tree"></i>
+            
+            <!-- NEW: HIGH GRAPHICAL BACKGROUND ELEMENTS -->
+            <div class="advanced-bg">
+                <!-- Huge Earth Watermark -->
+                <i class="fa-solid fa-earth-americas huge-earth"></i>
+                
+                <!-- Rotating ERP Gears -->
+                <i class="fa-solid fa-gear gear-1"></i>
+                <i class="fa-solid fa-cogs gear-2"></i>
+                
+                <!-- Falling Binary Streams (IT) -->
+                <div class="binary-stream b1">10101101</div>
+                <div class="binary-stream b2">01100010</div>
+                <div class="binary-stream b3">11010011</div>
+                
+                <!-- Floating Environment & Network Nodes -->
+                <i class="fa-solid fa-network-wired net-1"></i>
+                <i class="fa-solid fa-seedling plant-1"></i>
             </div>
-           
-            <p data-i18n="hero_p">Salesforce • SAP B1 • Website Support • Environment Projects</p>
+            
+            <!-- Glassmorphism Container -->
+            <div class="hero-content-box">
+                <!-- UPDATED TITLE -->
+                <h1 data-i18n="hero_h1">Our Expertise</h1>
+                
+                <!-- ANIMATED HIGH-GRAPHICAL SERVICE SLIDER -->
+                <div class="animated-services-container">
+                    
+                    <div class="service-slide active" id="h-slide-1">
+                        <i class="fa-brands fa-salesforce color-sf"></i>
+                        <h2 data-i18n="h_slide_sf_title">Salesforce Integration</h2>
+                        <p data-i18n="h_slide_sf_desc">Advanced CRM & Automation Solutions</p>
+                    </div>
+
+                    <div class="service-slide" id="h-slide-2">
+                        <i class="fa-solid fa-network-wired color-sap"></i>
+                        <h2 data-i18n="h_slide_sap_title">SAP B1 & ERP Systems</h2>
+                        <p data-i18n="h_slide_sap_desc">Accounting & Production Flow Optimization</p>
+                    </div>
+
+                    <div class="service-slide" id="h-slide-3">
+                        <i class="fa-solid fa-laptop-code color-web"></i>
+                        <h2 data-i18n="h_slide_web_title">Web Design & IT Support</h2>
+                        <p data-i18n="h_slide_web_desc">Modern Digital Experiences & Security</p>
+                    </div>
+
+                    <div class="service-slide" id="h-slide-4">
+                        <i class="fa-solid fa-seedling color-env"></i>
+                        <h2 data-i18n="h_slide_env_title">Environmental Projects</h2>
+                        <p data-i18n="h_slide_env_desc">Green Tech & Sustainability Initiatives</p>
+                    </div>
+
+                    <div class="service-slide" id="h-slide-5">
+                        <i class="fa-solid fa-microchip color-erp"></i>
+                        <h2 data-i18n="h_slide_dig_title">Business Process Automation</h2>
+                        <p data-i18n="h_slide_dig_desc">Smart, Reliable & Scalable IT Solutions</p>
+                    </div>
+
+                </div>
+            </div>
         </section>
 
-        <!-- MAIN SERVICES GRID (CORE OFFERINGS) -->
-        <div class="services-container">
-            <h2 style="color: #0d5c50;" data-i18n="core_offerings">Core Offerings</h2>
-            <div class="services-grid">
-                <!-- Clicking these cards will also open the Services page -->
-                <div class="card" onclick="selectTab('services-tab')">
-                    <i class="fa-brands fa-salesforce"></i>
-                    <h3 data-i18n="card_sf_h3">Salesforce Services</h3>
-                    <p data-i18n="card_sf_p">Implementation, Support, Automation</p>
-                </div>
-                <div class="card" onclick="selectTab('services-tab')">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <h3 data-i18n="card_sap_h3">SAP Business One</h3>
-                    <p data-i18n="card_sap_p">Setup, Optimization, Technical Support</p>
-                </div>
-                <div class="card" onclick="selectTab('services-tab')">
-                    <i class="fa-solid fa-code"></i>
-                    <h3 data-i18n="card_web_h3">Website Support</h3>
-                    <p data-i18n="card_web_p">Security, Maintenance, Performance</p>
-                </div>
-                <div class="card" onclick="selectTab('about')">
-                    <i class="fa-solid fa-seedling"></i>
-                    <h3 data-i18n="card_env_h3">Environmental Work</h3>
-                    <p data-i18n="card_env_p">Sustainability Initiatives & Awareness</p>
-                </div>
-                <div class="card" onclick="selectTab('product')">
-                    <i class="fa-solid fa-book-open"></i>
-                    <h3 data-i18n="card_av_h3">Avernus</h3>
-                    <p data-i18n="card_av_p">Books, Poetry & Thoughtful Writing</p>
+        <!-- MODERN CORE OFFERINGS SLIDER -->
+        <div class="slider-wrapper">
+            <h2 data-i18n="core_offerings">Core Offerings</h2>
+            
+            <!-- Slider Controls -->
+            <button class="slider-btn prev-btn" onclick="slideLeft()"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="slider-btn next-btn" onclick="slideRight()"><i class="fa-solid fa-chevron-right"></i></button>
+
+            <div class="slider-container">
+                <div class="slider-track" id="sliderTrack">
+                    <!-- Cards -->
+                    <div class="slide-card" onclick="selectTab('services-tab')">
+                        <i class="fa-brands fa-salesforce"></i>
+                        <h3 data-i18n="card_sf_h3">Salesforce Services</h3>
+                        <p data-i18n="card_sf_p">Implementation, Support, Automation</p>
+                    </div>
+                    <div class="slide-card" onclick="selectTab('services-tab')">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <h3 data-i18n="card_sap_h3">SAP Business One</h3>
+                        <p data-i18n="card_sap_p">Setup, Optimization, Technical Support</p>
+                    </div>
+                    <div class="slide-card" onclick="selectTab('services-tab')">
+                        <i class="fa-solid fa-code"></i>
+                        <h3 data-i18n="card_web_h3">Website Support</h3>
+                        <p data-i18n="card_web_p">Security, Maintenance, Performance</p>
+                    </div>
+                    <div class="slide-card" onclick="selectTab('about')">
+                        <i class="fa-solid fa-seedling"></i>
+                        <h3 data-i18n="card_env_h3">Environmental Work</h3>
+                        <p data-i18n="card_env_p">Sustainability Initiatives & Awareness</p>
+                    </div>
+                    <div class="slide-card" onclick="selectTab('product')">
+                        <i class="fa-solid fa-book-open"></i>
+                        <h3 data-i18n="card_av_h3">Avernus</h3>
+                        <p data-i18n="card_av_p">Books, Poetry & Thoughtful Writing</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -583,7 +707,6 @@
                 <p style="color: #0d5c34; font-weight: 600;">Dhami Group Digital Commerce & Solutions</p>
             </div>
 
-            <!-- IT + ENVIRONMENT ANIMATED GRAPHIC WITH PAPER PLANE -->
             <div class="about-graphics">
                 <div class="icon-group">
                     <div class="it-part">
@@ -598,7 +721,6 @@
                         <span>Environment</span>
                     </div>
                 </div>
-                <!-- Flying Paper Airplane -->
                 <i class="fa-solid fa-paper-plane paper-plane"></i>
             </div>
         </div>
@@ -677,49 +799,68 @@
     <script>
         // --- 1. SHOW HOME PAGE LOGIC ---
         function showHome() {
-            // Show Home Page content, hide inner pages
             document.getElementById('homePage').style.display = 'block';
             document.getElementById('tabContainer').style.display = 'none';
-            
-            // Scroll back to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // --- 2. SHOW INNER PAGES LOGIC ---
         function selectTab(tabName) {
-            // Hide Home Page, show inner pages container
             document.getElementById('homePage').style.display = 'none';
             document.getElementById('tabContainer').style.display = 'block';
 
-            // Hide all panels
             let panels = document.querySelectorAll('.tab-panel');
             panels.forEach(p => p.classList.remove('active'));
 
-            // Show active panel
             let activePanel = document.getElementById('panel-' + tabName);
             if(activePanel) {
                 activePanel.classList.add('active');
                 
-                // Re-trigger animation logic for About Us when clicked
                 if(tabName === 'about') {
                     let animatedItems = activePanel.querySelectorAll('.animate-text, .about-graphics');
                     animatedItems.forEach(item => {
                         item.style.animation = 'none';
-                        item.offsetHeight; /* trigger reflow */
+                        item.offsetHeight; 
                         item.style.animation = null; 
                     });
                 }
-                
-                // Scroll back to top after page switch
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
-       // --- 3. SCROLL TO TOP BUTTON LOGIC ---
-        let topBtn = document.getElementById("scrollTopBtn");
+        // --- 3. CORE OFFERINGS SLIDER LOGIC ---
+        const sliderTrack = document.getElementById('sliderTrack');
+        
+        function slideLeft() {
+            sliderTrack.scrollBy({ left: -320, behavior: 'smooth' });
+        }
 
+        function slideRight() {
+            sliderTrack.scrollBy({ left: 320, behavior: 'smooth' });
+        }
+
+        let slideInterval = setInterval(() => {
+            if (sliderTrack.scrollLeft + sliderTrack.clientWidth >= sliderTrack.scrollWidth - 10) {
+                sliderTrack.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                slideRight();
+            }
+        }, 4000);
+
+        sliderTrack.addEventListener('mouseenter', () => clearInterval(slideInterval));
+        sliderTrack.addEventListener('mouseleave', () => {
+            slideInterval = setInterval(() => {
+                if (sliderTrack.scrollLeft + sliderTrack.clientWidth >= sliderTrack.scrollWidth - 10) {
+                    sliderTrack.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    slideRight();
+                }
+            }, 4000);
+        });
+
+        // --- 4. SCROLL TO TOP BUTTON LOGIC ---
+        let topBtn = document.getElementById("scrollTopBtn");
         window.onscroll = function() {
-            // 300px ki jagah 50px kar diya hai, taaki turant dikhe
             if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
                 topBtn.style.display = "block";
             } else {
@@ -731,11 +872,31 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // --- 4. GLOBAL TRANSLATION DICTIONARY ---
+        // --- 5. HERO SECTION AUTO-SLIDER LOGIC ---
+        let currentHeroSlide = 1;
+        const totalHeroSlides = 5;
+
+        setInterval(() => {
+            document.querySelectorAll('.service-slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            currentHeroSlide = currentHeroSlide >= totalHeroSlides ? 1 : currentHeroSlide + 1;
+            document.getElementById('h-slide-' + currentHeroSlide).classList.add('active');
+        }, 3000);
+
+        // --- 6. GLOBAL TRANSLATION DICTIONARY ---
         const translations = {
             en: {
                 nav_home: "Home", nav_about: "About Us", nav_product: "Product", nav_partners: "Our Partners", nav_services: "Our Services", nav_contact: "Contact", nav_enquire: "Enquire", nav_support: "Support", nav_career: "Career",
-                hero_h1: "Welcome to Dhami Group", hero_p: "Salesforce • SAP B1 • Website Support • Environment Projects",
+                hero_h1: "Our Expertise",
+                
+                h_slide_sf_title: "Salesforce Integration", h_slide_sf_desc: "Advanced CRM & Automation Solutions",
+                h_slide_sap_title: "SAP B1 & ERP Systems", h_slide_sap_desc: "Accounting & Production Flow Optimization",
+                h_slide_web_title: "Web Design & IT Support", h_slide_web_desc: "Modern Digital Experiences & Security",
+                h_slide_env_title: "Environmental Projects", h_slide_env_desc: "Green Tech & Sustainability Initiatives",
+                h_slide_dig_title: "Business Process Automation", h_slide_dig_desc: "Smart, Reliable & Scalable IT Solutions",
+                
                 tab_about_h3: "About Dhami Group", 
                 tab_about_p1: "<strong>Dhami Group</strong> provides sustainable and eco-friendly engineering & digital solutions aligned with modern industrial standards.",
                 tab_about_p2: "We focus on quality, safety, compliance, and long-term value delivery across industrial, ERP, cloud, and automation projects.",
@@ -759,7 +920,14 @@
             },
             hi: {
                 nav_home: "होम", nav_about: "हमारे बारे में", nav_product: "उत्पाद", nav_partners: "हमारे भागीदार", nav_services: "हमारी सेवाएँ", nav_contact: "संपर्क", nav_enquire: "पूछताछ", nav_support: "समर्थन", nav_career: "करियर",
-                hero_h1: "धामी ग्रुप में आपका स्वागत है", hero_p: "सेल्सफोर्स • SAP B1 • वेबसाइट सपोर्ट • पर्यावरण प्रोजेक्ट्स",
+                hero_h1: "हमारी विशेषज्ञता", 
+                
+                h_slide_sf_title: "सेल्सफोर्स इंटीग्रेशन", h_slide_sf_desc: "एडवांस्ड CRM और ऑटोमेशन सॉल्यूशंस",
+                h_slide_sap_title: "SAP B1 और ERP सिस्टम", h_slide_sap_desc: "अकाउंटिंग और उत्पादन का अनुकूलन",
+                h_slide_web_title: "वेब डिजाइन और आईटी सपोर्ट", h_slide_web_desc: "आधुनिक डिजिटल अनुभव और सुरक्षा",
+                h_slide_env_title: "पर्यावरण परियोजनाएं", h_slide_env_desc: "हरित तकनीक और स्थिरता की पहल",
+                h_slide_dig_title: "व्यवसाय प्रक्रिया स्वचालन", h_slide_dig_desc: "स्मार्ट, विश्वसनीय और स्केलेबल आईटी समाधान",
+
                 tab_about_h3: "धामी ग्रुप के बारे में", 
                 tab_about_p1: "<strong>धामी ग्रुप</strong> आधुनिक औद्योगिक मानकों के अनुरूप टिकाऊ और पर्यावरण के अनुकूल इंजीनियरिंग और डिजिटल समाधान प्रदान करता है।",
                 tab_about_p2: "हम औद्योगिक, ईआरपी, क्लाउड और ऑटोमेशन परियोजनाओं में गुणवत्ता, सुरक्षा, अनुपालन और दीर्घकालिक मूल्य वितरण पर ध्यान केंद्रित करते हैं।",
@@ -783,7 +951,12 @@
             },
             es: {
                 nav_home: "Inicio", nav_about: "Sobre Nosotros", nav_product: "Producto", nav_partners: "Socios", nav_services: "Servicios", nav_contact: "Contacto", nav_enquire: "Consultar", nav_support: "Soporte", nav_career: "Carrera",
-                hero_h1: "Bienvenido a Dhami Group", hero_p: "Salesforce • SAP B1 • Soporte Web • Proyectos Ambientales",
+                hero_h1: "Nuestra Experiencia", 
+                h_slide_sf_title: "Integración Salesforce", h_slide_sf_desc: "CRM Avanzado y Automatización",
+                h_slide_sap_title: "SAP B1 y Sistemas ERP", h_slide_sap_desc: "Optimización de Contabilidad y Producción",
+                h_slide_web_title: "Diseño Web y Soporte TI", h_slide_web_desc: "Experiencias Digitales Modernas",
+                h_slide_env_title: "Proyectos Ambientales", h_slide_env_desc: "Tecnología Verde y Sostenibilidad",
+                h_slide_dig_title: "Automatización de Negocios", h_slide_dig_desc: "Soluciones TI Inteligentes y Escalables",
                 tab_about_h3: "Sobre Dhami Group", 
                 tab_about_p1: "<strong>Dhami Group</strong> proporciona soluciones digitales y de ingeniería sostenibles y ecológicas alineadas con los estándares industriales modernos.",
                 tab_about_p2: "Nos centramos en la calidad, la seguridad, el cumplimiento y la entrega de valor a largo plazo en proyectos industriales, ERP, en la nube y de automatización.",
@@ -807,7 +980,12 @@
             },
             fr: {
                 nav_home: "Accueil", nav_about: "À Propos", nav_product: "Produit", nav_partners: "Partenaires", nav_services: "Services", nav_contact: "Contact", nav_enquire: "Se Renseigner", nav_support: "Support", nav_career: "Carrière",
-                hero_h1: "Bienvenue chez Dhami Group", hero_p: "Salesforce • SAP B1 • Support Web • Projets Environnementaux",
+                hero_h1: "Notre Expertise", 
+                h_slide_sf_title: "Intégration Salesforce", h_slide_sf_desc: "CRM Avancé et Automatisation",
+                h_slide_sap_title: "SAP B1 et Systèmes ERP", h_slide_sap_desc: "Optimisation de la Comptabilité et de la Production",
+                h_slide_web_title: "Conception Web et Informatique", h_slide_web_desc: "Expériences Numériques Modernes",
+                h_slide_env_title: "Projets Environnementaux", h_slide_env_desc: "Technologies Vertes et Durabilité",
+                h_slide_dig_title: "Automatisation des Affaires", h_slide_dig_desc: "Solutions Informatiques Intelligentes",
                 tab_about_h3: "À Propos de Dhami Group", 
                 tab_about_p1: "<strong>Dhami Group</strong> fournit des solutions numériques et d'ingénierie durables et respectueuses de l'environnement, conformes aux normes industrielles modernes.",
                 tab_about_p2: "Nous nous concentrons sur la qualité, la sécurité, la conformité et la création de valeur à long terme à travers des projets industriels, ERP, cloud et d'automatisation.",
@@ -831,7 +1009,12 @@
             },
             de: {
                 nav_home: "Startseite", nav_about: "Über Uns", nav_product: "Produkt", nav_partners: "Partner", nav_services: "Dienste", nav_contact: "Kontakt", nav_enquire: "Anfragen", nav_support: "Support", nav_career: "Karriere",
-                hero_h1: "Willkommen bei der Dhami Group", hero_p: "Salesforce • SAP B1 • Website-Support • Umweltprojekte",
+                hero_h1: "Unsere Expertise", 
+                h_slide_sf_title: "Salesforce-Integration", h_slide_sf_desc: "Fortschrittliche CRM- und Automatisierungslösungen",
+                h_slide_sap_title: "SAP B1 & ERP-Systeme", h_slide_sap_desc: "Optimierung von Buchhaltung und Produktion",
+                h_slide_web_title: "Webdesign & IT-Support", h_slide_web_desc: "Moderne digitale Erlebnisse und Sicherheit",
+                h_slide_env_title: "Umweltprojekte", h_slide_env_desc: "Grüne Technologie und Nachhaltigkeit",
+                h_slide_dig_title: "Geschäftsprozessautomatisierung", h_slide_dig_desc: "Intelligente und skalierbare IT-Lösungen",
                 tab_about_h3: "Über die Dhami Group", 
                 tab_about_p1: "Die <strong>Dhami Group</strong> bietet nachhaltige und umweltfreundliche Engineering- und Digitallösungen, die auf moderne Industriestandards abgestimmt sind.",
                 tab_about_p2: "Wir konzentrieren uns auf Qualität, Sicherheit, Compliance und langfristige Wertschöpfung bei Industrie-, ERP-, Cloud- und Automatisierungsprojekten.",
@@ -855,7 +1038,12 @@
             },
             zh: {
                 nav_home: "首页", nav_about: "关于我们", nav_product: "产品", nav_partners: "合作伙伴", nav_services: "我们的服务", nav_contact: "联系我们", nav_enquire: "咨询", nav_support: "支持", nav_career: "职业",
-                hero_h1: "欢迎来到 Dhami Group", hero_p: "Salesforce • SAP B1 • 网站支持 • 环保项目",
+                hero_h1: "我们的专业知识", 
+                h_slide_sf_title: "Salesforce 集成", h_slide_sf_desc: "高级 CRM 与自动化解决方案",
+                h_slide_sap_title: "SAP B1 与 ERP 系统", h_slide_sap_desc: "会计与生产流程优化",
+                h_slide_web_title: "网页设计与 IT 支持", h_slide_web_desc: "现代数字体验与安全",
+                h_slide_env_title: "环保项目", h_slide_env_desc: "绿色科技与可持续发展",
+                h_slide_dig_title: "业务流程自动化", h_slide_dig_desc: "智能、可靠的 IT 解决方案",
                 tab_about_h3: "关于 Dhami Group", 
                 tab_about_p1: "<strong>Dhami Group</strong> 提供符合现代工业标准的可持续环保工程与数字化解决方案。",
                 tab_about_p2: "我们专注于在工业、ERP、云和自动化项目中提供质量、安全、合规性及长期价值。",
