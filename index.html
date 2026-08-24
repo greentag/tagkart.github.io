@@ -149,20 +149,18 @@
 
         /* ---------------- ADVANCED HERO SECTION (HOME) ---------------- */
         .hero {
-            /* Deeper gradient to make animations pop */
             background: radial-gradient(circle at center, #e4f5eb 0%, #c2f0d2 40%, #a3f3c4 100%);
             text-align: center;
-            padding: 100px 20px;
+            padding: 80px 20px 40px 20px;
             position: relative;
             z-index: 2;
             overflow: hidden;
-            min-height: 550px;
+            min-height: 450px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* --- HIGH GRAPHICAL BACKGROUND ANIMATIONS --- */
         .advanced-bg {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -170,17 +168,15 @@
             z-index: 0;
         }
 
-        /* 1. Huge Earth Background */
         .huge-earth {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             font-size: 48rem;
-            color: rgba(27, 138, 79, 0.05); /* very faint */
+            color: rgba(27, 138, 79, 0.05); 
             animation: spinGlobe 120s linear infinite;
         }
 
-        /* 2. ERP Gears */
         .gear-1 {
             position: absolute; top: 10%; left: 8%; font-size: 8rem;
             color: rgba(30, 58, 138, 0.08); animation: spinGear 20s linear infinite;
@@ -190,7 +186,6 @@
             color: rgba(116, 27, 71, 0.08); animation: spinGear reverse 25s linear infinite;
         }
 
-        /* 3. Falling Binary Math */
         .binary-stream {
             position: absolute; font-family: monospace; font-size: 1.5rem; font-weight: bold;
             color: rgba(27, 138, 79, 0.4); text-shadow: 0 0 8px rgba(27, 138, 79, 0.6);
@@ -201,7 +196,6 @@
         .b2 { left: 85%; animation-duration: 18s; animation-delay: 3s; font-size: 2rem; color: rgba(30, 58, 138, 0.3); }
         .b3 { left: 50%; animation-duration: 16s; animation-delay: 6s; opacity: 0.2; }
 
-        /* 4. Network & Environment Nodes */
         .net-1 {
             position: absolute; top: 20%; right: 25%; font-size: 6rem;
             color: rgba(5, 102, 100, 0.15); animation: pulseFloat 6s infinite;
@@ -211,7 +205,6 @@
             color: rgba(27, 138, 79, 0.15); animation: pulseFloat 8s infinite alternate-reverse;
         }
 
-        /* Keyframes for Advanced BG */
         @keyframes spinGear { 100% { transform: rotate(360deg); } }
         @keyframes binaryFall {
             0% { top: -20%; opacity: 0; }
@@ -228,7 +221,7 @@
         /* Glassmorphism Box for Text */
         .hero-content-box {
             position: relative;
-            z-index: 2; /* Keeps above the animated background */
+            z-index: 2; 
             background: rgba(255, 255, 255, 0.65);
             backdrop-filter: blur(12px);
             padding: 50px 40px;
@@ -250,10 +243,9 @@
             text-transform: uppercase;
         }
 
-        /* --- NEW DYNAMIC HERO SLIDER --- */
         .animated-services-container {
             position: relative;
-            height: 160px; /* Fixed height to prevent layout jumps */
+            height: 160px; 
             margin-top: 10px;
             overflow: hidden;
             display: flex;
@@ -266,7 +258,7 @@
             width: 100%;
             opacity: 0;
             transform: translateY(40px) scale(0.85);
-            transition: all 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Bouncy Pop-up effect */
+            transition: all 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -290,22 +282,9 @@
             100% { transform: scale(1.15); filter: drop-shadow(0px 15px 15px rgba(0,0,0,0.25)); }
         }
 
-        .service-slide h2 {
-            font-size: 1.6rem;
-            color: #0d5c34;
-            font-weight: 700;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        .service-slide h2 { font-size: 1.6rem; color: #0d5c34; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .service-slide p { font-size: 1.1rem; color: #555; font-weight: 600; }
 
-        .service-slide p {
-            font-size: 1.1rem;
-            color: #555;
-            font-weight: 600;
-        }
-
-        /* Dynamic Colors for slider icons */
         .color-sf { color: #00a1e0; }
         .color-sap { color: #f0ab00; }
         .color-web { color: #333; }
@@ -313,121 +292,146 @@
         .color-erp { color: #741B47; }
 
 
-        /* ---------------- MODERN SLIDER FOR CORE OFFERINGS ---------------- */
-        .slider-wrapper {
-            max-width: 1200px;
-            margin: 40px auto;
+        /* ---------------- ADVANCED CORE OFFERINGS (DARK GREEN + 3D CAROUSEL) ---------------- */
+        .core-offerings-section {
+            background: linear-gradient(135deg, #16360c 0%, #112609 100%); /* 2 Shades darker than header green */
             position: relative;
-            padding: 0 50px;
+            padding: 60px 0 100px 0;
+            overflow: hidden; /* Contains background graphics */
             z-index: 2;
         }
 
-        .slider-wrapper h2 {
+        .core-offerings-section h2 {
             text-align: center;
-            font-size: 2.2rem;
-            margin-bottom: 30px;
-            color: #0d5c34;
-        }
-
-        .slider-container {
-            overflow: hidden;
-            border-radius: 15px;
-            padding: 15px 0;
-        }
-
-        .slider-track {
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-            padding: 10px;
-        }
-
-        /* Hide scrollbar for clean look */
-        .slider-track::-webkit-scrollbar { display: none; }
-        .slider-track { -ms-overflow-style: none; scrollbar-width: none; }
-
-        .slide-card {
-            background: #ffffff;
-            min-width: calc(33.333% - 14px); /* Show 3 cards on desktop */
-            scroll-snap-align: start;
-            padding: 40px 20px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            border: 1px solid #e1ebe5;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: #a3f3c4;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             position: relative;
-            overflow: hidden;
-        }
-
-        /* Slide Card Hover Animation */
-        .slide-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(27, 138, 79, 0.05), transparent);
-            transition: 0.5s;
-        }
-
-        .slide-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(13, 92, 52, 0.15);
-            border-color: #1b8a4f;
-        }
-
-        .slide-card:hover::before {
-            left: 100%;
-        }
-
-        .slide-card i {
-            font-size: 3rem;
-            color: #1b8a4f;
-            margin-bottom: 20px;
-            transition: transform 0.3s;
-        }
-
-        .slide-card:hover i {
-            transform: scale(1.2);
-        }
-
-        .slide-card h3 { color: #333; margin-bottom: 10px; }
-        .slide-card p { font-size: 14px; color: #666; }
-
-        /* Slider Controls */
-        .slider-btn {
-            position: absolute;
-            top: 55%;
-            transform: translateY(-50%);
-            background: #1b8a4f;
-            color: #fff;
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: 0.3s;
             z-index: 10;
         }
 
-        .slider-btn:hover { background: #0d5c34; transform: translateY(-50%) scale(1.1); }
-        .prev-btn { left: 0; }
-        .next-btn { right: 0; }
+        /* Signal Graphics Layer inside Core Offerings */
+        .bg-graphics-layer {
+            position: absolute;
+            bottom: 20px; left: 0; width: 100%; height: 150px;
+            z-index: 1; pointer-events: none;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            padding: 0 5%;
+        }
+
+        .bg-computer { font-size: 6rem; color: rgba(163, 243, 196, 0.15); animation: floatEnv 4s infinite alternate; }
+        .bg-globe { font-size: 7rem; color: rgba(163, 243, 196, 0.15); animation: spinGlobe 20s linear infinite; }
+        
+        .bg-signal-wrapper {
+            position: absolute;
+            bottom: 40px; left: 15%; right: 15%;
+            height: 20px;
+        }
+        
+        .bg-signal-line {
+            width: 100%;
+            border-bottom: 2px dashed rgba(163, 243, 196, 0.3);
+            position: absolute; top: 50%;
+        }
+        
+        .bg-signal-particle {
+            position: absolute;
+            top: -5px; left: 0;
+            width: 12px; height: 12px;
+            background: #a3f3c4;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #a3f3c4, 0 0 30px #fff;
+            animation: shootSignal 3s infinite ease-in;
+        }
+
+        .bg-binary-flow {
+            position: absolute;
+            top: -30px; left: 0;
+            color: rgba(163, 243, 196, 0.6);
+            font-family: monospace; font-weight: bold; font-size: 14px;
+            letter-spacing: 4px;
+            animation: shootSignal 3s infinite ease-in;
+        }
+
+        @keyframes shootSignal {
+            0% { left: 0; opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { left: 100%; opacity: 0; }
+        }
+
+        /* 3D Circular Carousel Styles */
+        .carousel-scene {
+            perspective: 1500px;
+            width: 100%;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+            cursor: grab;
+        }
+
+        .carousel-scene:active {
+            cursor: grabbing;
+        }
+
+        .carousel-spinner {
+            width: 320px;
+            height: 380px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .slide-card {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            transform: rotateY(calc(var(--i) * 72deg)) translateZ(350px);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.5), inset 0 0 15px rgba(27, 138, 79, 0.1);
+            text-align: center;
+            border: 2px solid #1b8a4f;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            user-select: none; /* Prevents text selection while dragging */
+        }
+
+        .slide-card i {
+            font-size: 3.5rem;
+            color: #1b8a4f;
+            margin-bottom: 20px;
+        }
+
+        .slide-card h3 { color: #112609; margin-bottom: 10px; font-size: 20px; }
+        .slide-card p { font-size: 14px; color: #555; }
+        
+        .carousel-drag-hint {
+            text-align: center;
+            color: rgba(163, 243, 196, 0.7);
+            font-size: 14px;
+            margin-top: 50px;
+            position: relative;
+            z-index: 10;
+            animation: pulseGlow 2s infinite;
+        }
 
         @media(max-width: 900px) {
-            .slide-card { min-width: calc(50% - 10px); }
+            .carousel-spinner .slide-card { transform: rotateY(calc(var(--i) * 72deg)) translateZ(280px); }
         }
         @media(max-width: 600px) {
-            .slide-card { min-width: 100%; }
-            .slider-wrapper { padding: 0 20px; }
-            .slider-btn { width: 35px; height: 35px; font-size: 16px; }
-            .prev-btn { left: -10px; }
-            .next-btn { right: -10px; }
+            .carousel-scene { height: 350px; }
+            .carousel-spinner { width: 220px; height: 280px; }
+            .carousel-spinner .slide-card { transform: rotateY(calc(var(--i) * 72deg)) translateZ(200px); padding: 20px; }
+            .slide-card h3 { font-size: 18px; }
         }
 
         /* ---------------- PAGE SECTION LOGIC ---------------- */
@@ -485,32 +489,13 @@
             background: #fff; padding: 2px 8px; border-radius: 4px;
         }
 
-        .connection-line { font-size: 1.5rem; color: #888; animation: pulseGlow 2s infinite; }
-        .paper-plane {
-            position: absolute; font-size: 2rem; color: #1b8a4f; bottom: 40px; left: -10%;
-            z-index: 10; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2)); animation: flyAcross 8s linear infinite;
-        }
-
-        @keyframes pulseGlow { 0%, 100% { color: #888; transform: scale(1); } 50% { color: #1b8a4f; transform: scale(1.2); } }
-        @keyframes flyAcross {
-            0% { left: -10%; transform: translateY(0) rotate(15deg) scale(0.8); opacity: 0; }
-            10% { opacity: 1; }
-            30% { transform: translateY(-30px) rotate(0deg) scale(1); }
-            50% { transform: translateY(10px) rotate(10deg) scale(1.1); }
-            70% { transform: translateY(-20px) rotate(-5deg) scale(1); }
-            90% { opacity: 1; }
-            100% { left: 110%; transform: translateY(-50px) rotate(25deg) scale(0.8); opacity: 0; }
-        }
-        @keyframes floatIt { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); color: #2563eb; } }
-        @keyframes floatEnv { 0% { transform: translateY(0px); } 100% { transform: translateY(-12px); color: #25d366; } }
-
         /* CONTACT FORM IN TAB */
         .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
         .contact-form input, .contact-form textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; }
         .contact-form button { background: #1b8a4f; color: #fff; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; }
 
         /* FOOTER & BUTTONS */
-        footer { background: #0d1e15; color: #fff; padding: 30px 20px; text-align: center; margin-top: 50px; position: relative; z-index: 2; }
+        footer { background: #0d1e15; color: #fff; padding: 30px 20px; text-align: center; position: relative; z-index: 2; }
         .chat-btn { position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; padding: 12px 20px; border-radius: 30px; display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600; z-index: 999; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         #scrollTopBtn { display: none; position: fixed; bottom: 80px; right: 20px; z-index: 999; background-color: #1b8a4f; color: white; border: none; cursor: pointer; padding: 12px 15px; border-radius: 50%; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background-color 0.3s, transform 0.3s; }
         #scrollTopBtn:hover { background-color: #0d5c34; transform: translateY(-5px); }
@@ -571,104 +556,99 @@
         <!-- ADVANCED HERO SECTION -->
         <section class="hero" id="home">
             
-            <!-- NEW: HIGH GRAPHICAL BACKGROUND ELEMENTS -->
             <div class="advanced-bg">
-                <!-- Huge Earth Watermark -->
                 <i class="fa-solid fa-earth-americas huge-earth"></i>
-                
-                <!-- Rotating ERP Gears -->
                 <i class="fa-solid fa-gear gear-1"></i>
                 <i class="fa-solid fa-cogs gear-2"></i>
-                
-                <!-- Falling Binary Streams (IT) -->
                 <div class="binary-stream b1">10101101</div>
                 <div class="binary-stream b2">01100010</div>
                 <div class="binary-stream b3">11010011</div>
-                
-                <!-- Floating Environment & Network Nodes -->
                 <i class="fa-solid fa-network-wired net-1"></i>
                 <i class="fa-solid fa-seedling plant-1"></i>
             </div>
             
-            <!-- Glassmorphism Container -->
             <div class="hero-content-box">
-                <!-- UPDATED TITLE -->
                 <h1 data-i18n="hero_h1">Our Expertise</h1>
                 
-                <!-- ANIMATED HIGH-GRAPHICAL SERVICE SLIDER -->
                 <div class="animated-services-container">
-                    
                     <div class="service-slide active" id="h-slide-1">
                         <i class="fa-brands fa-salesforce color-sf"></i>
                         <h2 data-i18n="h_slide_sf_title">Salesforce Integration</h2>
                         <p data-i18n="h_slide_sf_desc">Advanced CRM & Automation Solutions</p>
                     </div>
-
                     <div class="service-slide" id="h-slide-2">
                         <i class="fa-solid fa-network-wired color-sap"></i>
                         <h2 data-i18n="h_slide_sap_title">SAP B1 & ERP Systems</h2>
                         <p data-i18n="h_slide_sap_desc">Accounting & Production Flow Optimization</p>
                     </div>
-
                     <div class="service-slide" id="h-slide-3">
                         <i class="fa-solid fa-laptop-code color-web"></i>
                         <h2 data-i18n="h_slide_web_title">Web Design & IT Support</h2>
                         <p data-i18n="h_slide_web_desc">Modern Digital Experiences & Security</p>
                     </div>
-
                     <div class="service-slide" id="h-slide-4">
                         <i class="fa-solid fa-seedling color-env"></i>
                         <h2 data-i18n="h_slide_env_title">Environmental Projects</h2>
                         <p data-i18n="h_slide_env_desc">Green Tech & Sustainability Initiatives</p>
                     </div>
-
                     <div class="service-slide" id="h-slide-5">
                         <i class="fa-solid fa-microchip color-erp"></i>
                         <h2 data-i18n="h_slide_dig_title">Business Process Automation</h2>
                         <p data-i18n="h_slide_dig_desc">Smart, Reliable & Scalable IT Solutions</p>
                     </div>
-
                 </div>
             </div>
         </section>
 
-        <!-- MODERN CORE OFFERINGS SLIDER -->
-        <div class="slider-wrapper">
+        <!-- 3D CAROUSEL CORE OFFERINGS (DARK GREEN BG) -->
+        <div class="core-offerings-section">
+            
+            <!-- Graphic Background: Computer to Globe Signal -->
+            <div class="bg-graphics-layer">
+                <i class="fa-solid fa-laptop-code bg-computer"></i>
+                <div class="bg-signal-wrapper">
+                    <div class="bg-signal-line"></div>
+                    <div class="bg-signal-particle"></div>
+                    <div class="bg-binary-flow">10110 01101 ERP 10011</div>
+                </div>
+                <i class="fa-solid fa-earth-americas bg-globe"></i>
+            </div>
+
             <h2 data-i18n="core_offerings">Core Offerings</h2>
             
-            <!-- Slider Controls -->
-            <button class="slider-btn prev-btn" onclick="slideLeft()"><i class="fa-solid fa-chevron-left"></i></button>
-            <button class="slider-btn next-btn" onclick="slideRight()"><i class="fa-solid fa-chevron-right"></i></button>
-
-            <div class="slider-container">
-                <div class="slider-track" id="sliderTrack">
-                    <!-- Cards -->
-                    <div class="slide-card" onclick="selectTab('services-tab')">
+            <div class="carousel-scene" id="carouselScene">
+                <div class="carousel-spinner" id="carouselSpinner">
+                    <!-- 5 Tiles in 3D Space -->
+                    <div class="slide-card" style="--i:0;" onclick="handleCardClick('services-tab')">
                         <i class="fa-brands fa-salesforce"></i>
                         <h3 data-i18n="card_sf_h3">Salesforce Services</h3>
                         <p data-i18n="card_sf_p">Implementation, Support, Automation</p>
                     </div>
-                    <div class="slide-card" onclick="selectTab('services-tab')">
+                    <div class="slide-card" style="--i:1;" onclick="handleCardClick('services-tab')">
                         <i class="fa-solid fa-chart-line"></i>
                         <h3 data-i18n="card_sap_h3">SAP Business One</h3>
                         <p data-i18n="card_sap_p">Setup, Optimization, Technical Support</p>
                     </div>
-                    <div class="slide-card" onclick="selectTab('services-tab')">
+                    <div class="slide-card" style="--i:2;" onclick="handleCardClick('services-tab')">
                         <i class="fa-solid fa-code"></i>
                         <h3 data-i18n="card_web_h3">Website Support</h3>
                         <p data-i18n="card_web_p">Security, Maintenance, Performance</p>
                     </div>
-                    <div class="slide-card" onclick="selectTab('about')">
+                    <div class="slide-card" style="--i:3;" onclick="handleCardClick('about')">
                         <i class="fa-solid fa-seedling"></i>
                         <h3 data-i18n="card_env_h3">Environmental Work</h3>
                         <p data-i18n="card_env_p">Sustainability Initiatives & Awareness</p>
                     </div>
-                    <div class="slide-card" onclick="selectTab('product')">
+                    <div class="slide-card" style="--i:4;" onclick="handleCardClick('product')">
                         <i class="fa-solid fa-book-open"></i>
                         <h3 data-i18n="card_av_h3">Avernus</h3>
                         <p data-i18n="card_av_p">Books, Poetry & Thoughtful Writing</p>
                     </div>
                 </div>
+            </div>
+            
+            <div class="carousel-drag-hint">
+                <i class="fa-solid fa-hand-pointer"></i> Drag or Swipe to Rotate
             </div>
         </div>
     </div>
@@ -828,35 +808,74 @@
             }
         }
 
-        // --- 3. CORE OFFERINGS SLIDER LOGIC ---
-        const sliderTrack = document.getElementById('sliderTrack');
-        
-        function slideLeft() {
-            sliderTrack.scrollBy({ left: -320, behavior: 'smooth' });
+        // --- 3. 3D CIRCULAR CAROUSEL LOGIC ---
+        let carouselSpinner = document.getElementById('carouselSpinner');
+        let carouselScene = document.getElementById('carouselScene');
+        let currentAngle = 0;
+        let startX = 0;
+        let isDraggingCarousel = false;
+        let didDrag = false; // To prevent click event if user was dragging
+
+        function moveCarousel(direction) {
+            currentAngle += direction * 72; // 360 degrees / 5 items = 72
+            carouselSpinner.style.transform = `rotateY(${currentAngle}deg)`;
         }
 
-        function slideRight() {
-            sliderTrack.scrollBy({ left: 320, behavior: 'smooth' });
+        // Auto rotate every 5 seconds
+        let autoRotate = setInterval(() => { moveCarousel(-1); }, 5000);
+
+        function resetAutoRotate() {
+            clearInterval(autoRotate);
+            autoRotate = setInterval(() => { moveCarousel(-1); }, 5000);
         }
 
-        let slideInterval = setInterval(() => {
-            if (sliderTrack.scrollLeft + sliderTrack.clientWidth >= sliderTrack.scrollWidth - 10) {
-                sliderTrack.scrollTo({ left: 0, behavior: 'smooth' });
-            } else {
-                slideRight();
-            }
-        }, 4000);
-
-        sliderTrack.addEventListener('mouseenter', () => clearInterval(slideInterval));
-        sliderTrack.addEventListener('mouseleave', () => {
-            slideInterval = setInterval(() => {
-                if (sliderTrack.scrollLeft + sliderTrack.clientWidth >= sliderTrack.scrollWidth - 10) {
-                    sliderTrack.scrollTo({ left: 0, behavior: 'smooth' });
-                } else {
-                    slideRight();
-                }
-            }, 4000);
+        // Mouse Drag Events
+        carouselScene.addEventListener('mousedown', (e) => {
+            isDraggingCarousel = true;
+            didDrag = false;
+            startX = e.clientX;
+            resetAutoRotate();
         });
+
+        window.addEventListener('mouseup', (e) => {
+            if(!isDraggingCarousel) return;
+            isDraggingCarousel = false;
+            let endX = e.clientX;
+            let diff = startX - endX;
+            if(Math.abs(diff) > 50) {
+                didDrag = true;
+                if(diff > 0) moveCarousel(-1); // drag left
+                else moveCarousel(1); // drag right
+            }
+        });
+
+        // Touch Drag Events
+        carouselScene.addEventListener('touchstart', (e) => {
+            isDraggingCarousel = true;
+            didDrag = false;
+            startX = e.touches[0].clientX;
+            resetAutoRotate();
+        });
+
+        window.addEventListener('touchend', (e) => {
+            if(!isDraggingCarousel) return;
+            isDraggingCarousel = false;
+            let endX = e.changedTouches[0].clientX;
+            let diff = startX - endX;
+            if(Math.abs(diff) > 50) {
+                didDrag = true;
+                if(diff > 0) moveCarousel(-1);
+                else moveCarousel(1);
+            }
+        });
+
+        // Only trigger click if user didn't drag the carousel
+        function handleCardClick(tabName) {
+            if(!didDrag) {
+                selectTab(tabName);
+            }
+        }
+
 
         // --- 4. SCROLL TO TOP BUTTON LOGIC ---
         let topBtn = document.getElementById("scrollTopBtn");
