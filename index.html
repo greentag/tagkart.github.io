@@ -54,9 +54,9 @@
             100% { top: 110%; transform: translateX(-30px) rotate(360deg); opacity: 0.2; }
         }
 
-        /* HEADER & NAVBAR */
+        /* --- UPDATED HEADER & NAVBAR (WHITE BG & BLACK TABS) --- */
         header {
-            background: linear-gradient(#EAD1DC, #741B47, #38761D);
+            background: #ffffff; /* WHITE SHADE */
             padding: 15px 5%;
             display: flex;
             align-items: center;
@@ -64,7 +64,7 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Lighter shadow */
         }
 
         .logo {
@@ -76,7 +76,7 @@
         }
 
         .earth-icon {
-            color: #a3f3c4; 
+            color: #1b8a4f; /* Green color to be visible on white */
             font-size: 32px;
             animation: spinGlobe 8s linear infinite;
         }
@@ -99,13 +99,13 @@
             letter-spacing: 2px;
             line-height: 1.1;
             text-transform: uppercase;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1); /* Reduced shadow */
         }
 
         .logo-subtitle {
             font-size: 11.5px;
             font-weight: 600;
-            color: #a3f3c4;
+            color: #1b8a4f; /* Green color to be visible on white */
             letter-spacing: 2.5px;
             line-height: 1;
             text-transform: uppercase;
@@ -124,10 +124,10 @@
         }
 
         nav ul li a {
-            color: #fff;
+            color: #333333; /* BLACK TABS */
             text-decoration: none;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600; /* Slightly bolder for visibility */
             padding: 6px 10px;
             border-radius: 4px;
             transition: all 0.3s ease;
@@ -135,14 +135,16 @@
         }
 
         nav ul li a:hover, nav ul li a.active-link {
-            background: rgba(255, 255, 255, 0.2);
-            color: #c2f0d2;
+            background: rgba(27, 138, 79, 0.1); /* Light green hover background */
+            color: #1b8a4f; /* Green text on hover */
         }
 
         .lang-select {
             padding: 4px 8px;
             border-radius: 4px;
-            border: none;
+            border: 1px solid #ccc; /* Border added for visibility on white */
+            background: #ffffff;
+            color: #333;
             cursor: pointer;
             font-weight: 600; 
         }
@@ -560,7 +562,7 @@
         .contact-form input, .contact-form textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; }
         .contact-form button { background: #1b8a4f; color: #fff; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; }
 
-        /* FOOTER & SOCIAL LINKS (REAL COLORS) */
+        /* FOOTER & SOCIAL LINKS */
         footer { background: #0d1e15; color: #fff; padding: 40px 20px 20px 20px; text-align: center; position: relative; z-index: 2; }
         
         .social-links {
@@ -593,8 +595,6 @@
         .yt-icon { color: #ff0000; }
         .ig-icon { color: #E1306C; }
         .fb-icon { color: #1877f2; }
-        
-        /* CLASSIC TWITTER ICON (TWITTER BLUE) */
         .tw-icon { color: #1DA1F2; } 
 
         .chat-btn { position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; padding: 12px 20px; border-radius: 30px; display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600; z-index: 999; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
@@ -614,7 +614,7 @@
         <i class="fa-solid fa-leaf leaf"></i>
     </div>
 
-    <!-- HEADER MENU LINKS -->
+    <!-- HEADER MENU LINKS (WHITE BACKGROUND) -->
     <header>
         <div class="logo" onclick="showHome()">
             <i class="fa-solid fa-earth-americas earth-icon"></i>
@@ -868,14 +868,11 @@
 
     <!-- FOOTER WITH SOCIAL LINKS -->
     <footer>
-        <!-- SOCIAL MEDIA LINKS (Classic Twitter Logo) -->
         <div class="social-links">
             <a href="https://www.linkedin.com/in/prakashsinghdhami" target="_blank" class="li-icon"><i class="fa-brands fa-linkedin-in"></i></a>
             <a href="https://www.youtube.com/@mepahadi" target="_blank" class="yt-icon"><i class="fa-brands fa-youtube"></i></a>
             <a href="https://www.instagram.com/mepahadi" target="_blank" class="ig-icon"><i class="fa-brands fa-instagram"></i></a>
             <a href="https://www.facebook.com/share/1DTpCmtq9H/" target="_blank" class="fb-icon"><i class="fa-brands fa-facebook-f"></i></a>
-            
-            <!-- Classic Twitter bird logo with real color -->
             <a href="https://x.com/maipahadi" target="_blank" class="tw-icon"><i class="fa-brands fa-twitter"></i></a>
         </div>
         
@@ -1105,7 +1102,7 @@
                 card_sap_h3: "SAP Business One", card_sap_p: "Configuración, Optimización, Soporte",
                 card_web_h3: "Soporte de Sitios Web", card_web_p: "Seguridad, Mantenimiento, Rendimiento",
                 card_env_h3: "Trabajo Ambiental", card_env_p: "Iniciativas de Sostenibilidad y Concienciación",
-                card_av_h3: "Avernus", card_av_p: "Libros, Poesie y Escritura Reflexiva",
+                card_av_h3: "Avernus", card_av_p: "Libros, Poesía y Escritura Reflexiva",
                 footer_text: "&copy; 2026 Dhami Digital Solutions. Todos los derechos reservados.",
                 chat: "Chat"
             },
