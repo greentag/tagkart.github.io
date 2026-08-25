@@ -31,7 +31,7 @@
             top: 0; left: 0;
             width: 100%; height: 100%;
             pointer-events: none;
-            z-index: 1;
+            z-index: 10;
             overflow: hidden;
         }
 
@@ -54,9 +54,9 @@
             100% { top: 110%; transform: translateX(-30px) rotate(360deg); opacity: 0.2; }
         }
 
-        /* --- UPDATED HEADER & NAVBAR (WHITE BG & BLACK TABS) --- */
+        /* HEADER & NAVBAR (WHITE BG & BLACK TABS) */
         header {
-            background: #ffffff; /* WHITE SHADE */
+            background: #ffffff; 
             padding: 15px 5%;
             display: flex;
             align-items: center;
@@ -64,7 +64,7 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Lighter shadow */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
         }
 
         .logo {
@@ -76,7 +76,7 @@
         }
 
         .earth-icon {
-            color: #1b8a4f; /* Green color to be visible on white */
+            color: #1b8a4f; 
             font-size: 32px;
             animation: spinGlobe 8s linear infinite;
         }
@@ -99,13 +99,13 @@
             letter-spacing: 2px;
             line-height: 1.1;
             text-transform: uppercase;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.1); /* Reduced shadow */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1); 
         }
 
         .logo-subtitle {
             font-size: 11.5px;
             font-weight: 600;
-            color: #1b8a4f; /* Green color to be visible on white */
+            color: #1b8a4f; 
             letter-spacing: 2.5px;
             line-height: 1;
             text-transform: uppercase;
@@ -124,10 +124,10 @@
         }
 
         nav ul li a {
-            color: #333333; /* BLACK TABS */
+            color: #333333; 
             text-decoration: none;
             font-size: 13px;
-            font-weight: 600; /* Slightly bolder for visibility */
+            font-weight: 600; 
             padding: 6px 10px;
             border-radius: 4px;
             transition: all 0.3s ease;
@@ -135,14 +135,14 @@
         }
 
         nav ul li a:hover, nav ul li a.active-link {
-            background: rgba(27, 138, 79, 0.1); /* Light green hover background */
-            color: #1b8a4f; /* Green text on hover */
+            background: rgba(27, 138, 79, 0.1); 
+            color: #1b8a4f; 
         }
 
         .lang-select {
             padding: 4px 8px;
             border-radius: 4px;
-            border: 1px solid #ccc; /* Border added for visibility on white */
+            border: 1px solid #ccc; 
             background: #ffffff;
             color: #333;
             cursor: pointer;
@@ -153,7 +153,7 @@
         .hero {
             background: radial-gradient(circle at center, transparent 0%, rgba(194, 240, 210, 0.4) 40%, rgba(163, 243, 196, 0.2) 100%);
             text-align: center;
-            padding: 80px 20px 40px 20px;
+            padding: 80px 20px 80px 20px;
             position: relative;
             z-index: 2;
             overflow: hidden;
@@ -286,27 +286,96 @@
         .service-slide h2 { font-size: 1.6rem; color: #0d5c34; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .service-slide p { font-size: 1.1rem; color: #555; font-weight: 600; }
 
-        .color-sf { color: #00a1e0; }
-        .color-sap { color: #f0ab00; }
-        .color-web { color: #333; }
-        .color-env { color: #25d366; }
-        .color-erp { color: #741B47; }
+        /* BRAND ORIGINAL COLORS FOR HERO AND TILES */
+        .color-sf { color: #00a1e0; } /* Salesforce Light Blue */
+        .color-sap { color: #008fd3; } /* SAP Original Blue */
+        .color-web { color: #e34f26; } /* HTML Orange */
+        .color-env { color: #22c55e; } /* Fresh Eco Green */
+        .color-erp { color: #741B47; } /* Avernus Maroon */
 
 
-        /* ---------------- ADVANCED CORE OFFERINGS (DARK GREEN + 3D CAROUSEL) ---------------- */
+        /* ---------------- ADVANCED CORE OFFERINGS (WATER THEME) ---------------- */
         .core-offerings-section {
-            background: linear-gradient(135deg, #16360c 0%, #112609 100%);
+            background: linear-gradient(180deg, #0f6c88 0%, #063140 100%);
             position: relative;
-            padding: 60px 0 100px 0;
-            overflow: hidden; 
-            z-index: 2;
+            padding: 80px 0 100px 0;
+            z-index: 1; 
+        }
+
+        .water-waves-container {
+            position: absolute;
+            top: -79px; 
+            left: 0;
+            width: 100%;
+            height: 80px;
+            z-index: 10;
+            overflow: visible; 
+        }
+
+        .ocean-wave {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 100%;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 80' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'%3E%3Cpath d='M0,40 C300,80 600,0 900,40 C1200,80 1500,0 1800,40 L1800,80 L0,80 Z' fill='%230f6c88'/%3E%3C/svg%3E") repeat-x;
+            background-size: 1200px 80px;
+            animation: rollWave 10s linear infinite;
+        }
+
+        .ocean-wave.w1 { opacity: 0.5; animation-duration: 15s; }
+        .ocean-wave.w2 { opacity: 0.7; animation-duration: 10s; animation-direction: reverse; height: 90%; }
+        .ocean-wave.w3 { opacity: 1; animation-duration: 7s; height: 80%; }
+
+        @keyframes rollWave {
+            0% { background-position-x: 0; }
+            100% { background-position-x: -1200px; }
+        }
+
+        .boat-icon {
+            position: absolute;
+            top: -20px; 
+            left: -10%;
+            font-size: 2.8rem;
+            color: #ffffff;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+            z-index: 15;
+            animation: sailBoat 22s linear infinite, bobBoat 2.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes sailBoat {
+            0% { left: -10%; }
+            100% { left: 110%; }
+        }
+        @keyframes bobBoat {
+            0% { transform: translateY(0px) rotate(-6deg); }
+            100% { transform: translateY(-12px) rotate(6deg); }
+        }
+
+        .water-bubbles {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; pointer-events: none; z-index: 1;
+        }
+        .bubble {
+            position: absolute; bottom: -50px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            animation: riseBubble infinite ease-in;
+        }
+        .bubble:nth-child(1) { width: 20px; height: 20px; left: 15%; animation-duration: 6s; }
+        .bubble:nth-child(2) { width: 15px; height: 15px; left: 35%; animation-duration: 4s; animation-delay: 2s; }
+        .bubble:nth-child(3) { width: 30px; height: 30px; left: 55%; animation-duration: 7s; animation-delay: 1s; }
+        .bubble:nth-child(4) { width: 12px; height: 12px; left: 75%; animation-duration: 5s; animation-delay: 3s; }
+        .bubble:nth-child(5) { width: 25px; height: 25px; left: 90%; animation-duration: 8s; }
+
+        @keyframes riseBubble {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-600px) scale(1.5); opacity: 0; }
         }
 
         .core-offerings-section h2 {
             text-align: center;
             font-size: 2.5rem;
             margin-bottom: 50px;
-            color: #a3f3c4;
+            color: #ffffff; 
             text-transform: uppercase;
             letter-spacing: 2px;
             position: relative;
@@ -316,13 +385,13 @@
         .bg-graphics-layer {
             position: absolute;
             bottom: 20px; left: 0; width: 100%; height: 150px;
-            z-index: 1; pointer-events: none;
+            z-index: 2; pointer-events: none;
             display: flex; justify-content: space-between; align-items: flex-end;
             padding: 0 5%;
         }
 
-        .bg-computer { font-size: 6rem; color: rgba(163, 243, 196, 0.15); animation: floatEnv 4s infinite alternate; }
-        .bg-globe { font-size: 7rem; color: rgba(163, 243, 196, 0.15); animation: spinGlobe 20s linear infinite; }
+        .bg-computer { font-size: 6rem; color: rgba(255, 255, 255, 0.15); animation: floatEnv 4s infinite alternate; }
+        .bg-globe { font-size: 7rem; color: rgba(255, 255, 255, 0.15); animation: spinGlobe 20s linear infinite; }
         
         .bg-signal-wrapper {
             position: absolute;
@@ -332,7 +401,7 @@
         
         .bg-signal-line {
             width: 100%;
-            border-bottom: 2px dashed rgba(163, 243, 196, 0.3);
+            border-bottom: 2px dashed rgba(0, 242, 254, 0.3); 
             position: absolute; top: 50%;
         }
         
@@ -340,16 +409,16 @@
             position: absolute;
             top: -5px; left: 0;
             width: 12px; height: 12px;
-            background: #a3f3c4;
+            background: #00f2fe; 
             border-radius: 50%;
-            box-shadow: 0 0 15px #a3f3c4, 0 0 30px #fff;
+            box-shadow: 0 0 15px #00f2fe, 0 0 30px #ffffff;
             animation: shootSignal 3s infinite ease-in;
         }
 
         .bg-binary-flow {
             position: absolute;
             top: -30px; left: 0;
-            color: rgba(163, 243, 196, 0.6);
+            color: rgba(0, 242, 254, 0.8);
             font-family: monospace; font-weight: bold; font-size: 14px;
             letter-spacing: 4px;
             animation: shootSignal 3s infinite ease-in;
@@ -392,12 +461,15 @@
             top: 0; left: 0;
             width: 100%; height: 100%;
             transform: rotateY(calc(var(--i) * 72deg)) translateZ(350px);
-            background: rgba(255, 255, 255, 0.95);
+            
+            /* --- NEW: LIGHT MULTI-COLOR SHADE FOR TILES --- */
+            background: linear-gradient(120deg, rgba(255, 240, 245, 0.95) 0%, rgba(230, 245, 255, 0.95) 50%, rgba(235, 255, 240, 0.95) 100%);
+            
             padding: 40px 20px;
             border-radius: 15px;
-            box-shadow: 0 0 25px rgba(0,0,0,0.5), inset 0 0 15px rgba(27, 138, 79, 0.1);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3), inset 0 0 20px rgba(255, 255, 255, 0.8);
             text-align: center;
-            border: 2px solid #1b8a4f;
+            border: 2px solid rgba(255, 255, 255, 0.6); /* Softened border to match light shade */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -407,21 +479,27 @@
 
         .slide-card i {
             font-size: 3.5rem;
-            color: #1b8a4f;
             margin-bottom: 20px;
+            /* Default color removed to let specific .color-* classes take over */
         }
 
         .slide-card h3 { color: #112609; margin-bottom: 10px; font-size: 20px; }
-        .slide-card p { font-size: 14px; color: #555; }
+        .slide-card p { font-size: 14px; color: #555; font-weight: 600; }
         
         .carousel-drag-hint {
             text-align: center;
-            color: rgba(163, 243, 196, 0.7);
+            color: #a3f3c4;
             font-size: 14px;
+            font-weight: 600;
             margin-top: 50px;
             position: relative;
             z-index: 10;
-            animation: pulseGlow 2s infinite;
+            animation: pulseGlowHint 2s infinite;
+        }
+
+        @keyframes pulseGlowHint {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
         }
 
         @media(max-width: 900px) {
@@ -456,44 +534,115 @@
             border: 1px solid #dbe8e0;
         }
 
-        /* --- ABOUT US PAGE SPECIFIC STYLING (SKY BLUE & SPACE PATTERN) --- */
+
+        /* ========================================================================= */
+        /* --- NEW ABOUT US PAGE SPECIFIC STYLING (OUTSIDE FULLSCREEN ANIMATION) --- */
+        /* ========================================================================= */
         #panel-about {
-            background-color: #e6f7ff; 
-            border: 1px solid #b3e0ff;
-            position: relative;
-            overflow: hidden; 
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
         }
 
-        .about-space-pattern {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
+        /* Background outside the panel */
+        .about-fullscreen-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #e6f7ff; /* Halka skyblue */
             z-index: 0;
+            overflow: hidden;
+            display: none; /* Controlled via JS when About is active */
+        }
+
+        /* Flowing Trampoline Net */
+        .bouncing-net {
+            position: absolute;
+            bottom: 5%; left: -5%; width: 110%; height: 150px;
             background-image: 
-                radial-gradient(circle at 15% 25%, rgba(27, 138, 79, 0.1) 2px, transparent 3px),
-                radial-gradient(circle at 75% 15%, rgba(0, 161, 224, 0.1) 2px, transparent 3px),
-                radial-gradient(circle at 45% 65%, rgba(27, 138, 79, 0.08) 1.5px, transparent 2px),
-                radial-gradient(circle at 85% 75%, rgba(0, 161, 224, 0.08) 1.5px, transparent 2.5px),
-                radial-gradient(circle at 30% 80%, rgba(116, 27, 71, 0.08) 2px, transparent 3px);
-            background-size: 150px 150px;
-            animation: panSpace 40s linear infinite;
+                linear-gradient(45deg, rgba(0, 161, 224, 0.4) 25%, transparent 25%, transparent 75%, rgba(0, 161, 224, 0.4) 75%, rgba(0, 161, 224, 0.4)),
+                linear-gradient(45deg, rgba(0, 161, 224, 0.4) 25%, transparent 25%, transparent 75%, rgba(0, 161, 224, 0.4) 75%, rgba(0, 161, 224, 0.4));
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            border-top: 5px solid #00a1e0;
+            border-radius: 50% / 100% 100% 0 0;
+            animation: netBounce 2s infinite alternate ease-in-out;
+            transform-origin: bottom center;
         }
 
-        @keyframes panSpace {
-            0% { background-position: 0px 0px; }
-            100% { background-position: 300px 300px; }
+        @keyframes netBounce {
+            0% { transform: translateY(0px) scaleY(1); }
+            100% { transform: translateY(20px) scaleY(0.7); }
         }
 
-        .about-content-wrapper {
-            position: relative;
+        /* Jumping Kids */
+        .kid {
+            position: absolute;
+            font-size: 5rem;
             z-index: 2;
+        }
+
+        .kid-1 {
+            color: #ff6b6b;
+            left: 12%;
+            bottom: 18%;
+            /* 4s duration to match the plane's exact arrival */
+            animation: jumpKid1 4s infinite ease-in-out;
+        }
+
+        .kid-2 {
+            color: #fca311;
+            right: 15%;
+            bottom: 18%;
+            animation: jumpKid2 3s infinite ease-in-out 0.5s;
+        }
+
+        @keyframes jumpKid1 {
+            0%, 100% { transform: translateY(0px) scaleY(0.9); }
+            10%, 90% { transform: translateY(0px) scaleY(1); }
+            50% { transform: translateY(-220px) rotate(15deg); } /* In the air exactly at 50% (2s mark) */
+        }
+
+        @keyframes jumpKid2 {
+            0%, 100% { transform: translateY(0px) scaleY(0.9); }
+            10%, 90% { transform: translateY(0px) scaleY(1); }
+            50% { transform: translateY(-180px) rotate(-10deg); }
+        }
+
+        /* Plane flying and touching Kid 1 */
+        .interactive-plane {
+            position: absolute;
+            font-size: 4rem;
+            color: #007bb5;
+            z-index: 3;
+            animation: planeInteraction 4s infinite ease-in-out;
+        }
+
+        @keyframes planeInteraction {
+            0% { left: -10%; bottom: 30%; transform: rotate(10deg); opacity: 0; }
+            10% { opacity: 1; }
+            /* Touches Kid 1 at exactly 50% (2s mark) when kid is highest */
+            50% { left: 12%; bottom: calc(18% + 220px); transform: rotate(-15deg) scale(1.2); } 
+            70% { left: 50%; bottom: 90%; transform: rotate(-40deg) scale(1.5); opacity: 1; }
+            100% { left: 120%; bottom: 120%; transform: rotate(-20deg) scale(1); opacity: 0; }
+        }
+
+        /* The Content Panel inside About Us */
+        .about-content-wrapper {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+            z-index: 10;
         }
 
         .tab-panel.active { display: block; animation: fadeIn 0.4s ease-in-out; }
         .tab-panel h3 { color: #0d5c34; font-size: 24px; margin-bottom: 15px; }
         .tab-panel p { font-size: 15px; line-height: 1.8; color: #444; }
 
-        /* ---------------- ABOUT US SPECIFIC ANIMATIONS ---------------- */
         .animate-text { opacity: 0; animation: fadeUp 0.8s ease-out forwards; }
         .delay-1 { animation-delay: 0.2s; }
         .delay-2 { animation-delay: 0.4s; }
@@ -505,64 +654,13 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .about-graphics {
-            position: relative; 
-            margin-top: 40px; 
-            padding: 50px 0; 
-            border-top: 2px dashed #a3f3c4; 
-            display: flex; 
-            justify-content: center;
-            align-items: center; 
-            overflow: hidden; 
-            opacity: 0;
-            border-radius: 0 0 10px 10px;
-            background: linear-gradient(180deg, transparent 0%, rgba(0, 161, 224, 0.05) 100%);
-            animation: fadeUp 0.8s ease-out 1s forwards;
-        }
-
-        .icon-group { display: flex; align-items: center; gap: 30px; position: relative; z-index: 2; }
-        .it-part, .env-part { display: flex; flex-direction: column; align-items: center; color: #0d5c34; }
-        .it-part i { font-size: 3rem; color: #1e3a8a; animation: floatIt 3s ease-in-out infinite; }
-        .env-part i { font-size: 3rem; color: #1b8a4f; animation: floatEnv 3.5s ease-in-out infinite alternate; }
-        
-        .it-part span, .env-part span {
-            margin-top: 8px; font-size: 13px; font-weight: 600; color: #555;
-            background: #fff; padding: 4px 10px; border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .connection-line { font-size: 1.5rem; color: #888; animation: pulseGlow 2s infinite; }
-        
-        .paper-plane {
-            position: absolute; 
-            font-size: 2.5rem; 
-            color: #007bb5; 
-            bottom: 30%; 
-            left: -10%;
-            z-index: 10; 
-            filter: drop-shadow(3px 5px 5px rgba(0,0,0,0.2)); 
-            animation: flyAcross 7s ease-in-out infinite;
-        }
-
-        @keyframes flyAcross {
-            0% { left: -10%; transform: translateY(0) rotate(15deg) scale(0.8); opacity: 0; }
-            10% { opacity: 1; }
-            25% { transform: translateY(-20px) rotate(0deg) scale(1); }
-            50% { transform: translateY(15px) rotate(10deg) scale(1.2); }
-            75% { transform: translateY(-15px) rotate(-5deg) scale(1); }
-            90% { opacity: 1; left: 90%; }
-            100% { left: 110%; transform: translateY(-40px) rotate(20deg) scale(0.8); opacity: 0; }
-        }
-
-        @keyframes floatIt { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); color: #2563eb; } }
-        @keyframes floatEnv { 0% { transform: translateY(0px); } 100% { transform: translateY(-12px); color: #25d366; } }
 
         /* CONTACT FORM IN TAB */
         .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
         .contact-form input, .contact-form textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; }
         .contact-form button { background: #1b8a4f; color: #fff; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; }
 
-        /* FOOTER & SOCIAL LINKS */
+        /* FOOTER & SOCIAL LINKS (REAL COLORS) */
         footer { background: #0d1e15; color: #fff; padding: 40px 20px 20px 20px; text-align: center; position: relative; z-index: 2; }
         
         .social-links {
@@ -576,7 +674,7 @@
             font-size: 28px;
             width: 45px;
             height: 45px;
-            background: #ffffff; /* White circle background */
+            background: #ffffff; 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -590,7 +688,6 @@
             box-shadow: 0 8px 15px rgba(255,255,255,0.2);
         }
 
-        /* Real Brand Colors */
         .li-icon { color: #0077b5; }
         .yt-icon { color: #ff0000; }
         .ig-icon { color: #E1306C; }
@@ -612,6 +709,14 @@
         <i class="fa-solid fa-leaf leaf"></i>
         <i class="fa-solid fa-leaf leaf"></i>
         <i class="fa-solid fa-leaf leaf"></i>
+    </div>
+
+    <!-- FULLSCREEN ANIMATION FOR ABOUT US (Managed by JS) -->
+    <div id="aboutFullscreenBg" class="about-fullscreen-bg">
+        <div class="bouncing-net"></div>
+        <i class="fa-solid fa-child-reaching kid kid-1"></i>
+        <i class="fa-solid fa-child kid kid-2"></i>
+        <i class="fa-solid fa-paper-plane interactive-plane"></i>
     </div>
 
     <!-- HEADER MENU LINKS (WHITE BACKGROUND) -->
@@ -701,8 +806,26 @@
             </div>
         </section>
 
-        <!-- 3D CAROUSEL CORE OFFERINGS (DARK GREEN BG) -->
+        <!-- 3D CAROUSEL CORE OFFERINGS (DEEP WATER THEME) -->
         <div class="core-offerings-section">
+            
+            <!-- WATER WAVES & SAILBOAT AT THE TOP DIVIDER -->
+            <div class="water-waves-container">
+                <div class="ocean-wave w1"></div>
+                <div class="ocean-wave w2"></div>
+                <div class="ocean-wave w3"></div>
+                <!-- Sailing Boat -->
+                <i class="fa-solid fa-sailboat boat-icon"></i>
+            </div>
+
+            <!-- UNDERWATER BUBBLES -->
+            <div class="water-bubbles">
+                <div class="bubble"></div>
+                <div class="bubble"></div>
+                <div class="bubble"></div>
+                <div class="bubble"></div>
+                <div class="bubble"></div>
+            </div>
             
             <div class="bg-graphics-layer">
                 <i class="fa-solid fa-laptop-code bg-computer"></i>
@@ -718,29 +841,29 @@
             
             <div class="carousel-scene" id="carouselScene">
                 <div class="carousel-spinner" id="carouselSpinner">
-                    <!-- 5 Tiles in 3D Space -->
+                    <!-- 5 Tiles in 3D Space (WITH LIGHT MULTI-COLOR SHADE & REAL BRAND COLORS) -->
                     <div class="slide-card" style="--i:0;" onclick="handleCardClick('services-tab')">
-                        <i class="fa-brands fa-salesforce"></i>
+                        <i class="fa-brands fa-salesforce color-sf"></i>
                         <h3 data-i18n="card_sf_h3">Salesforce Services</h3>
                         <p data-i18n="card_sf_p">Implementation, Support, Automation</p>
                     </div>
                     <div class="slide-card" style="--i:1;" onclick="handleCardClick('services-tab')">
-                        <i class="fa-solid fa-chart-line"></i>
+                        <i class="fa-solid fa-chart-line color-sap"></i>
                         <h3 data-i18n="card_sap_h3">SAP Business One</h3>
                         <p data-i18n="card_sap_p">Setup, Optimization, Technical Support</p>
                     </div>
                     <div class="slide-card" style="--i:2;" onclick="handleCardClick('services-tab')">
-                        <i class="fa-solid fa-code"></i>
+                        <i class="fa-solid fa-code color-web"></i>
                         <h3 data-i18n="card_web_h3">Website Support</h3>
                         <p data-i18n="card_web_p">Security, Maintenance, Performance</p>
                     </div>
                     <div class="slide-card" style="--i:3;" onclick="handleCardClick('about')">
-                        <i class="fa-solid fa-seedling"></i>
+                        <i class="fa-solid fa-seedling color-env"></i>
                         <h3 data-i18n="card_env_h3">Environmental Work</h3>
                         <p data-i18n="card_env_p">Sustainability Initiatives & Awareness</p>
                     </div>
                     <div class="slide-card" style="--i:4;" onclick="handleCardClick('product')">
-                        <i class="fa-solid fa-book-open"></i>
+                        <i class="fa-solid fa-book-open color-erp"></i>
                         <h3 data-i18n="card_av_h3">Avernus</h3>
                         <p data-i18n="card_av_p">Books, Poetry & Thoughtful Writing</p>
                     </div>
@@ -758,11 +881,8 @@
     <!-- ============================================== -->
     <div class="dynamic-tab-section" id="tabContainer" style="display: none;">
         
-        <!-- ABOUT US PAGE (WITH SKY BLUE & SPACE PATTERN) -->
+        <!-- ABOUT US PAGE (WITH OUTSIDE FLOWING NET ANIMATION) -->
         <div id="panel-about" class="tab-panel">
-            
-            <!-- Space Pattern Layer for About Us ONLY -->
-            <div class="about-space-pattern"></div>
 
             <div class="about-content-wrapper">
                 <h3 class="animate-text" data-i18n="tab_about_h3">About Dhami Group</h3>
@@ -771,7 +891,7 @@
 
                 <h4 class="animate-text delay-2" style="margin-top: 25px; margin-bottom: 10px; color: #1b8a4f; font-size: 18px;">What We Do</h4>
                 <p class="animate-text delay-2">Our key areas of services include:</p>
-                <ul class="animate-text delay-2" style="margin-left: 20px; margin-top: 10px; margin-bottom: 15px; color: #555; font-size: 15px; line-height: 1.8;">
+                <ul class="animate-text delay-2" style="margin-left: 20px; margin-top: 10px; margin-bottom: 15px; color: #444; font-size: 15px; line-height: 1.8;">
                     <li><strong>Salesforce CRM</strong> – Implementation, customization, automation, user support, and process improvement.</li>
                     <li><strong>SAP Business One</strong> – Implementation support, configuration, optimization, reporting, and technical-functional assistance.</li>
                     <li><strong>Website Solutions</strong> – Website development, maintenance, security, performance improvement, and ongoing support.</li>
@@ -790,23 +910,6 @@
                     <p style="margin-bottom: 5px; color: #333;"><strong>Established:</strong> 2025</p>
                     <p style="margin-bottom: 5px; color: #333;"><strong>Founder:</strong> Prakash</p>
                     <p style="color: #0d5c34; font-weight: 600;">Dhami Group Digital Commerce & Solutions</p>
-                </div>
-
-                <div class="about-graphics">
-                    <div class="icon-group">
-                        <div class="it-part">
-                            <i class="fa-solid fa-laptop-code"></i>
-                            <span>Digital IT</span>
-                        </div>
-                        <div class="connection-line">
-                            <i class="fa-solid fa-link"></i>
-                        </div>
-                        <div class="env-part">
-                            <i class="fa-solid fa-leaf"></i>
-                            <span>Environment</span>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-paper-plane paper-plane"></i>
                 </div>
             </div>
         </div>
@@ -895,6 +998,7 @@
         function showHome() {
             document.getElementById('homePage').style.display = 'block';
             document.getElementById('tabContainer').style.display = 'none';
+            document.getElementById('aboutFullscreenBg').style.display = 'none'; 
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -910,14 +1014,20 @@
             if(activePanel) {
                 activePanel.classList.add('active');
                 
+                // Show fullscreen background ONLY for About Us
+                let bgAbout = document.getElementById('aboutFullscreenBg');
                 if(tabName === 'about') {
-                    let animatedItems = activePanel.querySelectorAll('.animate-text, .about-graphics');
+                    bgAbout.style.display = 'block';
+                    let animatedItems = activePanel.querySelectorAll('.animate-text');
                     animatedItems.forEach(item => {
                         item.style.animation = 'none';
                         item.offsetHeight; 
                         item.style.animation = null; 
                     });
+                } else {
+                    bgAbout.style.display = 'none';
                 }
+
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
