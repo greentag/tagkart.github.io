@@ -149,7 +149,7 @@
 
         /* ---------------- ADVANCED HERO SECTION (HOME) ---------------- */
         .hero {
-            background: radial-gradient(circle at center, #e4f5eb 0%, #c2f0d2 40%, #a3f3c4 100%);
+            background: radial-gradient(circle at center, transparent 0%, rgba(194, 240, 210, 0.4) 40%, rgba(163, 243, 196, 0.2) 100%);
             text-align: center;
             padding: 80px 20px 40px 20px;
             position: relative;
@@ -218,7 +218,6 @@
             100% { transform: translateY(0) scale(1); opacity: 0.1; }
         }
 
-        /* Glassmorphism Box for Text */
         .hero-content-box {
             position: relative;
             z-index: 2; 
@@ -294,10 +293,10 @@
 
         /* ---------------- ADVANCED CORE OFFERINGS (DARK GREEN + 3D CAROUSEL) ---------------- */
         .core-offerings-section {
-            background: linear-gradient(135deg, #16360c 0%, #112609 100%); /* 2 Shades darker than header green */
+            background: linear-gradient(135deg, #16360c 0%, #112609 100%);
             position: relative;
             padding: 60px 0 100px 0;
-            overflow: hidden; /* Contains background graphics */
+            overflow: hidden; 
             z-index: 2;
         }
 
@@ -312,7 +311,6 @@
             z-index: 10;
         }
 
-        /* Signal Graphics Layer inside Core Offerings */
         .bg-graphics-layer {
             position: absolute;
             bottom: 20px; left: 0; width: 100%; height: 150px;
@@ -402,7 +400,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            user-select: none; /* Prevents text selection while dragging */
+            user-select: none; 
         }
 
         .slide-card i {
@@ -446,6 +444,7 @@
             z-index: 2;
         }
 
+        /* General Inner Pages (White Background) */
         .tab-panel {
             display: none;
             background: #ffffff;
@@ -455,9 +454,42 @@
             border: 1px solid #dbe8e0;
         }
 
+        /* --- ABOUT US PAGE SPECIFIC STYLING (SKY BLUE & SPACE PATTERN) --- */
+        #panel-about {
+            background-color: #e6f7ff; 
+            border: 1px solid #b3e0ff;
+            position: relative;
+            overflow: hidden; 
+        }
+
+        .about-space-pattern {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background-image: 
+                radial-gradient(circle at 15% 25%, rgba(27, 138, 79, 0.1) 2px, transparent 3px),
+                radial-gradient(circle at 75% 15%, rgba(0, 161, 224, 0.1) 2px, transparent 3px),
+                radial-gradient(circle at 45% 65%, rgba(27, 138, 79, 0.08) 1.5px, transparent 2px),
+                radial-gradient(circle at 85% 75%, rgba(0, 161, 224, 0.08) 1.5px, transparent 2.5px),
+                radial-gradient(circle at 30% 80%, rgba(116, 27, 71, 0.08) 2px, transparent 3px);
+            background-size: 150px 150px;
+            animation: panSpace 40s linear infinite;
+        }
+
+        @keyframes panSpace {
+            0% { background-position: 0px 0px; }
+            100% { background-position: 300px 300px; }
+        }
+
+        .about-content-wrapper {
+            position: relative;
+            z-index: 2;
+        }
+
         .tab-panel.active { display: block; animation: fadeIn 0.4s ease-in-out; }
         .tab-panel h3 { color: #0d5c34; font-size: 24px; margin-bottom: 15px; }
-        .tab-panel p { font-size: 15px; line-height: 1.8; color: #555; }
+        .tab-panel p { font-size: 15px; line-height: 1.8; color: #444; }
 
         /* ---------------- ABOUT US SPECIFIC ANIMATIONS ---------------- */
         .animate-text { opacity: 0; animation: fadeUp 0.8s ease-out forwards; }
@@ -471,31 +503,100 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* IT + Environment Graphical End Section */
         .about-graphics {
-            position: relative; margin-top: 40px; padding: 40px 0 20px 0;
-            border-top: 2px dashed #c2f0d2; display: flex; justify-content: center;
-            align-items: center; overflow: hidden; opacity: 0;
+            position: relative; 
+            margin-top: 40px; 
+            padding: 50px 0; 
+            border-top: 2px dashed #a3f3c4; 
+            display: flex; 
+            justify-content: center;
+            align-items: center; 
+            overflow: hidden; 
+            opacity: 0;
+            border-radius: 0 0 10px 10px;
+            background: linear-gradient(180deg, transparent 0%, rgba(0, 161, 224, 0.05) 100%);
             animation: fadeUp 0.8s ease-out 1s forwards;
         }
 
-        .icon-group { display: flex; align-items: center; gap: 25px; position: relative; z-index: 2; }
+        .icon-group { display: flex; align-items: center; gap: 30px; position: relative; z-index: 2; }
         .it-part, .env-part { display: flex; flex-direction: column; align-items: center; color: #0d5c34; }
         .it-part i { font-size: 3rem; color: #1e3a8a; animation: floatIt 3s ease-in-out infinite; }
         .env-part i { font-size: 3rem; color: #1b8a4f; animation: floatEnv 3.5s ease-in-out infinite alternate; }
         
         .it-part span, .env-part span {
             margin-top: 8px; font-size: 13px; font-weight: 600; color: #555;
-            background: #fff; padding: 2px 8px; border-radius: 4px;
+            background: #fff; padding: 4px 10px; border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+
+        .connection-line { font-size: 1.5rem; color: #888; animation: pulseGlow 2s infinite; }
+        
+        .paper-plane {
+            position: absolute; 
+            font-size: 2.5rem; 
+            color: #007bb5; 
+            bottom: 30%; 
+            left: -10%;
+            z-index: 10; 
+            filter: drop-shadow(3px 5px 5px rgba(0,0,0,0.2)); 
+            animation: flyAcross 7s ease-in-out infinite;
+        }
+
+        @keyframes flyAcross {
+            0% { left: -10%; transform: translateY(0) rotate(15deg) scale(0.8); opacity: 0; }
+            10% { opacity: 1; }
+            25% { transform: translateY(-20px) rotate(0deg) scale(1); }
+            50% { transform: translateY(15px) rotate(10deg) scale(1.2); }
+            75% { transform: translateY(-15px) rotate(-5deg) scale(1); }
+            90% { opacity: 1; left: 90%; }
+            100% { left: 110%; transform: translateY(-40px) rotate(20deg) scale(0.8); opacity: 0; }
+        }
+
+        @keyframes floatIt { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); color: #2563eb; } }
+        @keyframes floatEnv { 0% { transform: translateY(0px); } 100% { transform: translateY(-12px); color: #25d366; } }
 
         /* CONTACT FORM IN TAB */
         .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
         .contact-form input, .contact-form textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; }
         .contact-form button { background: #1b8a4f; color: #fff; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; }
 
-        /* FOOTER & BUTTONS */
-        footer { background: #0d1e15; color: #fff; padding: 30px 20px; text-align: center; position: relative; z-index: 2; }
+        /* FOOTER & SOCIAL LINKS (REAL COLORS) */
+        footer { background: #0d1e15; color: #fff; padding: 40px 20px 20px 20px; text-align: center; position: relative; z-index: 2; }
+        
+        .social-links {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+        }
+        .social-links a {
+            display: inline-block;
+            font-size: 28px;
+            width: 45px;
+            height: 45px;
+            background: #ffffff; /* White circle background */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .social-links a:hover {
+            transform: scale(1.2) translateY(-5px);
+            box-shadow: 0 8px 15px rgba(255,255,255,0.2);
+        }
+
+        /* Real Brand Colors */
+        .li-icon { color: #0077b5; }
+        .yt-icon { color: #ff0000; }
+        .ig-icon { color: #E1306C; }
+        .fb-icon { color: #1877f2; }
+        
+        /* CLASSIC TWITTER ICON (TWITTER BLUE) */
+        .tw-icon { color: #1DA1F2; } 
+
         .chat-btn { position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; padding: 12px 20px; border-radius: 30px; display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600; z-index: 999; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         #scrollTopBtn { display: none; position: fixed; bottom: 80px; right: 20px; z-index: 999; background-color: #1b8a4f; color: white; border: none; cursor: pointer; padding: 12px 15px; border-radius: 50%; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background-color 0.3s, transform 0.3s; }
         #scrollTopBtn:hover { background-color: #0d5c34; transform: translateY(-5px); }
@@ -603,7 +704,6 @@
         <!-- 3D CAROUSEL CORE OFFERINGS (DARK GREEN BG) -->
         <div class="core-offerings-section">
             
-            <!-- Graphic Background: Computer to Globe Signal -->
             <div class="bg-graphics-layer">
                 <i class="fa-solid fa-laptop-code bg-computer"></i>
                 <div class="bg-signal-wrapper">
@@ -658,50 +758,56 @@
     <!-- ============================================== -->
     <div class="dynamic-tab-section" id="tabContainer" style="display: none;">
         
-        <!-- ABOUT US PAGE -->
+        <!-- ABOUT US PAGE (WITH SKY BLUE & SPACE PATTERN) -->
         <div id="panel-about" class="tab-panel">
-            <h3 class="animate-text" data-i18n="tab_about_h3">About Dhami Group</h3>
-            <p class="animate-text" data-i18n="tab_about_p1"><strong>Dhami Group</strong> provides sustainable and eco-friendly engineering & digital solutions aligned with modern industrial standards.</p>
-            <p class="animate-text delay-1" style="margin-top: 10px;" data-i18n="tab_about_p2">We focus on quality, safety, compliance, and long-term value delivery across industrial, ERP, cloud, and automation projects.</p>
-
-            <h4 class="animate-text delay-2" style="margin-top: 25px; margin-bottom: 10px; color: #1b8a4f; font-size: 18px;">What We Do</h4>
-            <p class="animate-text delay-2">Our key areas of services include:</p>
-            <ul class="animate-text delay-2" style="margin-left: 20px; margin-top: 10px; margin-bottom: 15px; color: #555; font-size: 15px; line-height: 1.8;">
-                <li><strong>Salesforce CRM</strong> – Implementation, customization, automation, user support, and process improvement.</li>
-                <li><strong>SAP Business One</strong> – Implementation support, configuration, optimization, reporting, and technical-functional assistance.</li>
-                <li><strong>Website Solutions</strong> – Website development, maintenance, security, performance improvement, and ongoing support.</li>
-                <li><strong>Business Process Automation</strong> – Helping organizations reduce manual work and improve operational efficiency.</li>
-                <li><strong>Digital & Technical Support</strong> – Practical technology solutions tailored to individual business requirements.</li>
-            </ul>
-
-            <h4 class="animate-text delay-3" style="margin-top: 25px; margin-bottom: 10px; color: #1b8a4f; font-size: 18px;">Our Approach</h4>
-            <p class="animate-text delay-3">At Dhami Group, we believe technology should solve business problems rather than create unnecessary complexity.</p>
-            <p class="animate-text delay-3" style="margin-top: 10px;">We focus on understanding the business process first and then recommending the right technology or solution. Our approach is based on transparency, practical implementation, responsive support, and long-term value.</p>
-
-            <h4 class="animate-text delay-4" style="margin-top: 25px; margin-bottom: 10px; color: #1b8a4f; font-size: 18px;">Our Vision</h4>
-            <p class="animate-text delay-4">Our vision is to build Dhami Group as a trusted technology and digital solutions partner for businesses by delivering simple, reliable, and effective solutions that create measurable value.</p>
             
-            <div class="animate-text delay-4" style="margin-top: 30px; padding: 15px 20px; background: #f0f7f3; border-left: 5px solid #1b8a4f; border-radius: 5px;">
-                <p style="margin-bottom: 5px; color: #333;"><strong>Established:</strong> 2025</p>
-                <p style="margin-bottom: 5px; color: #333;"><strong>Founder:</strong> Prakash</p>
-                <p style="color: #0d5c34; font-weight: 600;">Dhami Group Digital Commerce & Solutions</p>
-            </div>
+            <!-- Space Pattern Layer for About Us ONLY -->
+            <div class="about-space-pattern"></div>
 
-            <div class="about-graphics">
-                <div class="icon-group">
-                    <div class="it-part">
-                        <i class="fa-solid fa-laptop-code"></i>
-                        <span>Digital IT</span>
-                    </div>
-                    <div class="connection-line">
-                        <i class="fa-solid fa-link"></i>
-                    </div>
-                    <div class="env-part">
-                        <i class="fa-solid fa-leaf"></i>
-                        <span>Environment</span>
-                    </div>
+            <div class="about-content-wrapper">
+                <h3 class="animate-text" data-i18n="tab_about_h3">About Dhami Group</h3>
+                <p class="animate-text" data-i18n="tab_about_p1"><strong>Dhami Group</strong> provides sustainable and eco-friendly engineering & digital solutions aligned with modern industrial standards.</p>
+                <p class="animate-text delay-1" style="margin-top: 10px;" data-i18n="tab_about_p2">We focus on quality, safety, compliance, and long-term value delivery across industrial, ERP, cloud, and automation projects.</p>
+
+                <h4 class="animate-text delay-2" style="margin-top: 25px; margin-bottom: 10px; color: #1b8a4f; font-size: 18px;">What We Do</h4>
+                <p class="animate-text delay-2">Our key areas of services include:</p>
+                <ul class="animate-text delay-2" style="margin-left: 20px; margin-top: 10px; margin-bottom: 15px; color: #555; font-size: 15px; line-height: 1.8;">
+                    <li><strong>Salesforce CRM</strong> – Implementation, customization, automation, user support, and process improvement.</li>
+                    <li><strong>SAP Business One</strong> – Implementation support, configuration, optimization, reporting, and technical-functional assistance.</li>
+                    <li><strong>Website Solutions</strong> – Website development, maintenance, security, performance improvement, and ongoing support.</li>
+                    <li><strong>Business Process Automation</strong> – Helping organizations reduce manual work and improve operational efficiency.</li>
+                    <li><strong>Digital & Technical Support</strong> – Practical technology solutions tailored to individual business requirements.</li>
+                </ul>
+
+                <h4 class="animate-text delay-3" style="margin-top: 25px; margin-bottom: 10px; color: #1b8a4f; font-size: 18px;">Our Approach</h4>
+                <p class="animate-text delay-3">At Dhami Group, we believe technology should solve business problems rather than create unnecessary complexity.</p>
+                <p class="animate-text delay-3" style="margin-top: 10px;">We focus on understanding the business process first and then recommending the right technology or solution. Our approach is based on transparency, practical implementation, responsive support, and long-term value.</p>
+
+                <h4 class="animate-text delay-4" style="margin-top: 25px; margin-bottom: 10px; color: #1b8a4f; font-size: 18px;">Our Vision</h4>
+                <p class="animate-text delay-4">Our vision is to build Dhami Group as a trusted technology and digital solutions partner for businesses by delivering simple, reliable, and effective solutions that create measurable value.</p>
+                
+                <div class="animate-text delay-4" style="margin-top: 30px; padding: 15px 20px; background: rgba(255, 255, 255, 0.7); border-left: 5px solid #1b8a4f; border-radius: 5px;">
+                    <p style="margin-bottom: 5px; color: #333;"><strong>Established:</strong> 2025</p>
+                    <p style="margin-bottom: 5px; color: #333;"><strong>Founder:</strong> Prakash</p>
+                    <p style="color: #0d5c34; font-weight: 600;">Dhami Group Digital Commerce & Solutions</p>
                 </div>
-                <i class="fa-solid fa-paper-plane paper-plane"></i>
+
+                <div class="about-graphics">
+                    <div class="icon-group">
+                        <div class="it-part">
+                            <i class="fa-solid fa-laptop-code"></i>
+                            <span>Digital IT</span>
+                        </div>
+                        <div class="connection-line">
+                            <i class="fa-solid fa-link"></i>
+                        </div>
+                        <div class="env-part">
+                            <i class="fa-solid fa-leaf"></i>
+                            <span>Environment</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-paper-plane paper-plane"></i>
+                </div>
             </div>
         </div>
 
@@ -760,8 +866,19 @@
         </div>
     </div>
 
-    <!-- FOOTER -->
+    <!-- FOOTER WITH SOCIAL LINKS -->
     <footer>
+        <!-- SOCIAL MEDIA LINKS (Classic Twitter Logo) -->
+        <div class="social-links">
+            <a href="https://www.linkedin.com/in/prakashsinghdhami" target="_blank" class="li-icon"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="https://www.youtube.com/@mepahadi" target="_blank" class="yt-icon"><i class="fa-brands fa-youtube"></i></a>
+            <a href="https://www.instagram.com/mepahadi" target="_blank" class="ig-icon"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.facebook.com/share/1DTpCmtq9H/" target="_blank" class="fb-icon"><i class="fa-brands fa-facebook-f"></i></a>
+            
+            <!-- Classic Twitter bird logo with real color -->
+            <a href="https://x.com/maipahadi" target="_blank" class="tw-icon"><i class="fa-brands fa-twitter"></i></a>
+        </div>
+        
         <p data-i18n="footer_text">&copy; 2026 Dhami Digital Solutions. All Rights Reserved.</p>
     </footer>
 
@@ -814,14 +931,13 @@
         let currentAngle = 0;
         let startX = 0;
         let isDraggingCarousel = false;
-        let didDrag = false; // To prevent click event if user was dragging
+        let didDrag = false;
 
         function moveCarousel(direction) {
             currentAngle += direction * 72; // 360 degrees / 5 items = 72
             carouselSpinner.style.transform = `rotateY(${currentAngle}deg)`;
         }
 
-        // Auto rotate every 5 seconds
         let autoRotate = setInterval(() => { moveCarousel(-1); }, 5000);
 
         function resetAutoRotate() {
@@ -829,7 +945,6 @@
             autoRotate = setInterval(() => { moveCarousel(-1); }, 5000);
         }
 
-        // Mouse Drag Events
         carouselScene.addEventListener('mousedown', (e) => {
             isDraggingCarousel = true;
             didDrag = false;
@@ -844,12 +959,11 @@
             let diff = startX - endX;
             if(Math.abs(diff) > 50) {
                 didDrag = true;
-                if(diff > 0) moveCarousel(-1); // drag left
-                else moveCarousel(1); // drag right
+                if(diff > 0) moveCarousel(-1); 
+                else moveCarousel(1); 
             }
         });
 
-        // Touch Drag Events
         carouselScene.addEventListener('touchstart', (e) => {
             isDraggingCarousel = true;
             didDrag = false;
@@ -869,13 +983,11 @@
             }
         });
 
-        // Only trigger click if user didn't drag the carousel
         function handleCardClick(tabName) {
             if(!didDrag) {
                 selectTab(tabName);
             }
         }
-
 
         // --- 4. SCROLL TO TOP BUTTON LOGIC ---
         let topBtn = document.getElementById("scrollTopBtn");
@@ -993,7 +1105,7 @@
                 card_sap_h3: "SAP Business One", card_sap_p: "Configuración, Optimización, Soporte",
                 card_web_h3: "Soporte de Sitios Web", card_web_p: "Seguridad, Mantenimiento, Rendimiento",
                 card_env_h3: "Trabajo Ambiental", card_env_p: "Iniciativas de Sostenibilidad y Concienciación",
-                card_av_h3: "Avernus", card_av_p: "Libros, Poesía y Escritura Reflexiva",
+                card_av_h3: "Avernus", card_av_p: "Libros, Poesie y Escritura Reflexiva",
                 footer_text: "&copy; 2026 Dhami Digital Solutions. Todos los derechos reservados.",
                 chat: "Chat"
             },
