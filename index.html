@@ -139,6 +139,52 @@
             color: #1b8a4f; 
         }
 
+        /* --- NEW DROPDOWN MENU STYLING --- */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #ffffff;
+            min-width: 220px;
+            box-shadow: 0px 8px 25px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            top: 100%;
+            left: 0;
+            z-index: 1001;
+            overflow: hidden;
+            border: 1px solid #dbe8e0;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .dropdown-content a {
+            color: #333333 !important;
+            padding: 12px 16px !important;
+            text-decoration: none;
+            display: block;
+            font-weight: 500 !important;
+            border-bottom: 1px solid #f0f7f3;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #e4f5eb !important;
+            color: #1b8a4f !important;
+            padding-left: 20px !important; /* Smooth indent effect */
+        }
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
         .lang-select {
             padding: 4px 8px;
             border-radius: 4px;
@@ -286,12 +332,11 @@
         .service-slide h2 { font-size: 1.6rem; color: #0d5c34; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .service-slide p { font-size: 1.1rem; color: #555; font-weight: 600; }
 
-        /* BRAND ORIGINAL COLORS FOR HERO AND TILES */
-        .color-sf { color: #00a1e0; } /* Salesforce Light Blue */
-        .color-sap { color: #008fd3; } /* SAP Original Blue */
-        .color-web { color: #e34f26; } /* HTML Orange */
-        .color-env { color: #22c55e; } /* Fresh Eco Green */
-        .color-erp { color: #741B47; } /* Avernus Maroon */
+        .color-sf { color: #00a1e0; }
+        .color-sap { color: #008fd3; }
+        .color-web { color: #e34f26; }
+        .color-env { color: #22c55e; }
+        .color-erp { color: #741B47; }
 
 
         /* ---------------- ADVANCED CORE OFFERINGS (WATER THEME) ---------------- */
@@ -461,15 +506,12 @@
             top: 0; left: 0;
             width: 100%; height: 100%;
             transform: rotateY(calc(var(--i) * 72deg)) translateZ(350px);
-            
-            /* --- NEW: LIGHT MULTI-COLOR SHADE FOR TILES --- */
-            background: linear-gradient(120deg, rgba(255, 240, 245, 0.95) 0%, rgba(230, 245, 255, 0.95) 50%, rgba(235, 255, 240, 0.95) 100%);
-            
+            background: linear-gradient(120deg, #fff0f5 0%, #e6f7ff 50%, #f0fff4 100%);
             padding: 40px 20px;
             border-radius: 15px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.3), inset 0 0 20px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3), inset 0 0 15px rgba(255,255,255,0.8);
             text-align: center;
-            border: 2px solid rgba(255, 255, 255, 0.6); /* Softened border to match light shade */
+            border: 2px solid rgba(255, 255, 255, 0.6);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -480,7 +522,6 @@
         .slide-card i {
             font-size: 3.5rem;
             margin-bottom: 20px;
-            /* Default color removed to let specific .color-* classes take over */
         }
 
         .slide-card h3 { color: #112609; margin-bottom: 10px; font-size: 20px; }
@@ -524,7 +565,7 @@
             z-index: 2;
         }
 
-        /* General Inner Pages (White Background) */
+        /* General Inner Pages */
         .tab-panel {
             display: none;
             background: #ffffff;
@@ -534,9 +575,8 @@
             border: 1px solid #dbe8e0;
         }
 
-
         /* ========================================================================= */
-        /* --- NEW ABOUT US PAGE SPECIFIC STYLING (OUTSIDE FULLSCREEN ANIMATION) --- */
+        /* --- ABOUT US PAGE SPECIFIC STYLING --- */
         /* ========================================================================= */
         #panel-about {
             background: transparent !important;
@@ -545,17 +585,15 @@
             padding: 0 !important;
         }
 
-        /* Background outside the panel */
         .about-fullscreen-bg {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #e6f7ff; /* Halka skyblue */
+            background-color: #e6f7ff; 
             z-index: 0;
             overflow: hidden;
-            display: none; /* Controlled via JS when About is active */
+            display: none; 
         }
 
-        /* Flowing Trampoline Net */
         .bouncing-net {
             position: absolute;
             bottom: 5%; left: -5%; width: 110%; height: 150px;
@@ -575,7 +613,6 @@
             100% { transform: translateY(20px) scaleY(0.7); }
         }
 
-        /* Jumping Kids */
         .kid {
             position: absolute;
             font-size: 5rem;
@@ -586,7 +623,6 @@
             color: #ff6b6b;
             left: 12%;
             bottom: 18%;
-            /* 4s duration to match the plane's exact arrival */
             animation: jumpKid1 4s infinite ease-in-out;
         }
 
@@ -600,7 +636,7 @@
         @keyframes jumpKid1 {
             0%, 100% { transform: translateY(0px) scaleY(0.9); }
             10%, 90% { transform: translateY(0px) scaleY(1); }
-            50% { transform: translateY(-220px) rotate(15deg); } /* In the air exactly at 50% (2s mark) */
+            50% { transform: translateY(-220px) rotate(15deg); } 
         }
 
         @keyframes jumpKid2 {
@@ -609,7 +645,6 @@
             50% { transform: translateY(-180px) rotate(-10deg); }
         }
 
-        /* Plane flying and touching Kid 1 */
         .interactive-plane {
             position: absolute;
             font-size: 4rem;
@@ -621,13 +656,11 @@
         @keyframes planeInteraction {
             0% { left: -10%; bottom: 30%; transform: rotate(10deg); opacity: 0; }
             10% { opacity: 1; }
-            /* Touches Kid 1 at exactly 50% (2s mark) when kid is highest */
             50% { left: 12%; bottom: calc(18% + 220px); transform: rotate(-15deg) scale(1.2); } 
             70% { left: 50%; bottom: 90%; transform: rotate(-40deg) scale(1.5); opacity: 1; }
             100% { left: 120%; bottom: 120%; transform: rotate(-20deg) scale(1); opacity: 0; }
         }
 
-        /* The Content Panel inside About Us */
         .about-content-wrapper {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(10px);
@@ -654,6 +687,11 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Service Panels Specific Styling */
+        .service-list-ul {
+            margin-left: 20px; margin-top: 15px; margin-bottom: 20px; color: #555; font-size: 15px; line-height: 1.8;
+        }
+        .service-list-ul li { margin-bottom: 8px; }
 
         /* CONTACT FORM IN TAB */
         .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
@@ -719,7 +757,7 @@
         <i class="fa-solid fa-paper-plane interactive-plane"></i>
     </div>
 
-    <!-- HEADER MENU LINKS (WHITE BACKGROUND) -->
+    <!-- HEADER MENU LINKS (WHITE BACKGROUND & DROPDOWN FOR SERVICES) -->
     <header>
         <div class="logo" onclick="showHome()">
             <i class="fa-solid fa-earth-americas earth-icon"></i>
@@ -735,7 +773,18 @@
                 <li><a onclick="selectTab('about')" data-i18n="nav_about">About Us</a></li>
                 <li><a onclick="selectTab('product')" data-i18n="nav_product">Product</a></li>
                 <li><a onclick="selectTab('partners')" data-i18n="nav_partners">Our Partners</a></li>
-                <li><a onclick="selectTab('services-tab')" data-i18n="nav_services">Our Services</a></li>
+                
+                <!-- NEW DROPDOWN MENU FOR OUR SERVICES -->
+                <li class="dropdown">
+                    <a style="cursor: pointer;" data-i18n="nav_services">Our Services <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:3px;"></i></a>
+                    <div class="dropdown-content">
+                        <a onclick="selectTab('serv-erp')">ERP Services</a>
+                        <a onclick="selectTab('serv-crm')">CRM Services</a>
+                        <a onclick="selectTab('serv-web')">Web Services</a>
+                        <a onclick="selectTab('serv-env')">Environmental Services</a>
+                    </div>
+                </li>
+
                 <li><a onclick="selectTab('contact')" data-i18n="nav_contact">Contact</a></li>
                 <li><a onclick="selectTab('enquire')" data-i18n="nav_enquire">Enquire</a></li>
                 <li><a onclick="selectTab('support')" data-i18n="nav_support">Support</a></li>
@@ -809,16 +858,13 @@
         <!-- 3D CAROUSEL CORE OFFERINGS (DEEP WATER THEME) -->
         <div class="core-offerings-section">
             
-            <!-- WATER WAVES & SAILBOAT AT THE TOP DIVIDER -->
             <div class="water-waves-container">
                 <div class="ocean-wave w1"></div>
                 <div class="ocean-wave w2"></div>
                 <div class="ocean-wave w3"></div>
-                <!-- Sailing Boat -->
                 <i class="fa-solid fa-sailboat boat-icon"></i>
             </div>
 
-            <!-- UNDERWATER BUBBLES -->
             <div class="water-bubbles">
                 <div class="bubble"></div>
                 <div class="bubble"></div>
@@ -841,23 +887,23 @@
             
             <div class="carousel-scene" id="carouselScene">
                 <div class="carousel-spinner" id="carouselSpinner">
-                    <!-- 5 Tiles in 3D Space (WITH LIGHT MULTI-COLOR SHADE & REAL BRAND COLORS) -->
-                    <div class="slide-card" style="--i:0;" onclick="handleCardClick('services-tab')">
+                    <!-- 5 Tiles in 3D Space -->
+                    <div class="slide-card" style="--i:0;" onclick="handleCardClick('serv-crm')">
                         <i class="fa-brands fa-salesforce color-sf"></i>
                         <h3 data-i18n="card_sf_h3">Salesforce Services</h3>
                         <p data-i18n="card_sf_p">Implementation, Support, Automation</p>
                     </div>
-                    <div class="slide-card" style="--i:1;" onclick="handleCardClick('services-tab')">
+                    <div class="slide-card" style="--i:1;" onclick="handleCardClick('serv-erp')">
                         <i class="fa-solid fa-chart-line color-sap"></i>
                         <h3 data-i18n="card_sap_h3">SAP Business One</h3>
                         <p data-i18n="card_sap_p">Setup, Optimization, Technical Support</p>
                     </div>
-                    <div class="slide-card" style="--i:2;" onclick="handleCardClick('services-tab')">
+                    <div class="slide-card" style="--i:2;" onclick="handleCardClick('serv-web')">
                         <i class="fa-solid fa-code color-web"></i>
                         <h3 data-i18n="card_web_h3">Website Support</h3>
                         <p data-i18n="card_web_p">Security, Maintenance, Performance</p>
                     </div>
-                    <div class="slide-card" style="--i:3;" onclick="handleCardClick('about')">
+                    <div class="slide-card" style="--i:3;" onclick="handleCardClick('serv-env')">
                         <i class="fa-solid fa-seedling color-env"></i>
                         <h3 data-i18n="card_env_h3">Environmental Work</h3>
                         <p data-i18n="card_env_p">Sustainability Initiatives & Awareness</p>
@@ -914,6 +960,56 @@
             </div>
         </div>
 
+        <!-- NEW 4 SERVICE PANELS -->
+        
+        <!-- ERP SERVICES -->
+        <div id="panel-serv-erp" class="tab-panel">
+            <h3 class="animate-text"><i class="fa-solid fa-chart-line color-sap"></i> ERP Services (SAP B1)</h3>
+            <p class="animate-text delay-1">We specialize in providing comprehensive SAP Business One services tailored to optimize your internal business processes.</p>
+            <ul class="animate-text delay-2 service-list-ul">
+                <li><strong>System Implementation & Setup:</strong> End-to-end SAP Business One installation and seamless module configuration.</li>
+                <li><strong>Financial & Accounting Optimization:</strong> Deep expertise in General Ledger (G/L) mapping, Expense Clearing accounts, and managing complex Journal Entries in multiple currencies.</li>
+                <li><strong>Production & Inventory Management:</strong> Streamlining production orders, profit analysis, and fixed asset mappings for smooth business operations.</li>
+                <li><strong>Ongoing Tech Support:</strong> 24/7 technical assistance, error troubleshooting, and system upgrades.</li>
+            </ul>
+        </div>
+
+        <!-- CRM SERVICES -->
+        <div id="panel-serv-crm" class="tab-panel">
+            <h3 class="animate-text"><i class="fa-brands fa-salesforce color-sf"></i> CRM Services (Salesforce)</h3>
+            <p class="animate-text delay-1">Maximize your customer relationships and internal efficiency with our dedicated Salesforce solutions.</p>
+            <ul class="animate-text delay-2 service-list-ul">
+                <li><strong>Org Management & Security:</strong> Complete Salesforce setup, user profiling, role hierarchy, and permission set management.</li>
+                <li><strong>Custom Development:</strong> Building customized Lightning Web Components (LWC) and tailored internal tools (like custom Recruitment tracking applications) to match your workflow.</li>
+                <li><strong>Process Automation:</strong> Designing complex workflows, custom Case escalation triggers, and automated approval processes to reduce manual effort.</li>
+                <li><strong>System Maintenance:</strong> Regular health checks, API integration support, and smooth data handling.</li>
+            </ul>
+        </div>
+
+        <!-- WEB SERVICES -->
+        <div id="panel-serv-web" class="tab-panel">
+            <h3 class="animate-text"><i class="fa-solid fa-code color-web"></i> Web Services</h3>
+            <p class="animate-text delay-1">We create dynamic, secure, and highly interactive digital experiences for modern businesses.</p>
+            <ul class="animate-text delay-2 service-list-ul">
+                <li><strong>Custom Website Development:</strong> Building responsive, highly graphical, and interactive business websites.</li>
+                <li><strong>UI/UX & Animations:</strong> Creating engaging user interfaces with modern trends like glassmorphism, 3D elements, and smooth scrolling animations.</li>
+                <li><strong>Hosting & Security:</strong> Secure server deployment, continuous monitoring, and SSL integration.</li>
+                <li><strong>Performance Optimization:</strong> Speed tuning, backend maintenance, and bug fixing to ensure zero downtime.</li>
+            </ul>
+        </div>
+
+        <!-- ENVIRONMENTAL SERVICES -->
+        <div id="panel-serv-env" class="tab-panel">
+            <h3 class="animate-text"><i class="fa-solid fa-seedling color-env"></i> Environmental Services</h3>
+            <p class="animate-text delay-1">Aligning technological growth with ecological responsibility for a sustainable future.</p>
+            <ul class="animate-text delay-2 service-list-ul">
+                <li><strong>Green Tech Consulting:</strong> Helping businesses adopt eco-friendly IT operations and digital solutions.</li>
+                <li><strong>Paperless Infrastructure:</strong> Designing automated digital workflows to significantly reduce organizational carbon footprints.</li>
+                <li><strong>Nature Conservation Initiatives:</strong> Supporting and integrating practical environmental awareness projects into corporate models.</li>
+                <li><strong>Sustainability Audits:</strong> Assisting organizations in tracking and reporting their eco-friendly initiatives.</li>
+            </ul>
+        </div>
+
         <!-- PRODUCT PAGE -->
         <div id="panel-product" class="tab-panel">
             <h3 data-i18n="tab_prod_h3">Our Products</h3>
@@ -924,12 +1020,6 @@
         <div id="panel-partners" class="tab-panel">
             <h3 data-i18n="tab_part_h3">Our Partners</h3>
             <p data-i18n="tab_part_p">We work closely with global tech giants including Salesforce, SAP, AWS, and modern green technology alliances to deliver reliable enterprise solutions.</p>
-        </div>
-
-        <!-- SERVICES PAGE -->
-        <div id="panel-services-tab" class="tab-panel">
-            <h3 data-i18n="tab_serv_h3">Our Sustainable Services</h3>
-            <p data-i18n="tab_serv_p">We specialize in Salesforce integration, SAP Business One, Website technical support, and green infrastructure initiatives.</p>
         </div>
 
         <!-- CONTACT PAGE -->
@@ -1018,15 +1108,17 @@
                 let bgAbout = document.getElementById('aboutFullscreenBg');
                 if(tabName === 'about') {
                     bgAbout.style.display = 'block';
-                    let animatedItems = activePanel.querySelectorAll('.animate-text');
-                    animatedItems.forEach(item => {
-                        item.style.animation = 'none';
-                        item.offsetHeight; 
-                        item.style.animation = null; 
-                    });
                 } else {
                     bgAbout.style.display = 'none';
                 }
+
+                // Re-trigger animations for any tab
+                let animatedItems = activePanel.querySelectorAll('.animate-text');
+                animatedItems.forEach(item => {
+                    item.style.animation = 'none';
+                    item.offsetHeight; 
+                    item.style.animation = null; 
+                });
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
@@ -1041,7 +1133,7 @@
         let didDrag = false;
 
         function moveCarousel(direction) {
-            currentAngle += direction * 72; // 360 degrees / 5 items = 72
+            currentAngle += direction * 72; 
             carouselSpinner.style.transform = `rotateY(${currentAngle}deg)`;
         }
 
@@ -1140,7 +1232,6 @@
                 tab_about_p2: "We focus on quality, safety, compliance, and long-term value delivery across industrial, ERP, cloud, and automation projects.",
                 tab_prod_h3: "Our Products", tab_prod_p: "Explore our next-gen digital commerce products, ERP toolkits, and sustainability automation modules designed for high performance.",
                 tab_part_h3: "Our Partners", tab_part_p: "We work closely with global tech giants including Salesforce, SAP, AWS, and modern green technology alliances to deliver reliable enterprise solutions.",
-                tab_serv_h3: "Our Sustainable Services", tab_serv_p: "We specialize in Salesforce integration, SAP Business One, Website technical support, and green infrastructure initiatives.",
                 tab_cont_h3: "Contact Us", 
                 cont_email: "<strong>Email:</strong> pspujari88@gmail.com", cont_phone: "<strong>Phone:</strong> +91 9716583334", cont_add: "<strong>Address:</strong> East Delhi, Delhi 110092",
                 form_name: "Name", form_email: "Email", form_msg: "Message", form_btn: "Send Message",
@@ -1171,7 +1262,6 @@
                 tab_about_p2: "हम औद्योगिक, ईआरपी, क्लाउड और ऑटोमेशन परियोजनाओं में गुणवत्ता, सुरक्षा, अनुपालन और दीर्घकालिक मूल्य वितरण पर ध्यान केंद्रित करते हैं।",
                 tab_prod_h3: "हमारे उत्पाद", tab_prod_p: "उच्च प्रदर्शन के लिए डिज़ाइन किए गए हमारे नेक्स्ट-जेन डिजिटल कॉमर्स उत्पाद, ईआरपी टूलकिट और सस्टेनेबिलिटी ऑटोमेशन मॉड्यूल एक्सप्लोर करें।",
                 tab_part_h3: "हमारे भागीदार", tab_part_p: "हम विश्वसनीय एंटरप्राइज समाधान प्रदान करने के लिए सेल्सफोर्स, SAP, AWS और आधुनिक ग्रीन टेक्नोलॉजी गठबंधनों सहित वैश्विक तकनीकी दिग्गजों के साथ मिलकर काम करते हैं।",
-                tab_serv_h3: "हमारी टिकाऊ सेवाएँ", tab_serv_p: "हम सेल्सफोर्स एकीकरण, SAP Business One, वेबसाइट तकनीकी सहायता और हरित बुनियादी ढांचा पहलों के विशेषज्ञ हैं।",
                 tab_cont_h3: "संपर्क करें", 
                 cont_email: "<strong>ईमेल:</strong> pspujari88@gmail.com", cont_phone: "<strong>फ़ोन:</strong> +91 9716583334", cont_add: "<strong>पता:</strong> पूर्वी दिल्ली, दिल्ली 110092",
                 form_name: "नाम", form_email: "ईमेल", form_msg: "संदेश", form_btn: "संदेश भेजें",
@@ -1200,7 +1290,6 @@
                 tab_about_p2: "Nos centramos en la calidad, la seguridad, el cumplimiento y la entrega de valor a largo plazo en proyectos industriales, ERP, en la nube y de automatización.",
                 tab_prod_h3: "Nuestros Productos", tab_prod_p: "Explore nuestros productos de comercio digital de próxima generación, kits de herramientas ERP y módulos de automatización de sostenibilidad diseñados para un alto rendimiento.",
                 tab_part_h3: "Nuestros Socios", tab_part_p: "Trabajamos en estrecha colaboración con gigantes tecnológicos globales, incluidos Salesforce, SAP, AWS y alianzas de tecnología verde para ofrecer soluciones empresariales confiables.",
-                tab_serv_h3: "Nuestros Servicios Sostenibles", tab_serv_p: "Nos especializamos en la integración de Salesforce, SAP Business One, soporte técnico de sitios web e iniciativas de infraestructura ecológica.",
                 tab_cont_h3: "Contáctenos", 
                 cont_email: "<strong>Correo:</strong> pspujari88@gmail.com", cont_phone: "<strong>Teléfono:</strong> +91 9716583334", cont_add: "<strong>Dirección:</strong> East Delhi, Delhi 110092",
                 form_name: "Nombre", form_email: "Correo Electrónico", form_msg: "Mensaje", form_btn: "Enviar Mensaje",
@@ -1229,7 +1318,6 @@
                 tab_about_p2: "Nous nous concentrons sur la qualité, la sécurité, la conformité et la création de valeur à long terme à travers des projets industriels, ERP, cloud et d'automatisation.",
                 tab_prod_h3: "Nos Produits", tab_prod_p: "Découvrez nos produits de commerce numérique de nouvelle génération, nos boîtes à outils ERP et nos modules d'automatisation de la durabilité conçus pour de hautes performances.",
                 tab_part_h3: "Nos Partenaires", tab_part_p: "Nous travaillons en étroite collaboration avec des géants mondiaux de la technologie tels que Salesforce, SAP, AWS et des alliances technologiques vertes pour fournir des solutions fiables.",
-                tab_serv_h3: "Nos Services Durables", tab_serv_p: "Nous sommes spécialisés dans l'intégration de Salesforce, SAP Business One, le support technique de sites Web et les initiatives d'infrastructure verte.",
                 tab_cont_h3: "Contactez-nous", 
                 cont_email: "<strong>E-mail :</strong> pspujari88@gmail.com", cont_phone: "<strong>Téléphone :</strong> +91 9716583334", cont_add: "<strong>Adresse :</strong> East Delhi, Delhi 110092",
                 form_name: "Nom", form_email: "E-mail", form_msg: "Message", form_btn: "Envoyer",
@@ -1258,7 +1346,6 @@
                 tab_about_p2: "Wir konzentrieren uns auf Qualität, Sicherheit, Compliance und langfristige Wertschöpfung bei Industrie-, ERP-, Cloud- und Automatisierungsprojekten.",
                 tab_prod_h3: "Unsere Produkte", tab_prod_p: "Entdecken Sie unsere hochmodernen Digital Commerce-Produkte, ERP-Toolkits und Nachhaltigkeits-Automatisierungsmodule für hohe Leistung.",
                 tab_part_h3: "Unsere Partner", tab_part_p: "Wir arbeiten eng mit globalen Technologiegiganten wie Salesforce, SAP, AWS und Allianzen für grüne Technologien zusammen, um zuverlässige Unternehmenslösungen bereitzustellen.",
-                tab_serv_h3: "Unsere Nachhaltigen Dienste", tab_serv_p: "Wir sind spezialisiert auf Salesforce-Integration, SAP Business One, technischen Website-Support und grüne Infrastrukturinitiativen.",
                 tab_cont_h3: "Kontaktiere Uns", 
                 cont_email: "<strong>E-Mail:</strong> pspujari88@gmail.com", cont_phone: "<strong>Telefon:</strong> +91 9716583334", cont_add: "<strong>Adresse:</strong> East Delhi, Delhi 110092",
                 form_name: "Name", form_email: "E-Mail", form_msg: "Nachricht", form_btn: "Nachricht Senden",
@@ -1287,7 +1374,6 @@
                 tab_about_p2: "我们专注于在工业、ERP、云和自动化项目中提供质量、安全、合规性及长期价值。",
                 tab_prod_h3: "我们的产品", tab_prod_p: "探索我们专为高性能设计的新一代数字商务产品、ERP工具包以及可持续自动化模块。",
                 tab_part_h3: "我们的合作伙伴", tab_part_p: "我们与 Salesforce、SAP、AWS 等全球科技巨头及现代绿色技术联盟紧密合作，提供可靠的企业解决方案。",
-                tab_serv_h3: "我们的可持续服务", tab_serv_p: "我们专注于 Salesforce 集成、SAP Business One、网站技术支持及绿色基础设施计划。",
                 tab_cont_h3: "联系我们", 
                 cont_email: "<strong>电子邮件:</strong> pspujari88@gmail.com", cont_phone: "<strong>电话:</strong> +91 9716583334", cont_add: "<strong>地址:</strong> East Delhi, Delhi 110092",
                 form_name: "姓名", form_email: "电子邮件", form_msg: "信息", form_btn: "发送信息",
