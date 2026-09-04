@@ -573,7 +573,9 @@
             border: 1px solid #dbe8e0;
         }
 
+        /* ========================================================================= */
         /* --- ABOUT US PAGE SPECIFIC STYLING --- */
+        /* ========================================================================= */
         #panel-about {
             background: transparent !important;
             border: none !important;
@@ -689,10 +691,129 @@
         }
         .service-list-ul li { margin-bottom: 8px; }
 
-        /* CONTACT FORM IN TAB */
-        .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
-        .contact-form input, .contact-form textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; }
-        .contact-form button { background: #1b8a4f; color: #fff; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; }
+        /* ========================================================================= */
+        /* --- NEW CONTACT US PAGE (REAL 3D GLOBE & LIVE FORM) --- */
+        /* ========================================================================= */
+        .contact-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        .contact-left {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .contact-right {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        /* Spinning Real Globe Map */
+        .globe-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin-bottom: 30px;
+        }
+
+        .animated-globe {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            /* Highly reliable NASA Earth texture from GitHub */
+            background: url('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg') repeat-x;
+            background-size: auto 100%; /* Keeps aspect ratio perfectly */
+            /* 3D Shadows for realistic sphere depth */
+            box-shadow: inset -30px -30px 40px rgba(0,0,0,0.8), inset 10px 10px 20px rgba(255,255,255,0.4), 0 0 20px rgba(27, 138, 79, 0.4);
+            animation: spinRealGlobe 40s linear infinite; /* Slow spinning */
+        }
+
+        @keyframes spinRealGlobe {
+            0% { background-position: 0 0; }
+            100% { background-position: 500px 0; } /* 250 height * 2 = 500 width */
+        }
+
+        /* Bouncing Location Pin */
+        .location-pin {
+            position: absolute;
+            top: 25%; /* Fixed on container, so it hovers over the spinning earth */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #e34f26; /* Bright Orange/Red Pin */
+            font-size: 2.5rem;
+            filter: drop-shadow(0 4px 5px rgba(0,0,0,0.5));
+            animation: bouncePin 1s infinite alternate;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .location-pin span {
+            font-size: 13px;
+            background: #ffffff;
+            color: #333;
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-top: 5px;
+            font-weight: 700;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            white-space: nowrap;
+        }
+
+        @keyframes bouncePin {
+            from { transform: translate(-50%, -50%); }
+            to { transform: translate(-50%, -65%); }
+        }
+
+        /* Contact Info Details */
+        .contact-details {
+            width: 100%;
+            background: #f8fbf9;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #1b8a4f;
+        }
+
+        .contact-details p {
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+            color: #444;
+            display: flex;
+            align-items: center;
+        }
+
+        .contact-details i {
+            color: #1b8a4f;
+            width: 30px;
+            font-size: 1.2rem;
+        }
+
+        /* Contact Form */
+        .contact-form {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e1ebe5;
+        }
+
+        .contact-form input, .contact-form textarea { 
+            width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; font-family: 'Poppins', sans-serif;
+        }
+        .contact-form button { 
+            background: #1b8a4f; color: #fff; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; font-size: 1rem; transition: 0.3s;
+        }
+        .contact-form button:hover {
+            background: #0d5c34;
+        }
+
 
         /* FOOTER & SOCIAL LINKS (REAL COLORS) */
         footer { background: #0d1e15; color: #fff; padding: 40px 20px 20px 20px; text-align: center; position: relative; z-index: 2; }
@@ -995,19 +1116,42 @@
         </div>
 
         <div id="panel-contact" class="tab-panel">
-            <h3 data-i18n="tab_cont_h3">Contact Us</h3>
-            <div class="contact-grid">
-                <div>
-                    <p data-i18n="cont_email"><strong>Email:</strong> pspujari88@gmail.com</p>
-                    <p data-i18n="cont_phone"><strong>Phone:</strong> +91 9716583334</p>
-                    <p data-i18n="cont_add"><strong>Address:</strong> East Delhi, Delhi 110092</p>
+            <h3 class="animate-text" data-i18n="tab_cont_h3">Contact Us</h3>
+            
+            <div class="contact-wrapper animate-text delay-1">
+                <div class="contact-left">
+                    
+                    <div class="globe-container">
+                        <div class="animated-globe"></div>
+                        <div class="location-pin">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span data-i18n="cont_pin">Laxmi Nagar, Delhi</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-details">
+                        <p><i class="fa-solid fa-phone"></i> <span data-i18n="cont_phone"><strong>Phone:</strong> 9716938334 / 8586888178</span></p>
+                        <p><i class="fa-solid fa-envelope"></i> <span data-i18n="cont_email"><strong>Email:</strong> pspujari88@gmail.com</span></p>
+                        <p><i class="fa-solid fa-map-location-dot"></i> <span data-i18n="cont_add"><strong>Address:</strong> Laxmi Nagar, Delhi-110092</span></p>
+                    </div>
+
                 </div>
-                <form class="contact-form" onsubmit="event.preventDefault(); alert('Message Sent Successfully!');">
-                    <input type="text" data-i18n-placeholder="form_name" placeholder="Name" required>
-                    <input type="email" data-i18n-placeholder="form_email" placeholder="Email" required>
-                    <textarea rows="3" data-i18n-placeholder="form_msg" placeholder="Message" required></textarea>
-                    <button type="submit" data-i18n="form_btn">Send Message</button>
-                </form>
+
+                <div class="contact-right">
+                    <form action="https://formsubmit.co/pspujari88@gmail.com" method="POST" class="contact-form">
+                        
+                        <input type="hidden" name="_subject" value="New Contact Request from Dhami Group Website">
+                        <input type="hidden" name="_captcha" value="false">
+                        <input type="hidden" name="_template" value="table">
+                        
+                        <input type="text" name="Name" data-i18n-placeholder="form_name" placeholder="Name" required>
+                        <input type="email" name="Email" data-i18n-placeholder="form_email" placeholder="Email" required>
+                        <input type="tel" name="Mobile" data-i18n-placeholder="form_mobile" placeholder="Mobile Number" required>
+                        <textarea name="Message" rows="4" data-i18n-placeholder="form_msg" placeholder="Message" required></textarea>
+                        
+                        <button type="submit" data-i18n="form_btn">Send Message</button>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -1217,8 +1361,14 @@
 
                 tab_prod_h3: "Our Products", tab_prod_p: "Explore our next-gen digital commerce products, ERP toolkits, and sustainability automation modules designed for high performance.",
                 tab_part_h3: "Our Partners", tab_part_p: "We work closely with global tech giants including Salesforce, SAP, AWS, and modern green technology alliances to deliver reliable enterprise solutions.",
-                tab_cont_h3: "Contact Us", cont_email: "<strong>Email:</strong> pspujari88@gmail.com", cont_phone: "<strong>Phone:</strong> +91 9716583334", cont_add: "<strong>Address:</strong> East Delhi, Delhi 110092",
-                form_name: "Name", form_email: "Email", form_msg: "Message", form_btn: "Send Message",
+                
+                tab_cont_h3: "Contact Us", 
+                cont_pin: "Laxmi Nagar, Delhi",
+                cont_phone: "<strong>Phone:</strong> 9716938334 / 8586888178", 
+                cont_email: "<strong>Email:</strong> pspujari88@gmail.com", 
+                cont_add: "<strong>Address:</strong> Laxmi Nagar, Delhi-110092",
+                form_name: "Name", form_email: "Email", form_mobile: "Mobile Number", form_msg: "Message", form_btn: "Send Message",
+                
                 tab_enq_h3: "Enquiry Form", tab_enq_p: "Submit your requirements for custom enterprise solutions, cloud integrations, or sustainability audits.",
                 tab_sup_h3: "24/7 Technical Support", tab_sup_p: "Our dedicated support team is available round-the-clock to handle system maintenance, patch updates, and site uptime.",
                 tab_car_h3: "Careers at Dhami Group", tab_car_p: "Join our dynamic green tech team! Send your updated CV to <strong>careers@dhamigroup.com</strong>.",
@@ -1239,6 +1389,7 @@
                 h_slide_web_title: "वेब डिजाइन और आईटी सपोर्ट", h_slide_web_desc: "आधुनिक डिजिटल अनुभव और सुरक्षा",
                 h_slide_env_title: "पर्यावरण परियोजनाएं", h_slide_env_desc: "हरित तकनीक और स्थिरता की पहल",
                 h_slide_dig_title: "व्यवसाय प्रक्रिया स्वचालन", h_slide_dig_desc: "स्मार्ट, विश्वसनीय और स्केलेबल आईटी समाधान",
+
                 tab_about_h3: "धामी ग्रुप के बारे में", 
                 tab_about_p1: "<strong>धामी ग्रुप</strong> आधुनिक औद्योगिक मानकों के अनुरूप टिकाऊ और पर्यावरण के अनुकूल इंजीनियरिंग और डिजिटल समाधान प्रदान करता है।",
                 tab_about_p2: "हम औद्योगिक, ईआरपी, क्लाउड और ऑटोमेशन परियोजनाओं में गुणवत्ता, सुरक्षा, अनुपालन और दीर्घकालिक मूल्य वितरण पर ध्यान केंद्रित करते हैं।",
@@ -1266,8 +1417,14 @@
 
                 tab_prod_h3: "हमारे उत्पाद", tab_prod_p: "उच्च प्रदर्शन के लिए डिज़ाइन किए गए हमारे नेक्स्ट-जेन डिजिटल कॉमर्स उत्पाद, ईआरपी टूलकिट और सस्टेनेबिलिटी ऑटोमेशन मॉड्यूल एक्सप्लोर करें।",
                 tab_part_h3: "हमारे भागीदार", tab_part_p: "हम विश्वसनीय एंटरप्राइज समाधान प्रदान करने के लिए सेल्सफोर्स, SAP, AWS और आधुनिक ग्रीन टेक्नोलॉजी गठबंधनों सहित वैश्विक तकनीकी दिग्गजों के साथ मिलकर काम करते हैं।",
-                tab_cont_h3: "संपर्क करें", cont_email: "<strong>ईमेल:</strong> pspujari88@gmail.com", cont_phone: "<strong>फ़ोन:</strong> +91 9716583334", cont_add: "<strong>पता:</strong> पूर्वी दिल्ली, दिल्ली 110092",
-                form_name: "नाम", form_email: "ईमेल", form_msg: "संदेश", form_btn: "संदेश भेजें",
+                
+                tab_cont_h3: "संपर्क करें", 
+                cont_pin: "लक्ष्मी नगर, दिल्ली",
+                cont_phone: "<strong>फ़ोन:</strong> 9716938334 / 8586888178", 
+                cont_email: "<strong>ईमेल:</strong> pspujari88@gmail.com", 
+                cont_add: "<strong>पता:</strong> लक्ष्मी नगर, दिल्ली-110092",
+                form_name: "नाम", form_email: "ईमेल", form_mobile: "मोबाइल नंबर", form_msg: "संदेश", form_btn: "संदेश भेजें",
+
                 tab_enq_h3: "पूछताछ फॉर्म", tab_enq_p: "कस्टम एंटरप्राइज़ समाधान, क्लाउड एकीकरण, या स्थिरता ऑडिट के लिए अपनी आवश्यकताएं सबमिट करें।",
                 tab_sup_h3: "24/7 तकनीकी सहायता", tab_sup_p: "हमारी समर्पित सहायता टीम सिस्टम रखरखाव, पैच अपडेट और साइट अपटाइम को संभालने के लिए चौबीसों घंटे उपलब्ध है।",
                 tab_car_h3: "धामी ग्रुप में करियर", tab_car_p: "हमारी डायनामिक ग्रीन टेक टीम में शामिल हों! अपना अपडेटेड CV <strong>careers@dhamigroup.com</strong> पर भेजें।",
@@ -1297,8 +1454,14 @@
                 
                 tab_prod_h3: "Nuestros Productos", tab_prod_p: "Explore nuestros productos de comercio digital de próxima generación.",
                 tab_part_h3: "Nuestros Socios", tab_part_p: "Trabajamos en estrecha colaboración con gigantes tecnológicos globales.",
-                tab_cont_h3: "Contáctenos", cont_email: "<strong>Correo:</strong> pspujari88@gmail.com", cont_phone: "<strong>Teléfono:</strong> +91 9716583334", cont_add: "<strong>Dirección:</strong> East Delhi, Delhi 110092",
-                form_name: "Nombre", form_email: "Correo Electrónico", form_msg: "Mensaje", form_btn: "Enviar Mensaje",
+                
+                tab_cont_h3: "Contáctenos", 
+                cont_pin: "Laxmi Nagar, Delhi",
+                cont_phone: "<strong>Teléfono:</strong> 9716938334 / 8586888178", 
+                cont_email: "<strong>Correo:</strong> pspujari88@gmail.com", 
+                cont_add: "<strong>Dirección:</strong> Laxmi Nagar, Delhi-110092",
+                form_name: "Nombre", form_email: "Correo", form_mobile: "Número de Móvil", form_msg: "Mensaje", form_btn: "Enviar Mensaje",
+
                 tab_enq_h3: "Formulario de Consulta", tab_enq_p: "Envíe sus requisitos para soluciones personalizadas.",
                 tab_sup_h3: "Soporte Técnico 24/7", tab_sup_p: "Nuestro equipo de soporte está disponible las 24 horas.",
                 tab_car_h3: "Carreras en Dhami Group", tab_car_p: "¡Únase a nuestro equipo! Envíe su CV a <strong>careers@dhamigroup.com</strong>.",
@@ -1328,8 +1491,14 @@
 
                 tab_prod_h3: "Nos Produits", tab_prod_p: "Découvrez nos produits de commerce numérique de nouvelle génération.",
                 tab_part_h3: "Nos Partenaires", tab_part_p: "Nous travaillons en étroite collaboration avec des géants mondiaux.",
-                tab_cont_h3: "Contactez-nous", cont_email: "<strong>E-mail :</strong> pspujari88@gmail.com", cont_phone: "<strong>Téléphone :</strong> +91 9716583334", cont_add: "<strong>Adresse :</strong> East Delhi, Delhi 110092",
-                form_name: "Nom", form_email: "E-mail", form_msg: "Message", form_btn: "Envoyer",
+                
+                tab_cont_h3: "Contactez-nous", 
+                cont_pin: "Laxmi Nagar, Delhi",
+                cont_email: "<strong>E-mail :</strong> pspujari88@gmail.com", 
+                cont_phone: "<strong>Téléphone :</strong> 9716938334 / 8586888178", 
+                cont_add: "<strong>Adresse :</strong> Laxmi Nagar, Delhi 110092",
+                form_name: "Nom", form_email: "E-mail", form_mobile: "Numéro de Mobile", form_msg: "Message", form_btn: "Envoyer",
+
                 tab_enq_h3: "Formulaire de Demande", tab_enq_p: "Soumettez vos besoins pour des solutions personnalisées.",
                 tab_sup_h3: "Support Technique 24/7", tab_sup_p: "Notre équipe de support dédiée est disponible 24h/24.",
                 tab_car_h3: "Carrières chez Dhami Group", tab_car_p: "Rejoignez notre équipe ! Envoyez votre CV à <strong>careers@dhamigroup.com</strong>.",
@@ -1359,8 +1528,14 @@
 
                 tab_prod_h3: "Unsere Produkte", tab_prod_p: "Entdecken Sie unsere hochmodernen Digital Commerce-Produkte.",
                 tab_part_h3: "Unsere Partner", tab_part_p: "Wir arbeiten eng mit globalen Technologiegiganten zusammen.",
-                tab_cont_h3: "Kontaktiere Uns", cont_email: "<strong>E-Mail:</strong> pspujari88@gmail.com", cont_phone: "<strong>Telefon:</strong> +91 9716583334", cont_add: "<strong>Adresse:</strong> East Delhi, Delhi 110092",
-                form_name: "Name", form_email: "E-Mail", form_msg: "Nachricht", form_btn: "Nachricht Senden",
+                
+                tab_cont_h3: "Kontaktiere Uns", 
+                cont_pin: "Laxmi Nagar, Delhi",
+                cont_email: "<strong>E-Mail:</strong> pspujari88@gmail.com", 
+                cont_phone: "<strong>Telefon:</strong> 9716938334 / 8586888178", 
+                cont_add: "<strong>Adresse:</strong> East Delhi, Delhi 110092",
+                form_name: "Name", form_email: "E-Mail", form_mobile: "Handynummer", form_msg: "Nachricht", form_btn: "Nachricht Senden",
+
                 tab_enq_h3: "Anfrageformular", tab_enq_p: "Reichen Sie Ihre Anforderungen für maßgeschneiderte Lösungen ein.",
                 tab_sup_h3: "24/7 Technischer Support", tab_sup_p: "Unser engagiertes Support-Team steht Ihnen rund um die Uhr zur Verfügung.",
                 tab_car_h3: "Karriere bei der Dhami Group", tab_car_p: "Senden Sie Ihren Lebenslauf an <strong>careers@dhamigroup.com</strong>.",
@@ -1390,8 +1565,14 @@
 
                 tab_prod_h3: "我们的产品", tab_prod_p: "探索我们专为高性能设计的新一代数字商务产品、ERP工具包以及可持续自动化模块。",
                 tab_part_h3: "我们的合作伙伴", tab_part_p: "我们与全球科技巨头紧密合作，提供可靠的企业解决方案。",
-                tab_cont_h3: "联系我们", cont_email: "<strong>电子邮件:</strong> pspujari88@gmail.com", cont_phone: "<strong>电话:</strong> +91 9716583334", cont_add: "<strong>地址:</strong> East Delhi, Delhi 110092",
-                form_name: "姓名", form_email: "电子邮件", form_msg: "信息", form_btn: "发送信息",
+                
+                tab_cont_h3: "联系我们", 
+                cont_pin: "德里，拉克西米纳加尔",
+                cont_email: "<strong>电子邮件:</strong> pspujari88@gmail.com", 
+                cont_phone: "<strong>电话:</strong> 9716938334 / 8586888178", 
+                cont_add: "<strong>地址:</strong> Laxmi Nagar, Delhi 110092",
+                form_name: "姓名", form_email: "电子邮件", form_mobile: "手机号码", form_msg: "信息", form_btn: "发送信息",
+
                 tab_enq_h3: "咨询表格", tab_enq_p: "提交您对定制企业解决方案、云集成或可持续性审计的需求。",
                 tab_sup_h3: "全天候技术支持", tab_sup_p: "我们的专职支持团队全天候全天候为您处理系统维护、补丁更新和网站运行。",
                 tab_car_h3: "Dhami Group 职业发展", tab_car_p: "加入我们充满活力的绿色科技团队！将您的最新简历发送至 <strong>careers@dhamigroup.com</strong>.",
