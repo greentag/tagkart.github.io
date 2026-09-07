@@ -891,6 +891,14 @@
         .admin-profile { text-align: center; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
         .admin-profile i { font-size: 50px; color: #a3f3c4; margin-bottom: 10px; }
         
+        /* Updated Admin Name CSS to prevent overflow */
+        #adminNameDisplay {
+            word-wrap: break-word;
+            padding: 0 10px;
+            font-size: 16px;
+            line-height: 1.3;
+        }
+
         .admin-menu a {
             display: block; padding: 15px 25px; color: #ccc; text-decoration: none; font-size: 15px; transition: 0.3s; cursor: pointer;
         }
@@ -1015,11 +1023,11 @@
         <div class="login-box">
             <i class="fa-solid fa-xmark close-modal" onclick="closeLoginModal()"></i>
             <h2>Secure Portal Login</h2>
-            <p style="text-align: center; font-size: 12px; color: #666; margin-bottom: 20px;">Login with your registered ID</p>
+            <p style="text-align: center; font-size: 12px; color: #666; margin-bottom: 20px;">Login with your registered Email ID</p>
             
             <div class="input-group">
                 <i class="fa-solid fa-envelope"></i>
-                <input type="email" id="loginId" placeholder="Login ID" required>
+                <input type="email" id="loginId" placeholder="Email Address" required>
             </div>
             <div class="input-group">
                 <i class="fa-solid fa-lock"></i>
@@ -1322,13 +1330,13 @@
                 <div class="admin-sidebar">
                     <div class="admin-profile">
                         <i class="fa-solid fa-user-shield"></i>
-                        <h3 id="adminNameDisplay">Admin User</h3>
-                        <p style="font-size: 12px; color: #a3f3c4;">System Administrator</p>
+                        <h3 id="adminNameDisplay">Loading...</h3>
+                        <p id="adminRoleDisplay" style="font-size: 12px; color: #a3f3c4;">Checking Role...</p>
                     </div>
                     <div class="admin-menu">
-                        <a id="nav-manage-prod" class="active" onclick="switchAdminTab('manage-prod')"><i class="fa-solid fa-boxes-stacked"></i> Manage Products</a>
-                        <a id="nav-manage-car" onclick="switchAdminTab('manage-car')"><i class="fa-solid fa-briefcase"></i> Manage Careers</a>
-                        <a id="nav-manage-user" onclick="switchAdminTab('manage-user')"><i class="fa-solid fa-users-gear"></i> Manage Users</a>
+                        <a id="nav-manage-prod" class="active" onclick="switchAdminTab('manage-prod')" style="display:none;"><i class="fa-solid fa-boxes-stacked"></i> Manage Products</a>
+                        <a id="nav-manage-car" onclick="switchAdminTab('manage-car')" style="display:none;"><i class="fa-solid fa-briefcase"></i> Manage Careers</a>
+                        <a id="nav-manage-user" onclick="switchAdminTab('manage-user')" style="display:none;"><i class="fa-solid fa-users-gear"></i> Manage Users</a>
                     </div>
                 </div>
 
@@ -1416,10 +1424,46 @@
                     <!-- MANAGE USER PERMISSIONS -->
                     <div id="admin-manage-user" class="admin-section">
                         <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">User Management (Cloud)</h2>
+                        
+                        <!-- NEW: CREATE USERS DIRECTLY FROM DASHBOARD -->
                         <div class="admin-card">
-                            <h4><i class="fa-solid fa-users"></i> Platform Admin Note</h4>
-                            <p style="font-size: 14px; color: #555;">Users are securely managed via Google Firebase Authentication. To create new users or permanently change passwords, please visit your <a href="https://console.firebase.google.com/" target="_blank" style="color:#007bb5;">Firebase Console</a>.</p>
+                            <h4><i class="fa-solid fa-user-plus"></i> Create New User</h4>
+                            <p style="font-size: 13px; color: #555; margin-bottom: 15px;">Add team members to access this dashboard directly. Firebase will sync automatically.</p>
+                            <div class="form-grid">
+                                <input type="text" id="addUserName" placeholder="Full Name (e.g. Prakash Dhami)">
+                                <input type="email" id="addUserEmail" placeholder="Email Address">
+                                <input type="password" id="addUserPass" placeholder="Password (Min 6 chars)">
+                                <select id="addUserRole">
+                                    <option value="Only Manage Product">Only Manage Product</option>
+                                    <option value="Only Manage Career">Only Manage Career</option>
+                                    <option value="Manager - Both">Manage Both (Product & Career)</option>
+                                    <option value="System Administrator">System Administrator (Full Access)</option>
+                                </select>
+                            </div>
+                            <button class="action-btn" onclick="createNewUser()"><i class="fa-solid fa-plus"></i> Create & Sync User</button>
                         </div>
+
+                        <!-- NEW: SHOW ALL REGISTERED USERS -->
+                        <div class="admin-card">
+                            <h4><i class="fa-solid fa-users"></i> Registered Team Members</h4>
+                            <div style="overflow-x: auto;">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Full Name</th>
+                                            <th>Email ID</th>
+                                            <th>Assigned Role</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="userTbody">
+                                        <!-- Loaded from Firebase -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
 
                 </div>
@@ -1453,7 +1497,7 @@
     <!-- JAVASCRIPT LOGIC (FIREBASE + UI) -->
     <script>
         // ====================================================
-        // 1. FIREBASE CONFIGURATION 
+        // 1. FIREBASE CONFIGURATION & INITIALIZATION
         // ====================================================
         const firebaseConfig = {
             apiKey: "AIzaSyD0sQgLV32_ZoB26eYzBY_Elv8JKa4v5wQ",
@@ -1464,20 +1508,59 @@
             appId: "1:230272575666:web:f88a092b9d2a1beb2941ab"
         };
 
-        // Initialize Firebase
+        // Main App Initialization
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Listen for auth state changes
+        // SECONDARY APP INITIALIZATION (Trick for creating users without logging out)
+        const secondaryApp = firebase.initializeApp(firebaseConfig, "Secondary");
+
+        // Listen for auth state changes & Manage Roles
         auth.onAuthStateChanged(user => {
             if (user) {
                 // User is signed in
                 document.getElementById('loginNavBtn').style.display = 'none';
                 document.getElementById('logoutNavBtn').style.display = 'inline-block';
-                document.getElementById('adminNameDisplay').innerText = user.email;
+                
+                // STEP 1: Default Backup Name (fixes overflow by showing name part only)
+                let emailPrefix = user.email.split('@')[0];
+                let defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
+                
+                document.getElementById('adminNameDisplay').innerText = defaultName;
+                document.getElementById('adminRoleDisplay').innerText = "Loading Role...";
+
+                // Hide all menus by default until role is checked
+                document.getElementById('nav-manage-prod').style.display = 'none';
+                document.getElementById('nav-manage-car').style.display = 'none';
+                document.getElementById('nav-manage-user').style.display = 'none';
+
+                // STEP 2: Check Database for Real Name and Role
+                db.collection("users").where("email", "==", user.email).get().then((querySnapshot) => {
+                    let userRole = "Standard User";
+                    let userName = defaultName;
+
+                    if (!querySnapshot.empty) {
+                        // User exists in Database
+                        let userData = querySnapshot.docs[0].data();
+                        userName = userData.name;
+                        userRole = userData.role;
+                    } else if (user.email === 'pspujari88@gmail.com' || user.email === 'admin@dhamigroup.com') {
+                        // Master Admin Fallback (in case db is empty)
+                        userRole = "System Administrator";
+                        userName = "Prakash Dhami (Admin)";
+                    }
+
+                    document.getElementById('adminNameDisplay').innerText = userName;
+                    document.getElementById('adminRoleDisplay').innerText = userRole;
+
+                    // Execute Role Based Access Control (RBAC)
+                    applyPermissions(userRole);
+                });
+
                 fetchProducts();
                 fetchJobs();
+                fetchUsers();
             } else {
                 // User is signed out
                 document.getElementById('loginNavBtn').style.display = 'inline-block';
@@ -1486,6 +1569,44 @@
             // Always fetch public data for standard users
             fetchPublicData();
         });
+
+        // ====================================================
+        // ROLE BASED ACCESS CONTROL (RBAC) LOGIC
+        // ====================================================
+        function applyPermissions(role) {
+            let navProd = document.getElementById('nav-manage-prod');
+            let navCar = document.getElementById('nav-manage-car');
+            let navUser = document.getElementById('nav-manage-user');
+
+            if (role === "System Administrator") {
+                // Admin sees everything
+                navProd.style.display = 'block';
+                navCar.style.display = 'block';
+                navUser.style.display = 'block';
+                switchAdminTab('manage-prod');
+            } 
+            else if (role === "Manager - Both") {
+                // Sees Products & Careers, NO User Management
+                navProd.style.display = 'block';
+                navCar.style.display = 'block';
+                navUser.style.display = 'none';
+                switchAdminTab('manage-prod');
+            } 
+            else if (role === "Only Manage Product") {
+                // Only sees Products
+                navProd.style.display = 'block';
+                navCar.style.display = 'none';
+                navUser.style.display = 'none';
+                switchAdminTab('manage-prod');
+            } 
+            else if (role === "Only Manage Career") {
+                // Only sees Careers
+                navProd.style.display = 'none';
+                navCar.style.display = 'block';
+                navUser.style.display = 'none';
+                switchAdminTab('manage-car');
+            }
+        }
 
 
         // ====================================================
@@ -1704,9 +1825,73 @@
             });
         }
 
+        // --- Manage Users (Create without logout) ---
+        function createNewUser() {
+            let name = document.getElementById('addUserName').value;
+            let email = document.getElementById('addUserEmail').value;
+            let pass = document.getElementById('addUserPass').value;
+            let role = document.getElementById('addUserRole').value;
+
+            if(!name || !email || !pass) return alert("Please fill all details!");
+            if(pass.length < 6) return alert("Password must be at least 6 characters.");
+
+            // Use Secondary App to create user so main Admin does not get logged out
+            secondaryApp.auth().createUserWithEmailAndPassword(email, pass)
+            .then((userCredential) => {
+                
+                // Immediately sign out from secondary app
+                secondaryApp.auth().signOut();
+                
+                // Save user details to Firestore for Table View
+                db.collection("users").doc(userCredential.user.uid).set({
+                    name: name,
+                    email: email,
+                    role: role,
+                    status: "Active",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    alert("New User created and assigned role: " + role);
+                    document.getElementById('addUserName').value = '';
+                    document.getElementById('addUserEmail').value = '';
+                    document.getElementById('addUserPass').value = '';
+                });
+
+            })
+            .catch((error) => {
+                alert("Error: " + error.message);
+            });
+        }
+
+        function fetchUsers() {
+            db.collection("users").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+                let tbody = document.getElementById('userTbody');
+                if(!tbody) return;
+                tbody.innerHTML = '';
+                snapshot.forEach(doc => {
+                    let u = doc.data();
+                    let badgeClass = u.status === 'Active' ? 'status-active' : 'status-inactive';
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${u.name}</strong></td>
+                            <td>${u.email}</td>
+                            <td><span style="color:#007bb5; font-weight:600;">${u.role}</span></td>
+                            <td><span class="status-badge ${badgeClass}">${u.status}</span></td>
+                            <td>
+                                <button class="btn-small btn-delete" onclick="deleteDoc('users', '${doc.id}')"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+        }
+
         // Generic Delete
         function deleteDoc(collectionName, docId) {
-            if(confirm("Permanently delete from Cloud Database?")) {
+            let msg = "Permanently delete from Cloud Database?";
+            if(collectionName === 'users') {
+                msg = "Remove user's Role and Access from Dashboard?\n(Note: Complete email deletion requires Firebase Console)";
+            }
+            if(confirm(msg)) {
                 db.collection(collectionName).doc(docId).delete();
             }
         }
