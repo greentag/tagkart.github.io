@@ -950,6 +950,7 @@
     </style>
 </head>
 <body>
+    <div id="websiteView">
 
     <div class="leaf-container">
         <i class="fa-solid fa-leaf leaf"></i>
@@ -1020,26 +1021,31 @@
     <!-- FIREBASE LOGIN MODALS (POPUP)                  -->
     <!-- ============================================== -->
     <div class="modal-overlay" id="loginModal">
-        <div class="login-box">
-            <i class="fa-solid fa-xmark close-modal" onclick="closeLoginModal()"></i>
-            <h2>Secure Portal Login</h2>
-            <p style="text-align: center; font-size: 12px; color: #666; margin-bottom: 20px;">Login with your registered Email ID</p>
-            
-            <div class="input-group">
-                <i class="fa-solid fa-envelope"></i>
-                <input type="email" id="loginId" placeholder="Email Address" required>
-            </div>
-            <div class="input-group">
-                <i class="fa-solid fa-lock"></i>
-                <input type="password" id="loginPass" placeholder="Password" required>
-            </div>
-            
-            <a class="forgot-link" onclick="openForgotModal()">Forgot Password?</a>
-            
-            <button onclick="handleLogin()">Login to Dashboard</button>
-            <div class="login-error" id="loginError">Invalid Credentials.</div>
+    <div class="login-box">
+        <i class="fa-solid fa-xmark close-modal" onclick="closeLoginModal()"></i>
+        <h2>Secure Portal Login</h2>
+        <p style="text-align: center; font-size: 12px; color: #666; margin-bottom: 20px;">Login with your registered Email ID</p>
+        
+        <div class="input-group">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" id="loginId" placeholder="Email Address" required>
         </div>
+        <div class="input-group">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="loginPass" placeholder="Password" required>
+        </div>
+        
+        <!-- NEW CAPTCHA BOX -->
+        <div class="captcha-box" style="display: flex; justify-content: space-between; align-items: center; background: #f0f7f3; padding: 10px 15px; border-radius: 6px; border: 1px dashed #1b8a4f; margin-bottom: 20px;">
+            <span id="captchaQuestion" style="font-weight: 700; color: #0d5c34; font-size: 16px; letter-spacing: 2px;"></span>
+            <input type="number" id="captchaAnswer" placeholder="Answer" style="width: 100px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; text-align: center; font-weight: 600;" required>
+        </div>
+        
+        <a class="forgot-link" onclick="openForgotModal()">Forgot Password?</a>
+        <button onclick="handleLogin()">Verify & Login</button>
+        <div class="login-error" id="loginError">Invalid Credentials.</div>
     </div>
+</div>
 
     <!-- Forgot Password Modal -->
     <div class="modal-overlay" id="forgotPassModal">
@@ -1324,30 +1330,35 @@
         <!-- ============================================== -->
         <!-- SECURE FIREBASE ADMIN DASHBOARD                -->
         <!-- ============================================== -->
-        <div id="panel-admin" class="tab-panel" style="padding: 0; background: #f8fbf9;">
-            <div class="admin-layout">
+        <div id="adminPortal" style="display: none; min-height: 100vh; background: #f8fbf9;">
+            <div class="admin-topbar" style="background: #056664; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                <h2><i class="fa-solid fa-earth-americas"></i> Dhami Group Cloud Portal</h2>
+                <button onclick="logoutUser()" style="background: #e34f26; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>
+            </div>
+            
+            <div class="admin-layout" style="display: flex; min-height: calc(100vh - 60px);">
                 <!-- Sidebar -->
-                <div class="admin-sidebar">
-                    <div class="admin-profile">
-                        <i class="fa-solid fa-user-shield"></i>
-                        <h3 id="adminNameDisplay">Loading...</h3>
+                <div class="admin-sidebar" style="width: 260px; background: #0d1e15; color: #fff; padding: 30px 0; display: flex; flex-direction: column;">
+                    <div class="admin-profile" style="text-align: center; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px;">
+                        <i class="fa-solid fa-user-shield" style="font-size: 50px; color: #a3f3c4; margin-bottom: 10px;"></i>
+                        <h3 id="adminNameDisplay" style="word-wrap: break-word; padding: 0 15px; font-size: 16px;">Loading...</h3>
                         <p id="adminRoleDisplay" style="font-size: 12px; color: #a3f3c4;">Checking Role...</p>
                     </div>
                     <div class="admin-menu">
-                        <a id="nav-manage-prod" class="active" onclick="switchAdminTab('manage-prod')" style="display:none;"><i class="fa-solid fa-boxes-stacked"></i> Manage Products</a>
-                        <a id="nav-manage-car" onclick="switchAdminTab('manage-car')" style="display:none;"><i class="fa-solid fa-briefcase"></i> Manage Careers</a>
-                        <a id="nav-manage-user" onclick="switchAdminTab('manage-user')" style="display:none;"><i class="fa-solid fa-users-gear"></i> Manage Users</a>
+                        <a id="nav-manage-prod" class="active" onclick="switchAdminTab('manage-prod')" style="display:none; padding: 15px 25px; color: #ccc; cursor: pointer; text-decoration: none;"><i class="fa-solid fa-boxes-stacked"></i> Manage Products</a>
+                        <a id="nav-manage-car" onclick="switchAdminTab('manage-car')" style="display:none; padding: 15px 25px; color: #ccc; cursor: pointer; text-decoration: none;"><i class="fa-solid fa-briefcase"></i> Manage Careers</a>
+                        <a id="nav-manage-user" onclick="switchAdminTab('manage-user')" style="display:none; padding: 15px 25px; color: #ccc; cursor: pointer; text-decoration: none;"><i class="fa-solid fa-users-gear"></i> Manage Users</a>
                     </div>
                 </div>
 
                 <!-- Admin Content Area -->
-                <div class="admin-content">
+                <div class="admin-content" style="flex: 1; padding: 40px; background: #ffffff;">
                     
                     <!-- MANAGE PRODUCTS -->
                     <div id="admin-manage-prod" class="admin-section active">
                         <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">Manage Products (Cloud)</h2>
                         <div class="admin-card">
-                            <h4><i class="fa-solid fa-plus-circle"></i> Add New Product</h4>
+                            <h4><i class="fa-solid fa-plus-circle"></i> Add / Edit Product</h4>
                             <div class="form-grid">
                                 <input type="text" id="addProdName" placeholder="Product Name">
                                 <select id="addProdCat">
@@ -1360,7 +1371,7 @@
                             </div>
                             <textarea id="addProdDesc" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;" rows="2" placeholder="Product Related Information..."></textarea>
                             <div>
-                                <button class="action-btn" onclick="addNewProduct()">Save Product</button>
+                                <button id="btnSaveProd" class="action-btn" onclick="saveProduct()">Save Product</button>
                                 <label style="margin-left: 15px; font-weight: 600;"><input type="checkbox" id="addProdHidden"> Hide from Public View</label>
                             </div>
                         </div>
@@ -1387,18 +1398,18 @@
                     </div>
 
                     <!-- MANAGE CAREERS -->
-                    <div id="admin-manage-car" class="admin-section">
+                    <div id="admin-manage-car" class="admin-section" style="display: none;">
                         <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">Manage Careers (Cloud)</h2>
                         <div class="admin-card">
-                            <h4><i class="fa-solid fa-file-signature"></i> Post Job Vacancy</h4>
+                            <h4><i class="fa-solid fa-file-signature"></i> Post / Edit Job Vacancy</h4>
                             <div class="form-grid">
                                 <input type="text" id="addJobTitle" placeholder="Designation (e.g. Salesforce Admin)">
-                                <input type="number" id="addJobReq" placeholder="Total Requirement (No. of positions)">
+                                <input type="number" id="addJobReq" placeholder="Total Requirement">
                                 <input type="text" id="addJobExp" placeholder="Experience Required">
                                 <input type="text" id="addJobLoc" placeholder="Location">
                             </div>
                             <textarea id="addJobDesc" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;" rows="4" placeholder="Detailed Job Description..."></textarea>
-                            <button class="action-btn" style="background: #e34f26;" onclick="addNewJob()"><i class="fa-solid fa-upload"></i> Post Job</button>
+                            <button id="btnSaveJob" class="action-btn" style="background: #e34f26;" onclick="saveJob()"><i class="fa-solid fa-upload"></i> Post Job</button>
                         </div>
                         <div class="admin-card">
                             <h4><i class="fa-solid fa-briefcase"></i> Active Job Postings</h4>
@@ -1422,15 +1433,13 @@
                     </div>
 
                     <!-- MANAGE USER PERMISSIONS -->
-                    <div id="admin-manage-user" class="admin-section">
+                    <div id="admin-manage-user" class="admin-section" style="display: none;">
                         <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">User Management (Cloud)</h2>
-                        
-                        <!-- NEW: CREATE USERS DIRECTLY FROM DASHBOARD -->
                         <div class="admin-card">
-                            <h4><i class="fa-solid fa-user-plus"></i> Create New User</h4>
+                            <h4><i class="fa-solid fa-user-plus"></i> Create / Update User</h4>
                             <p style="font-size: 13px; color: #555; margin-bottom: 15px;">Add team members to access this dashboard directly. Firebase will sync automatically.</p>
                             <div class="form-grid">
-                                <input type="text" id="addUserName" placeholder="Full Name (e.g. Prakash Dhami)">
+                                <input type="text" id="addUserName" placeholder="Full Name">
                                 <input type="email" id="addUserEmail" placeholder="Email Address">
                                 <input type="password" id="addUserPass" placeholder="Password (Min 6 chars)">
                                 <select id="addUserRole">
@@ -1440,10 +1449,9 @@
                                     <option value="System Administrator">System Administrator (Full Access)</option>
                                 </select>
                             </div>
-                            <button class="action-btn" onclick="createNewUser()"><i class="fa-solid fa-plus"></i> Create & Sync User</button>
+                            <button id="btnSaveUser" class="action-btn" onclick="saveUser()"><i class="fa-solid fa-plus"></i> Create & Sync User</button>
                         </div>
 
-                        <!-- NEW: SHOW ALL REGISTERED USERS -->
                         <div class="admin-card">
                             <h4><i class="fa-solid fa-users"></i> Registered Team Members</h4>
                             <div style="overflow-x: auto;">
@@ -1463,7 +1471,6 @@
                                 </table>
                             </div>
                         </div>
-
                     </div>
 
                 </div>
@@ -1483,6 +1490,7 @@
         </div>
         <p data-i18n="footer_text">&copy; 2026 Dhami Digital Solutions. All Rights Reserved.</p>
     </footer>
+    </div> <!-- END websiteView -->
 
     <!-- WHATSAPP CHAT BUTTON -->
     <a href="https://wa.me/?text=Hello%20Dhami%20Group,%20I%20want%20to%20know%20more." class="chat-btn" target="_blank">
@@ -1508,105 +1516,141 @@
             appId: "1:230272575666:web:f88a092b9d2a1beb2941ab"
         };
 
-        // Main App Initialization
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // SECONDARY APP INITIALIZATION (Trick for creating users without logging out)
-        const secondaryApp = firebase.initializeApp(firebaseConfig, "Secondary");
+        let secondaryApp;
+        if (firebase.apps.length < 2) { secondaryApp = firebase.initializeApp(firebaseConfig, "Secondary"); } 
+        else { secondaryApp = firebase.app("Secondary"); }
 
-        // Listen for auth state changes & Manage Roles
+        let captchaCorrect = 0;
+        function generateCaptcha() {
+            let n1 = Math.floor(Math.random() * 10) + 1; let n2 = Math.floor(Math.random() * 10) + 1;
+            captchaCorrect = n1 + n2;
+            let el = document.getElementById('captchaQuestion');
+            if(el) el.innerText = `${n1} + ${n2} = ?`;
+            let a = document.getElementById('captchaAnswer');
+            if(a) a.value = '';
+        }
+
         auth.onAuthStateChanged(user => {
             if (user) {
-                // User is signed in
-                document.getElementById('loginNavBtn').style.display = 'none';
-                document.getElementById('logoutNavBtn').style.display = 'inline-block';
+                let wv = document.getElementById('websiteView'); if(wv) wv.style.display = 'none';
+                let portal = document.getElementById('adminPortal'); if(portal) portal.style.display = 'block';
                 
-                // STEP 1: Default Backup Name (fixes overflow by showing name part only)
-                let emailPrefix = user.email.split('@')[0];
-                let defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
-                
+                let defaultName = user.email.split('@')[0];
                 document.getElementById('adminNameDisplay').innerText = defaultName;
                 document.getElementById('adminRoleDisplay').innerText = "Loading Role...";
 
-                // Hide all menus by default until role is checked
                 document.getElementById('nav-manage-prod').style.display = 'none';
                 document.getElementById('nav-manage-car').style.display = 'none';
                 document.getElementById('nav-manage-user').style.display = 'none';
 
-                // STEP 2: Check Database for Real Name and Role
-                db.collection("users").where("email", "==", user.email).get().then((querySnapshot) => {
-                    let userRole = "Standard User";
-                    let userName = defaultName;
-
-                    if (!querySnapshot.empty) {
-                        // User exists in Database
-                        let userData = querySnapshot.docs[0].data();
-                        userName = userData.name;
-                        userRole = userData.role;
+                db.collection("users").where("email", "==", user.email).get().then((snap) => {
+                    let uRole = "Standard User"; let uName = defaultName;
+                    if (!snap.empty) {
+                        let data = snap.docs[0].data(); uName = data.name; uRole = data.role;
                     } else if (user.email === 'pspujari88@gmail.com' || user.email === 'admin@dhamigroup.com') {
-                        // Master Admin Fallback (in case db is empty)
-                        userRole = "System Administrator";
-                        userName = "Prakash Dhami (Admin)";
+                        uRole = "System Administrator"; uName = "Prakash Dhami";
                     }
-
-                    document.getElementById('adminNameDisplay').innerText = userName;
-                    document.getElementById('adminRoleDisplay').innerText = userRole;
-
-                    // Execute Role Based Access Control (RBAC)
-                    applyPermissions(userRole);
+                    document.getElementById('adminNameDisplay').innerText = uName;
+                    document.getElementById('adminRoleDisplay').innerText = uRole;
+                    applyPermissions(uRole);
                 });
-
-                fetchProducts();
-                fetchJobs();
-                fetchUsers();
+                fetchProducts(); fetchJobs(); fetchUsers();
             } else {
-                // User is signed out
-                document.getElementById('loginNavBtn').style.display = 'inline-block';
-                document.getElementById('logoutNavBtn').style.display = 'none';
+                let wv = document.getElementById('websiteView'); if(wv) wv.style.display = 'block';
+                let portal = document.getElementById('adminPortal'); if(portal) portal.style.display = 'none';
             }
-            // Always fetch public data for standard users
             fetchPublicData();
         });
 
-        // ====================================================
-        // ROLE BASED ACCESS CONTROL (RBAC) LOGIC
-        // ====================================================
         function applyPermissions(role) {
-            let navProd = document.getElementById('nav-manage-prod');
-            let navCar = document.getElementById('nav-manage-car');
-            let navUser = document.getElementById('nav-manage-user');
+            document.getElementById('nav-manage-prod').style.display = 'none';
+            document.getElementById('nav-manage-car').style.display = 'none';
+            document.getElementById('nav-manage-user').style.display = 'none';
 
             if (role === "System Administrator") {
-                // Admin sees everything
-                navProd.style.display = 'block';
-                navCar.style.display = 'block';
-                navUser.style.display = 'block';
+                document.getElementById('nav-manage-prod').style.display = 'block'; document.getElementById('nav-manage-car').style.display = 'block'; document.getElementById('nav-manage-user').style.display = 'block';
                 switchAdminTab('manage-prod');
-            } 
-            else if (role === "Manager - Both") {
-                // Sees Products & Careers, NO User Management
-                navProd.style.display = 'block';
-                navCar.style.display = 'block';
-                navUser.style.display = 'none';
+            } else if (role === "Manager - Both") {
+                document.getElementById('nav-manage-prod').style.display = 'block'; document.getElementById('nav-manage-car').style.display = 'block';
                 switchAdminTab('manage-prod');
-            } 
-            else if (role === "Only Manage Product") {
-                // Only sees Products
-                navProd.style.display = 'block';
-                navCar.style.display = 'none';
-                navUser.style.display = 'none';
-                switchAdminTab('manage-prod');
-            } 
-            else if (role === "Only Manage Career") {
-                // Only sees Careers
-                navProd.style.display = 'none';
-                navCar.style.display = 'block';
-                navUser.style.display = 'none';
-                switchAdminTab('manage-car');
+            } else if (role === "Only Manage Product") {
+                document.getElementById('nav-manage-prod').style.display = 'block'; switchAdminTab('manage-prod');
+            } else if (role === "Only Manage Career") {
+                document.getElementById('nav-manage-car').style.display = 'block'; switchAdminTab('manage-car');
             }
         }
+
+        function switchAdminTab(id) { document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none'); document.getElementById('admin-' + id).style.display = 'block'; document.querySelectorAll('.admin-menu a').forEach(a => a.classList.remove('active')); document.getElementById('nav-'+id).classList.add('active'); }
+
+        function handleLogin() {
+            let email = document.getElementById('loginId').value; let pass = document.getElementById('loginPass').value; let ans = parseInt(document.getElementById('captchaAnswer').value);
+            if(!email || !pass) return alert("Enter email/password.");
+            if(ans !== captchaCorrect) { document.getElementById('loginError').style.display = 'block'; document.getElementById('loginError').innerText = "Incorrect Captcha!"; generateCaptcha(); return; }
+            auth.signInWithEmailAndPassword(email, pass).then(() => { closeLoginModal(); }).catch((err) => { document.getElementById('loginError').style.display = 'block'; document.getElementById('loginError').innerText = err.message; generateCaptcha(); });
+        }
+        function logoutUser() { auth.signOut().then(() => window.location.reload()); }
+        function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; generateCaptcha(); }
+        function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
+
+        // PRODUCTS CRUD
+        let editProdId = null;
+        function editProduct(id, name, cat, qty, isHidden) {
+            editProdId = id; document.getElementById('addProdName').value = name; document.getElementById('addProdCat').value = cat; document.getElementById('addProdQty').value = qty; document.getElementById('addProdHidden').checked = isHidden; document.getElementById('btnSaveProd').innerText = "Update Product"; window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function saveProduct() {
+            let name = document.getElementById('addProdName').value; let cat = document.getElementById('addProdCat').value; let qty = document.getElementById('addProdQty').value; let isHidden = document.getElementById('addProdHidden').checked;
+            if(!name || !qty) return; let data = { name: name, category: cat, qty: qty, status: isHidden ? "Hidden" : "Public" };
+            if(editProdId) { db.collection("products").doc(editProdId).update(data).then(() => { alert("Updated!"); editProdId = null; document.getElementById('btnSaveProd').innerText = "Save Product"; document.getElementById('addProdName').value = ''; document.getElementById('addProdQty').value = ''; });
+            } else { data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); db.collection("products").add(data).then(() => { alert("Saved!"); document.getElementById('addProdName').value = ''; document.getElementById('addProdQty').value = ''; }); }
+        }
+        function fetchProducts() {
+            db.collection("products").orderBy("createdAt", "desc").onSnapshot((snap) => {
+                let t = document.getElementById('prodTbody'); if(!t) return; t.innerHTML = '';
+                snap.forEach(doc => { let p = doc.data(); let safeName = p.name ? p.name.replace(/'/g, "\\'") : ""; t.innerHTML += `<tr><td style="padding:10px; border-bottom:1px solid #ccc;">${p.name}</td><td style="border-bottom:1px solid #ccc;">${p.category}</td><td style="border-bottom:1px solid #ccc;">${p.qty}</td><td style="border-bottom:1px solid #ccc;">${p.status}</td><td style="border-bottom:1px solid #ccc;"><button style="background:#007bb5; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;" onclick="editProduct('${doc.id}', '${safeName}', '${p.category}', '${p.qty}', ${p.status==='Hidden'})"><i class="fa-solid fa-pen"></i></button> <button style="background:#e34f26; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;" onclick="deleteDoc('products', '${doc.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; });
+            });
+        }
+
+        // CAREERS CRUD
+        let editJobId = null;
+        function editJob(id, title, req, exp) { editJobId = id; document.getElementById('addJobTitle').value = title; document.getElementById('addJobReq').value = req; document.getElementById('addJobExp').value = exp; document.getElementById('btnSaveJob').innerText = "Update Job"; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function saveJob() {
+            let title = document.getElementById('addJobTitle').value; let req = document.getElementById('addJobReq').value; let exp = document.getElementById('addJobExp').value;
+            if(!title || !req) return; let data = { title: title, openings: req, exp: exp, status: "Active" };
+            if(editJobId) { db.collection("jobs").doc(editJobId).update(data).then(() => { alert("Updated!"); editJobId = null; document.getElementById('btnSaveJob').innerText = "Post Job"; document.getElementById('addJobTitle').value = ''; document.getElementById('addJobReq').value = ''; });
+            } else { data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); db.collection("jobs").add(data).then(() => { alert("Posted!"); document.getElementById('addJobTitle').value = ''; document.getElementById('addJobReq').value = ''; }); }
+        }
+        function fetchJobs() {
+            db.collection("jobs").orderBy("createdAt", "desc").onSnapshot((snap) => {
+                let t = document.getElementById('jobTbody'); if(!t) return; t.innerHTML = '';
+                snap.forEach(doc => { let j = doc.data(); let safeTitle = j.title ? j.title.replace(/'/g, "\\'") : ""; t.innerHTML += `<tr><td style="padding:10px; border-bottom:1px solid #ccc;">${j.title}</td><td style="border-bottom:1px solid #ccc;">${j.openings}</td><td style="border-bottom:1px solid #ccc;">${j.exp}</td><td style="border-bottom:1px solid #ccc;">${j.status}</td><td style="border-bottom:1px solid #ccc;"><button style="background:#007bb5; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;" onclick="editJob('${doc.id}', '${safeTitle}', '${j.openings}', '${j.exp}')"><i class="fa-solid fa-pen"></i></button> <button style="background:#e34f26; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;" onclick="deleteDoc('jobs', '${doc.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; });
+            });
+        }
+
+        // USERS CRUD
+        let editUserId = null;
+        function editUser(id, name, email, role) { editUserId = id; document.getElementById('addUserName').value = name; document.getElementById('addUserEmail').value = email; document.getElementById('addUserEmail').disabled = true; document.getElementById('addUserPass').disabled = true; document.getElementById('addUserPass').placeholder = "Disabled"; document.getElementById('addUserRole').value = role; document.getElementById('btnSaveUser').innerText = "Update User Role"; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function saveUser() {
+            let name = document.getElementById('addUserName').value; let email = document.getElementById('addUserEmail').value; let pass = document.getElementById('addUserPass').value; let role = document.getElementById('addUserRole').value;
+            if(!name || (!editUserId && (!email || !pass))) return;
+            if(editUserId) { db.collection("users").doc(editUserId).update({ name: name, role: role }).then(() => { alert("Updated!"); editUserId = null; document.getElementById('btnSaveUser').innerText = "Create User"; document.getElementById('addUserName').value = ''; document.getElementById('addUserEmail').value = ''; document.getElementById('addUserPass').value = ''; document.getElementById('addUserEmail').disabled = false; document.getElementById('addUserPass').disabled = false; });
+            } else {
+                if(pass.length < 6) return alert("Min 6 chars.");
+                secondaryApp.auth().createUserWithEmailAndPassword(email, pass).then((cred) => {
+                    secondaryApp.auth().signOut(); db.collection("users").doc(cred.user.uid).set({ name: name, email: email, role: role, status: "Active", createdAt: firebase.firestore.FieldValue.serverTimestamp() }).then(() => { alert("User Created!"); document.getElementById('addUserName').value = ''; document.getElementById('addUserEmail').value = ''; document.getElementById('addUserPass').value = ''; });
+                }).catch(err => alert(err.message));
+            }
+        }
+        function fetchUsers() {
+            db.collection("users").orderBy("createdAt", "desc").onSnapshot((snap) => {
+                let t = document.getElementById('userTbody'); if(!t) return; t.innerHTML = '';
+                snap.forEach(doc => { let u = doc.data(); let safeName = u.name ? u.name.replace(/'/g, "\\'") : ""; t.innerHTML += `<tr><td style="padding:10px; border-bottom:1px solid #ccc;">${u.name}</td><td style="border-bottom:1px solid #ccc;">${u.email}</td><td style="color:#007bb5; font-weight:600; border-bottom:1px solid #ccc;">${u.role}</td><td style="border-bottom:1px solid #ccc;">${u.status}</td><td style="border-bottom:1px solid #ccc;"><button style="background:#007bb5; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;" onclick="editUser('${doc.id}', '${safeName}', '${u.email}', '${u.role}')"><i class="fa-solid fa-pen"></i></button> <button style="background:#e34f26; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;" onclick="deleteDoc('users', '${doc.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; });
+            });
+        }
+        function deleteDoc(col, id) { if(confirm("Permanently delete?")) db.collection(col).doc(id).delete(); }
 
 
         // ====================================================
@@ -1654,16 +1698,6 @@
         // ====================================================
         // 3. FIREBASE AUTHENTICATION (Login / Logout / Reset)
         // ====================================================
-        function openLoginModal() {
-            document.getElementById('forgotPassModal').style.display = 'none';
-            document.getElementById('loginModal').style.display = 'flex';
-        }
-
-        function closeLoginModal() {
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('loginError').style.display = 'none';
-        }
-
         function openForgotModal() {
             document.getElementById('loginModal').style.display = 'none';
             document.getElementById('forgotPassModal').style.display = 'flex';
@@ -1673,35 +1707,6 @@
             document.getElementById('forgotPassModal').style.display = 'none';
             document.getElementById('resetMessage').style.display = 'none';
             document.getElementById('loginModal').style.display = 'flex';
-        }
-
-        function handleLogin() {
-            let email = document.getElementById('loginId').value;
-            let pass = document.getElementById('loginPass').value;
-
-            if(!email || !pass) {
-                document.getElementById('loginError').style.display = 'block';
-                document.getElementById('loginError').innerText = "Please enter email and password.";
-                return;
-            }
-
-            auth.signInWithEmailAndPassword(email, pass)
-            .then((userCredential) => {
-                closeLoginModal();
-                selectTab('admin');
-            })
-            .catch((error) => {
-                document.getElementById('loginError').style.display = 'block';
-                document.getElementById('loginError').innerText = error.message;
-            });
-        }
-
-        function logoutUser() {
-            auth.signOut().then(() => {
-                showHome();
-                document.getElementById('loginId').value = '';
-                document.getElementById('loginPass').value = '';
-            });
         }
 
         function sendResetLink() {
@@ -1718,185 +1723,10 @@
             }
         }
 
-        function switchAdminTab(sectionId) {
-            document.getElementById('nav-manage-prod').classList.remove('active');
-            document.getElementById('nav-manage-car').classList.remove('active');
-            document.getElementById('nav-manage-user').classList.remove('active');
-            
-            document.getElementById('nav-' + sectionId).classList.add('active');
-
-            document.querySelectorAll('.admin-section').forEach(sec => {
-                sec.classList.remove('active');
-            });
-
-            document.getElementById('admin-' + sectionId).classList.add('active');
-        }
-
 
         // ====================================================
-        // 4. FIREBASE FIRESTORE (Database CRUD Operations)
+        // 4. FIREBASE FIRESTORE (Public Data Operations)
         // ====================================================
-        
-        // --- Manage Products ---
-        function addNewProduct() {
-            let name = document.getElementById('addProdName').value;
-            let cat = document.getElementById('addProdCat').value;
-            let qty = document.getElementById('addProdQty').value;
-            let isHidden = document.getElementById('addProdHidden').checked;
-            
-            if(!name || !qty) return alert("Name and Qty are required!");
-
-            db.collection("products").add({
-                name: name,
-                category: cat,
-                qty: qty,
-                status: isHidden ? "Hidden" : "Public",
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                alert("Product saved to Cloud!");
-                document.getElementById('addProdName').value = '';
-                document.getElementById('addProdQty').value = '';
-            });
-        }
-
-        function fetchProducts() {
-            db.collection("products").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
-                let tbody = document.getElementById('prodTbody');
-                if(!tbody) return;
-                tbody.innerHTML = '';
-                snapshot.forEach(doc => {
-                    let p = doc.data();
-                    let badgeClass = p.status === 'Public' ? 'status-active' : 'status-inactive';
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><strong>${p.name}</strong></td>
-                            <td>${p.category}</td>
-                            <td>${p.qty}</td>
-                            <td><span class="status-badge ${badgeClass}">${p.status}</span></td>
-                            <td>
-                                <button class="btn-small btn-delete" onclick="deleteDoc('products', '${doc.id}')"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            });
-        }
-
-        // --- Manage Jobs ---
-        function addNewJob() {
-            let title = document.getElementById('addJobTitle').value;
-            let req = document.getElementById('addJobReq').value;
-            let exp = document.getElementById('addJobExp').value;
-            
-            if(!title || !req) return alert("Title and Requirement are required!");
-
-            db.collection("jobs").add({
-                title: title,
-                openings: req,
-                exp: exp,
-                status: "Active",
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                alert("Job posted to Cloud!");
-                document.getElementById('addJobTitle').value = '';
-                document.getElementById('addJobReq').value = '';
-            });
-        }
-
-        function fetchJobs() {
-            db.collection("jobs").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
-                let tbody = document.getElementById('jobTbody');
-                if(!tbody) return;
-                tbody.innerHTML = '';
-                snapshot.forEach(doc => {
-                    let j = doc.data();
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><strong>${j.title}</strong></td>
-                            <td>${j.openings}</td>
-                            <td>${j.exp}</td>
-                            <td><span class="status-badge status-active">${j.status}</span></td>
-                            <td>
-                                <button class="btn-small btn-delete" onclick="deleteDoc('jobs', '${doc.id}')"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            });
-        }
-
-        // --- Manage Users (Create without logout) ---
-        function createNewUser() {
-            let name = document.getElementById('addUserName').value;
-            let email = document.getElementById('addUserEmail').value;
-            let pass = document.getElementById('addUserPass').value;
-            let role = document.getElementById('addUserRole').value;
-
-            if(!name || !email || !pass) return alert("Please fill all details!");
-            if(pass.length < 6) return alert("Password must be at least 6 characters.");
-
-            // Use Secondary App to create user so main Admin does not get logged out
-            secondaryApp.auth().createUserWithEmailAndPassword(email, pass)
-            .then((userCredential) => {
-                
-                // Immediately sign out from secondary app
-                secondaryApp.auth().signOut();
-                
-                // Save user details to Firestore for Table View
-                db.collection("users").doc(userCredential.user.uid).set({
-                    name: name,
-                    email: email,
-                    role: role,
-                    status: "Active",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    alert("New User created and assigned role: " + role);
-                    document.getElementById('addUserName').value = '';
-                    document.getElementById('addUserEmail').value = '';
-                    document.getElementById('addUserPass').value = '';
-                });
-
-            })
-            .catch((error) => {
-                alert("Error: " + error.message);
-            });
-        }
-
-        function fetchUsers() {
-            db.collection("users").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
-                let tbody = document.getElementById('userTbody');
-                if(!tbody) return;
-                tbody.innerHTML = '';
-                snapshot.forEach(doc => {
-                    let u = doc.data();
-                    let badgeClass = u.status === 'Active' ? 'status-active' : 'status-inactive';
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><strong>${u.name}</strong></td>
-                            <td>${u.email}</td>
-                            <td><span style="color:#007bb5; font-weight:600;">${u.role}</span></td>
-                            <td><span class="status-badge ${badgeClass}">${u.status}</span></td>
-                            <td>
-                                <button class="btn-small btn-delete" onclick="deleteDoc('users', '${doc.id}')"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            });
-        }
-
-        // Generic Delete
-        function deleteDoc(collectionName, docId) {
-            let msg = "Permanently delete from Cloud Database?";
-            if(collectionName === 'users') {
-                msg = "Remove user's Role and Access from Dashboard?\n(Note: Complete email deletion requires Firebase Console)";
-            }
-            if(confirm(msg)) {
-                db.collection(collectionName).doc(docId).delete();
-            }
-        }
-
-        // Fetch Public Data for Normal Users
         function fetchPublicData() {
             // Public Products
             db.collection("products").where("status", "==", "Public").onSnapshot(snapshot => {
@@ -2855,6 +2685,11 @@
                 }
             });
         }
+        
+        // Initialize default language on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            changeLanguage('en');
+        });
     </script>
 </body>
-</html>
+</html> 
