@@ -30,6 +30,13 @@
             position: relative;
         }
 
+        /* --- 100% WORKING STICKY FOOTER FIX --- */
+        #websiteView {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* पूरी स्क्रीन की हाइट कवर करेगा */
+        }
+
         /* FLOATING LEAVES BACKGROUND (Global) */
         .leaf-container {
             position: fixed;
@@ -934,8 +941,8 @@
         .btn-activate { background: #1b8a4f; }
         .btn-activate:hover { background: #0d5c34; }
 
-        /* FOOTER & SOCIAL LINKS (REAL COLORS) */
-        footer { background: #0d1e15; color: #fff; padding: 40px 20px 20px 20px; text-align: center; position: relative; z-index: 2; }
+        /* FOOTER & SOCIAL LINKS (REAL COLORS) - FIXED MARGIN-TOP: AUTO */
+        footer { background: #0d1e15; color: #fff; padding: 40px 20px 20px 20px; text-align: center; position: relative; z-index: 2; margin-top: auto; }
         
         .social-links { margin-bottom: 20px; display: flex; justify-content: center; gap: 25px; }
         .social-links a { display: inline-block; font-size: 28px; width: 45px; height: 45px; background: #ffffff; display: flex; align-items: center; justify-content: center; border-radius: 50%; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
@@ -1487,7 +1494,7 @@
                 });
                 fetchProducts(); fetchJobs(); fetchUsers();
             } else {
-                document.getElementById('websiteView').style.display = 'block';
+                document.getElementById('websiteView').style.display = 'flex'; // Changed to flex for sticky footer
                 document.getElementById('adminPortal').style.display = 'none';
             }
             fetchPublicData();
