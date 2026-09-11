@@ -13,6 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-storage-compat.js"></script>
 
     <style>
         * {
@@ -34,7 +35,11 @@
         #websiteView {
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* पूरी स्क्रीन की हाइट कवर करेगा */
+            min-height: 100vh; 
+        }
+        
+        #homePage, #tabContainer {
+            flex-grow: 1;
         }
 
         /* FLOATING LEAVES BACKGROUND (Global) */
@@ -915,7 +920,7 @@
         .logout-btn-sidebar { margin-top: auto; padding: 15px 25px; color: #e34f26; cursor: pointer; font-weight: 600; border-top: 1px solid rgba(255,255,255,0.1); }
         .logout-btn-sidebar:hover { background: #e34f26; color: white; }
         
-        .admin-content { flex: 1; padding: 40px; background: #ffffff; }
+        .admin-content { flex: 1; padding: 40px; background: #ffffff; overflow-y: auto; height: calc(100vh - 60px); }
         .admin-section { display: none; animation: fadeIn 0.4s; }
         .admin-section.active { display: block; }
         
@@ -941,7 +946,7 @@
         .btn-activate { background: #1b8a4f; }
         .btn-activate:hover { background: #0d5c34; }
 
-        /* FOOTER & SOCIAL LINKS (REAL COLORS) - FIXED MARGIN-TOP: AUTO */
+        /* FOOTER & SOCIAL LINKS - MARGIN-TOP: AUTO APPLIED FOR STICKY BOTTOM */
         footer { background: #0d1e15; color: #fff; padding: 40px 20px 20px 20px; text-align: center; position: relative; z-index: 2; margin-top: auto; }
         
         .social-links { margin-bottom: 20px; display: flex; justify-content: center; gap: 25px; }
@@ -970,7 +975,6 @@
             <i class="fa-solid fa-leaf leaf"></i>
         </div>
 
-        <!-- FULLSCREEN ANIMATION FOR ABOUT US -->
         <div id="aboutFullscreenBg" class="about-fullscreen-bg">
             <div class="bouncing-net"></div>
             <i class="fa-solid fa-child-reaching kid kid-1"></i>
@@ -1009,7 +1013,6 @@
                     <li><a onclick="selectTab('support')" data-i18n="nav_support">Support</a></li>
                     <li><a onclick="selectTab('career')" data-i18n="nav_career">Career</a></li>
                     
-                    <!-- LOGIN / LOGOUT BUTTONS -->
                     <li class="login-btn" id="loginNavBtn"><a onclick="openLoginModal()"><i class="fa-solid fa-user-circle"></i> <span data-i18n="nav_login">Portal Login</span></a></li>
                     <li class="login-btn" id="logoutNavBtn" style="display: none;"><a onclick="logoutUser()" style="background: #e34f26;"><i class="fa-solid fa-sign-out-alt"></i> <span data-i18n="nav_logout">Logout</span></a></li>
 
@@ -1082,20 +1085,12 @@
                 </div>
                 
                 <div class="water-bubbles">
-                    <div class="bubble"></div>
-                    <div class="bubble"></div>
-                    <div class="bubble"></div>
-                    <div class="bubble"></div>
-                    <div class="bubble"></div>
+                    <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
                 </div>
                 
                 <div class="bg-graphics-layer">
                     <i class="fa-solid fa-laptop-code bg-computer"></i>
-                    <div class="bg-signal-wrapper">
-                        <div class="bg-signal-line"></div>
-                        <div class="bg-signal-particle"></div>
-                        <div class="bg-binary-flow">10110 01101 ERP 10011</div>
-                    </div>
+                    <div class="bg-signal-wrapper"><div class="bg-signal-line"></div><div class="bg-signal-particle"></div><div class="bg-binary-flow">10110 01101 ERP 10011</div></div>
                     <i class="fa-solid fa-earth-americas bg-globe"></i>
                 </div>
                 
@@ -1104,40 +1099,29 @@
                 <div class="carousel-scene" id="carouselScene">
                     <div class="carousel-spinner" id="carouselSpinner">
                         <div class="slide-card" style="--i:0;" onclick="handleCardClick('serv-crm')">
-                            <i class="fa-brands fa-salesforce color-sf"></i>
-                            <h3 data-i18n="card_sf_h3">Salesforce Services</h3>
-                            <p data-i18n="card_sf_p">Implementation, Support, Automation</p>
+                            <i class="fa-brands fa-salesforce color-sf"></i><h3 data-i18n="card_sf_h3">Salesforce Services</h3><p data-i18n="card_sf_p">Implementation, Support, Automation</p>
                         </div>
                         <div class="slide-card" style="--i:1;" onclick="handleCardClick('serv-erp')">
-                            <i class="fa-solid fa-chart-line color-sap"></i>
-                            <h3 data-i18n="card_sap_h3">SAP Business One</h3>
-                            <p data-i18n="card_sap_p">Setup, Optimization, Technical Support</p>
+                            <i class="fa-solid fa-chart-line color-sap"></i><h3 data-i18n="card_sap_h3">SAP Business One</h3><p data-i18n="card_sap_p">Setup, Optimization, Technical Support</p>
                         </div>
                         <div class="slide-card" style="--i:2;" onclick="handleCardClick('serv-web')">
-                            <i class="fa-solid fa-code color-web"></i>
-                            <h3 data-i18n="card_web_h3">Website Support</h3>
-                            <p data-i18n="card_web_p">Security, Maintenance, Performance</p>
+                            <i class="fa-solid fa-code color-web"></i><h3 data-i18n="card_web_h3">Website Support</h3><p data-i18n="card_web_p">Security, Maintenance, Performance</p>
                         </div>
                         <div class="slide-card" style="--i:3;" onclick="handleCardClick('serv-env')">
-                            <i class="fa-solid fa-seedling color-env"></i>
-                            <h3 data-i18n="card_env_h3">Environmental Work</h3>
-                            <p data-i18n="card_env_p">Sustainability Initiatives & Awareness</p>
+                            <i class="fa-solid fa-seedling color-env"></i><h3 data-i18n="card_env_h3">Environmental Work</h3><p data-i18n="card_env_p">Sustainability Initiatives & Awareness</p>
                         </div>
                         <div class="slide-card" style="--i:4;" onclick="handleCardClick('product')">
-                            <i class="fa-solid fa-book-open color-erp"></i>
-                            <h3 data-i18n="card_av_h3">Avernus</h3>
-                            <p data-i18n="card_av_p">Books, Poetry & Thoughtful Writing</p>
+                            <i class="fa-solid fa-book-open color-erp"></i><h3 data-i18n="card_av_h3">Avernus</h3><p data-i18n="card_av_p">Books, Poetry & Thoughtful Writing</p>
                         </div>
                     </div>
                 </div>
                 
-                <div class="carousel-drag-hint">
-                    <i class="fa-solid fa-hand-pointer"></i> <span data-i18n="drag_hint">Drag or Swipe to Rotate</span>
-                </div>
+                <div class="carousel-drag-hint"><i class="fa-solid fa-hand-pointer"></i> <span data-i18n="drag_hint">Drag or Swipe to Rotate</span></div>
             </div>
         </div>
 
         <div class="dynamic-tab-section" id="tabContainer" style="display: none;">
+            
             <div id="panel-about" class="tab-panel">
                 <div class="about-content-wrapper">
                     <h3 class="animate-text" data-i18n="tab_about_h3">About Dhami Group</h3>
@@ -1231,22 +1215,15 @@
                     <div class="contact-left">
                         <div class="globe-container">
                             <div class="animated-globe"></div>
-                            <div class="location-pin">
-                                <i class="fa-solid fa-location-dot"></i>
-                                <span data-i18n="cont_pin">Laxmi Nagar, Delhi</span>
-                            </div>
+                            <div class="location-pin"><i class="fa-solid fa-location-dot"></i><span data-i18n="cont_pin">Laxmi Nagar, Delhi</span></div>
                         </div>
                         <div class="contact-details">
                             <p><i class="fa-solid fa-phone"></i> <span data-i18n="cont_phone"><strong>Phone:</strong> 9716938334 / 8586888178</span></p>
                             <p><i class="fa-solid fa-envelope"></i> <span data-i18n="cont_email"><strong>Email:</strong> pspujari88@gmail.com</span></p>
-                            <p><i class="fa-solid fa-map-location-dot"></i> <span data-i18n="cont_add"><strong>Address:</strong> Laxmi Nagar, Delhi-110092</span></p>
                         </div>
                     </div>
                     <div class="contact-right">
                         <form action="https://formsubmit.co/pspujari88@gmail.com" method="POST" class="contact-form">
-                            <input type="hidden" name="_subject" value="New Contact Request from Dhami Group Website">
-                            <input type="hidden" name="_captcha" value="false">
-                            <input type="hidden" name="_template" value="table">
                             <input type="text" name="Name" data-i18n-placeholder="form_name" placeholder="Name" required>
                             <input type="email" name="Email" data-i18n-placeholder="form_email" placeholder="Email" required>
                             <input type="tel" name="Mobile" data-i18n-placeholder="form_mobile" placeholder="Mobile Number" required>
@@ -1257,14 +1234,16 @@
                 </div>
             </div>
 
+            <!-- NEW SALESFORCE FORM INTEGRATION -->
             <div id="panel-enquire" class="tab-panel">
                 <h3 data-i18n="tab_enq_h3">Enquiry Form</h3>
-                <p data-i18n="tab_enq_p">Submit your requirements for custom enterprise solutions, cloud integrations, or sustainability audits.</p>
+                <p data-i18n="tab_enq_p">Submit your requirements for custom enterprise solutions.</p>
+                <iframe src="salesforce-enquiry.html" width="100%" height="600px" style="border:none; border-radius:10px; overflow:hidden; margin-top: 20px;"></iframe>
             </div>
 
             <div id="panel-support" class="tab-panel">
                 <h3 data-i18n="tab_sup_h3">24/7 Technical Support</h3>
-                <p data-i18n="tab_sup_p">Our dedicated support team is available round-the-clock to handle system maintenance, patch updates, and site uptime.</p>
+                <p data-i18n="tab_sup_p">Our dedicated support team is available round-the-clock.</p>
             </div>
 
             <div id="panel-career" class="tab-panel">
@@ -1279,8 +1258,6 @@
                 <a href="https://www.linkedin.com/in/prakashsinghdhami" target="_blank" class="li-icon"><i class="fa-brands fa-linkedin-in"></i></a>
                 <a href="https://www.youtube.com/@mepahadi" target="_blank" class="yt-icon"><i class="fa-brands fa-youtube"></i></a>
                 <a href="https://www.instagram.com/mepahadi" target="_blank" class="ig-icon"><i class="fa-brands fa-instagram"></i></a>
-                <a href="https://www.facebook.com/share/1DTpCmtq9H/" target="_blank" class="fb-icon"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="https://x.com/maipahadi" target="_blank" class="tw-icon"><i class="fa-brands fa-twitter"></i></a>
             </div>
             <p data-i18n="footer_text">&copy; 2026 Dhami Digital Solutions. All Rights Reserved.</p>
         </footer>
@@ -1311,10 +1288,10 @@
             </div>
 
             <!-- Admin Content -->
-            <div class="admin-content" style="flex: 1; padding: 40px; background: #ffffff;">
+            <div class="admin-content" style="flex: 1; padding: 40px; background: #ffffff; overflow-y: auto; height: calc(100vh - 60px);">
                 <!-- PRODUCT SECTION -->
                 <div id="admin-manage-prod" class="admin-section active" style="display: block;">
-                    <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">Manage Products (Cloud)</h2>
+                    <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">Manage Products</h2>
                     <div class="admin-card" style="background: #f0f7f3; border: 1px solid #dbe8e0; border-radius: 10px; padding: 25px; margin-bottom: 20px;">
                         <h4 style="color: #0d5c34; margin-bottom: 15px;"><i class="fa-solid fa-plus-circle"></i> Add / Edit Product</h4>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
@@ -1323,7 +1300,25 @@
                             <input type="text" id="addProdColor" placeholder="Variant / Color" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
                             <input type="number" id="addProdQty" placeholder="Quantity Available" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
                         </div>
-                        <button id="btnSaveProd" onclick="saveProduct()" style="background: #1b8a4f; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Save Product</button>
+                        
+                        <!-- FILE UPLOADS FOR PRODUCT -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="font-size: 13px; color: #555; font-weight: 600;">Product Image</label>
+                                <input type="file" id="addProdImage" accept="image/*" style="border: 1px solid #ccc; padding: 6px; width: 100%; border-radius: 4px; background: #fff;">
+                            </div>
+                            <div>
+                                <label style="font-size: 13px; color: #555; font-weight: 600;">Catalogue (PDF)</label>
+                                <input type="file" id="addProdCatalog" accept=".pdf" style="border: 1px solid #ccc; padding: 6px; width: 100%; border-radius: 4px; background: #fff;">
+                            </div>
+                        </div>
+
+                        <!-- SPECIFICATIONS TEXTAREA -->
+                        <textarea id="addProdSpec" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;" rows="3" placeholder="Detailed Specifications..."></textarea>
+                        
+                        <textarea id="addProdDesc" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;" rows="2" placeholder="Brief Description..."></textarea>
+
+                        <button id="btnSaveProd" onclick="saveProduct()" style="background: #1b8a4f; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;"><i class="fa-solid fa-save"></i> Save Product</button>
                         <button id="btnCancelProd" onclick="cancelEdit('prod')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none;">Cancel</button>
                         <label style="margin-left: 15px; font-weight: 600;"><input type="checkbox" id="addProdHidden"> Hide from Public View</label>
                     </div>
@@ -1335,7 +1330,7 @@
 
                 <!-- CAREER SECTION -->
                 <div id="admin-manage-car" class="admin-section" style="display: none;">
-                    <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">Manage Careers (Cloud)</h2>
+                    <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">Manage Careers</h2>
                     <div class="admin-card" style="background: #f0f7f3; border: 1px solid #dbe8e0; border-radius: 10px; padding: 25px; margin-bottom: 20px;">
                         <h4 style="color: #0d5c34; margin-bottom: 15px;"><i class="fa-solid fa-file-signature"></i> Post / Edit Job Vacancy</h4>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
@@ -1344,7 +1339,8 @@
                             <input type="text" id="addJobExp" placeholder="Experience Required" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
                             <input type="text" id="addJobLoc" placeholder="Location" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
                         </div>
-                        <button id="btnSaveJob" onclick="saveJob()" style="background: #e34f26; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Post Job</button>
+                        <textarea id="addJobDesc" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;" rows="4" placeholder="Detailed Job Description..."></textarea>
+                        <button id="btnSaveJob" onclick="saveJob()" style="background: #e34f26; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;"><i class="fa-solid fa-upload"></i> Post Job</button>
                         <button id="btnCancelJob" onclick="cancelEdit('job')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none;">Cancel</button>
                     </div>
                     <table style="width: 100%; border-collapse: collapse;">
@@ -1355,7 +1351,7 @@
 
                 <!-- USER SECTION -->
                 <div id="admin-manage-user" class="admin-section" style="display: none;">
-                    <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">User Management (Cloud)</h2>
+                    <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">User Management</h2>
                     <div class="admin-card" style="background: #f0f7f3; border: 1px solid #dbe8e0; border-radius: 10px; padding: 25px; margin-bottom: 20px;">
                         <h4 style="color: #0d5c34; margin-bottom: 15px;"><i class="fa-solid fa-user-plus"></i> Create / Update User</h4>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
@@ -1369,7 +1365,7 @@
                                 <option value="System Administrator">System Administrator (Full Access)</option>
                             </select>
                         </div>
-                        <button id="btnSaveUser" onclick="saveUser()" style="background: #1b8a4f; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Create & Sync User</button>
+                        <button id="btnSaveUser" onclick="saveUser()" style="background: #1b8a4f; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;"><i class="fa-solid fa-plus"></i> Create & Sync User</button>
                         <button id="btnCancelUser" onclick="cancelEdit('user')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none;">Cancel</button>
                     </div>
                     <table style="width: 100%; border-collapse: collapse;">
@@ -1381,7 +1377,6 @@
         </div>
     </div>
 
-
     <!-- ============================================== -->
     <!-- LOGIN AND FORGOT PASSWORD MODALS               -->
     <!-- ============================================== -->
@@ -1389,8 +1384,6 @@
         <div class="login-box">
             <i class="fa-solid fa-xmark close-modal" onclick="closeLoginModal()"></i>
             <h2>Secure Portal Login</h2>
-            <p style="text-align: center; font-size: 12px; color: #666; margin-bottom: 20px;">Login with your registered Email ID</p>
-            
             <div class="input-group">
                 <i class="fa-solid fa-envelope"></i>
                 <input type="email" id="loginId" placeholder="Email Address" required>
@@ -1411,12 +1404,10 @@
         </div>
     </div>
 
-    <!-- Forgot Password Modal -->
     <div class="modal-overlay" id="forgotPassModal">
         <div class="login-box">
             <i class="fa-solid fa-xmark close-modal" onclick="closeForgotModal()"></i>
             <h2>Reset Password</h2>
-            <p style="text-align: center; font-size: 13px; color: #555; margin-bottom: 20px;">Enter your registered email to receive a password reset link.</p>
             <div class="input-group">
                 <i class="fa-solid fa-envelope"></i>
                 <input type="email" id="resetEmail" placeholder="Email Address" required>
@@ -1427,15 +1418,9 @@
         </div>
     </div>
 
-    <!-- WHATSAPP CHAT BUTTON -->
-    <a href="https://wa.me/?text=Hello%20Dhami%20Group,%20I%20want%20to%20know%20more." class="chat-btn" target="_blank">
-        <i class="fa-brands fa-whatsapp" style="font-size: 20px;"></i> <span data-i18n="chat">Chat</span>
-    </a>
-
-    <!-- SCROLL TO TOP BUTTON -->
-    <button id="scrollTopBtn" onclick="scrollToTop()">
-        <i class="fa-solid fa-arrow-up"></i>
-    </button>
+    <!-- WHATSAPP & SCROLL UP -->
+    <a href="https://wa.me/?text=Hello%20Dhami%20Group,%20I%20want%20to%20know%20more." class="chat-btn" target="_blank"><i class="fa-brands fa-whatsapp" style="font-size: 20px;"></i> <span data-i18n="chat">Chat</span></a>
+    <button id="scrollTopBtn" onclick="scrollToTop()"><i class="fa-solid fa-arrow-up"></i></button>
 
     <script>
         // ====================================================
@@ -1453,6 +1438,7 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const auth = firebase.auth();
         const db = firebase.firestore();
+        const storage = firebase.storage();
 
         let secondaryApp;
         if (firebase.apps.length < 2) { secondaryApp = firebase.initializeApp(firebaseConfig, "Secondary"); } 
@@ -1472,177 +1458,240 @@
             if (user) {
                 document.getElementById('websiteView').style.display = 'none';
                 document.getElementById('adminPortal').style.display = 'block';
+                closeLoginModal();
                 
-                let defaultName = user.email.split('@')[0];
+                let emailPrefix = user.email.split('@')[0];
+                let defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
+                
                 document.getElementById('adminNameDisplay').innerText = defaultName;
                 document.getElementById('adminRoleDisplay').innerText = "Loading Role...";
-
-                document.getElementById('nav-manage-prod').style.display = 'none';
-                document.getElementById('nav-manage-car').style.display = 'none';
-                document.getElementById('nav-manage-user').style.display = 'none';
 
                 db.collection("users").where("email", "==", user.email).get().then((snap) => {
                     let uRole = "Standard User"; let uName = defaultName;
                     if (!snap.empty) {
                         let data = snap.docs[0].data(); uName = data.name; uRole = data.role;
                     } else if (user.email === 'pspujari88@gmail.com' || user.email === 'admin@dhamigroup.com') {
-                        uRole = "System Administrator"; uName = "Prakash Dhami";
+                        uRole = "System Administrator"; uName = "Prakash Dhami (Admin)";
                     }
                     document.getElementById('adminNameDisplay').innerText = uName;
                     document.getElementById('adminRoleDisplay').innerText = uRole;
                     applyPermissions(uRole);
                 });
+
                 fetchProducts(); fetchJobs(); fetchUsers();
             } else {
-                document.getElementById('websiteView').style.display = 'flex'; // Changed to flex for sticky footer
+                document.getElementById('websiteView').style.display = 'flex';
                 document.getElementById('adminPortal').style.display = 'none';
             }
             fetchPublicData();
         });
 
         function applyPermissions(role) {
-            document.getElementById('nav-manage-prod').style.display = 'none';
-            document.getElementById('nav-manage-car').style.display = 'none';
-            document.getElementById('nav-manage-user').style.display = 'none';
+            let navProd = document.getElementById('nav-manage-prod');
+            let navCar = document.getElementById('nav-manage-car');
+            let navUser = document.getElementById('nav-manage-user');
+
+            navProd.style.display = 'none'; navCar.style.display = 'none'; navUser.style.display = 'none';
 
             if (role === "System Administrator") {
-                document.getElementById('nav-manage-prod').style.display = 'block'; document.getElementById('nav-manage-car').style.display = 'block'; document.getElementById('nav-manage-user').style.display = 'block';
+                navProd.style.display = 'block'; navCar.style.display = 'block'; navUser.style.display = 'block';
                 switchAdminTab('manage-prod');
             } else if (role === "Manager - Both") {
-                document.getElementById('nav-manage-prod').style.display = 'block'; document.getElementById('nav-manage-car').style.display = 'block';
+                navProd.style.display = 'block'; navCar.style.display = 'block';
                 switchAdminTab('manage-prod');
             } else if (role === "Only Manage Product") {
-                document.getElementById('nav-manage-prod').style.display = 'block'; switchAdminTab('manage-prod');
+                navProd.style.display = 'block'; switchAdminTab('manage-prod');
             } else if (role === "Only Manage Career") {
-                document.getElementById('nav-manage-car').style.display = 'block'; switchAdminTab('manage-car');
+                navCar.style.display = 'block'; switchAdminTab('manage-car');
+            } else {
+                alert("You don't have access to the Dashboard!"); auth.signOut();
             }
         }
 
-        function switchAdminTab(id) { document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none'); document.getElementById('admin-' + id).style.display = 'block'; document.querySelectorAll('.admin-menu a').forEach(a => a.classList.remove('active')); document.getElementById('nav-'+id).classList.add('active'); }
+        function switchAdminTab(id) { 
+            document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none'); 
+            document.getElementById('admin-' + id).style.display = 'block'; 
+            document.querySelectorAll('.admin-menu a').forEach(a => a.classList.remove('active')); 
+            document.getElementById('nav-'+id).classList.add('active'); 
+        }
 
         function handleLogin() {
             let email = document.getElementById('loginId').value; let pass = document.getElementById('loginPass').value; let ans = parseInt(document.getElementById('captchaAnswer').value);
-            if(!email || !pass) return alert("Enter email/password.");
-            if(ans !== captchaCorrect) { document.getElementById('loginError').style.display = 'block'; document.getElementById('loginError').innerText = "Incorrect Captcha!"; generateCaptcha(); return; }
-            auth.signInWithEmailAndPassword(email, pass).then(() => { closeLoginModal(); }).catch((err) => { document.getElementById('loginError').style.display = 'block'; document.getElementById('loginError').innerText = err.message; generateCaptcha(); });
+            let errBox = document.getElementById('loginError');
+            if(!email || !pass) { errBox.style.display = 'block'; errBox.innerText = "Enter email and password."; return; }
+            if(ans !== captchaCorrect) { errBox.style.display = 'block'; errBox.innerText = "Incorrect Captcha!"; generateCaptcha(); return; }
+            auth.signInWithEmailAndPassword(email, pass).catch((err) => { errBox.style.display = 'block'; errBox.innerText = err.message; generateCaptcha(); });
         }
-        function logoutUser() { auth.signOut().then(() => window.location.reload()); }
+        function logoutUser() { auth.signOut().then(() => { window.location.reload(); }); }
         function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; generateCaptcha(); }
-        function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
-        
+        function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; document.getElementById('loginError').style.display = 'none'; }
         function openForgotModal() { document.getElementById('loginModal').style.display = 'none'; document.getElementById('forgotPassModal').style.display = 'flex'; }
-        function closeForgotModal() { document.getElementById('forgotPassModal').style.display = 'none'; document.getElementById('resetMessage').style.display = 'none'; document.getElementById('loginModal').style.display = 'flex'; }
+        function closeForgotModal() { document.getElementById('forgotPassModal').style.display = 'none'; document.getElementById('loginModal').style.display = 'flex'; }
         function sendResetLink() {
             let email = document.getElementById('resetEmail').value;
             if(email) { auth.sendPasswordResetEmail(email).then(() => { document.getElementById('resetMessage').style.display = 'block'; document.getElementById('resetMessage').innerText = "Reset link sent to your email!"; }).catch((error) => { document.getElementById('resetMessage').style.display = 'block'; document.getElementById('resetMessage').style.color = '#e34f26'; document.getElementById('resetMessage').innerText = error.message; }); }
         }
 
         // ====================================================
-        // CRUD: PRODUCTS
+        // CRUD: PRODUCTS (WITH IMAGE & PDF UPLOAD)
         // ====================================================
         let editProdId = null;
-        function editProduct(id, name, cat, qty, isHidden) {
-            editProdId = id; document.getElementById('addProdName').value = name; document.getElementById('addProdCat').value = cat; document.getElementById('addProdQty').value = qty; document.getElementById('addProdHidden').checked = isHidden; document.getElementById('btnSaveProd').innerText = "Update Product"; document.getElementById('btnCancelProd').style.display = "inline-block"; window.scrollTo({ top: 0, behavior: 'smooth' });
+        let existingImgUrl = "";
+        let existingCatUrl = "";
+
+        function editProduct(id, name, cat, color, qty, desc, spec, imgUrl, catUrl, isHidden) {
+            editProdId = id; 
+            existingImgUrl = imgUrl !== 'undefined' ? imgUrl : "";
+            existingCatUrl = catUrl !== 'undefined' ? catUrl : "";
+            
+            document.getElementById('addProdName').value = name; 
+            document.getElementById('addProdCat').value = cat; 
+            document.getElementById('addProdColor').value = color;
+            document.getElementById('addProdQty').value = qty; 
+            document.getElementById('addProdDesc').value = desc;
+            document.getElementById('addProdSpec').value = spec;
+            document.getElementById('addProdHidden').checked = isHidden; 
+            
+            document.getElementById('btnSaveProd').innerHTML = "<i class='fa-solid fa-save'></i> Update Product"; 
+            document.getElementById('btnCancelProd').style.display = "inline-block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        function saveProduct() {
-            let name = document.getElementById('addProdName').value; let cat = document.getElementById('addProdCat').value; let qty = document.getElementById('addProdQty').value; let isHidden = document.getElementById('addProdHidden').checked;
-            if(!name || !qty) return; let data = { name: name, category: cat, qty: qty, status: isHidden ? "Hidden" : "Public" };
-            if(editProdId) { db.collection("products").doc(editProdId).update(data).then(() => { alert("Updated!"); cancelEdit('prod'); });
-            } else { data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); db.collection("products").add(data).then(() => { alert("Saved!"); cancelEdit('prod'); }); }
+
+        async function saveProduct() {
+            let name = document.getElementById('addProdName').value; 
+            let cat = document.getElementById('addProdCat').value; 
+            let color = document.getElementById('addProdColor').value;
+            let qty = document.getElementById('addProdQty').value; 
+            let desc = document.getElementById('addProdDesc').value; 
+            let spec = document.getElementById('addProdSpec').value;
+            let isHidden = document.getElementById('addProdHidden').checked;
+            
+            let imgFile = document.getElementById('addProdImage').files[0];
+            let catFile = document.getElementById('addProdCatalog').files[0];
+            
+            if(!name || !qty) return alert("Product Name and Quantity are required!"); 
+            
+            let btn = document.getElementById('btnSaveProd');
+            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Uploading...";
+            btn.disabled = true;
+
+            try {
+                let finalImgUrl = existingImgUrl;
+                let finalCatUrl = existingCatUrl;
+
+                if(imgFile) {
+                    let imgRef = storage.ref('products/images/' + Date.now() + '_' + imgFile.name);
+                    await imgRef.put(imgFile);
+                    finalImgUrl = await imgRef.getDownloadURL();
+                }
+
+                if(catFile) {
+                    let catRef = storage.ref('products/catalogs/' + Date.now() + '_' + catFile.name);
+                    await catRef.put(catFile);
+                    finalCatUrl = await catRef.getDownloadURL();
+                }
+
+                let data = { 
+                    name: name, category: cat, color: color, qty: qty, 
+                    description: desc, specifications: spec, 
+                    imageUrl: finalImgUrl, catalogUrl: finalCatUrl,
+                    status: isHidden ? "Hidden" : "Public" 
+                };
+                
+                if(editProdId) { 
+                    await db.collection("products").doc(editProdId).update(data);
+                    alert("Product Updated Successfully!"); 
+                } else { 
+                    data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); 
+                    await db.collection("products").add(data);
+                    alert("Product Added Successfully!"); 
+                }
+                cancelEdit('prod');
+            } catch(e) {
+                alert("Error saving product: " + e.message + "\nMake sure Firebase Storage rules allow writing.");
+            } finally {
+                btn.innerHTML = "<i class='fa-solid fa-save'></i> Save Product";
+                btn.disabled = false;
+            }
         }
+
         function fetchProducts() {
             db.collection("products").orderBy("createdAt", "desc").onSnapshot((snap) => {
                 let t = document.getElementById('prodTbody'); if(!t) return; t.innerHTML = '';
-                snap.forEach(doc => { let p = doc.data(); let safeName = p.name ? p.name.replace(/'/g, "\\'") : ""; t.innerHTML += `<tr><td style="padding:10px; border-bottom:1px solid #ccc;">${p.name}</td><td style="border-bottom:1px solid #ccc;">${p.category}</td><td style="border-bottom:1px solid #ccc;">${p.qty}</td><td style="border-bottom:1px solid #ccc;">${p.status}</td><td style="border-bottom:1px solid #ccc;"><button style="background:#007bb5; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;" onclick="editProduct('${doc.id}', '${safeName}', '${p.category}', '${p.qty}', ${p.status==='Hidden'})"><i class="fa-solid fa-pen"></i></button> <button style="background:#e34f26; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;" onclick="deleteDoc('products', '${doc.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; });
+                snap.forEach(doc => { 
+                    let p = doc.data(); 
+                    let safeName = p.name ? p.name.replace(/'/g, "\\'") : ""; 
+                    let safeColor = p.color ? p.color.replace(/'/g, "\\'") : "";
+                    let safeDesc = p.description ? p.description.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : "";
+                    let safeSpec = p.specifications ? p.specifications.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : "";
+                    
+                    t.innerHTML += `<tr>
+                        <td>${p.name}</td><td>${p.category}</td><td>${p.qty}</td>
+                        <td><span class="status-badge ${p.status==='Public'?'status-active':'status-inactive'}">${p.status}</span></td>
+                        <td>
+                            <button class="btn-small btn-edit" onclick="editProduct('${doc.id}', '${safeName}', '${p.category}', '${safeColor}', '${p.qty}', '${safeDesc}', '${safeSpec}', '${p.imageUrl}', '${p.catalogUrl}', ${p.status==='Hidden'})"><i class="fa-solid fa-pen"></i></button> 
+                            <button class="btn-small btn-delete" onclick="deleteDoc('products', '${doc.id}')"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>`; 
+                });
             });
         }
 
         // ====================================================
-        // CRUD: CAREERS
-        // ====================================================
-        let editJobId = null;
-        function editJob(id, title, req, exp) { editJobId = id; document.getElementById('addJobTitle').value = title; document.getElementById('addJobReq').value = req; document.getElementById('addJobExp').value = exp; document.getElementById('btnSaveJob').innerText = "Update Job"; document.getElementById('btnCancelJob').style.display = "inline-block"; window.scrollTo({ top: 0, behavior: 'smooth' }); }
-        function saveJob() {
-            let title = document.getElementById('addJobTitle').value; let req = document.getElementById('addJobReq').value; let exp = document.getElementById('addJobExp').value;
-            if(!title || !req) return; let data = { title: title, openings: req, exp: exp, status: "Active" };
-            if(editJobId) { db.collection("jobs").doc(editJobId).update(data).then(() => { alert("Updated!"); cancelEdit('job'); });
-            } else { data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); db.collection("jobs").add(data).then(() => { alert("Posted!"); cancelEdit('job'); }); }
-        }
-        function fetchJobs() {
-            db.collection("jobs").orderBy("createdAt", "desc").onSnapshot((snap) => {
-                let t = document.getElementById('jobTbody'); if(!t) return; t.innerHTML = '';
-                snap.forEach(doc => { let j = doc.data(); let safeTitle = j.title ? j.title.replace(/'/g, "\\'") : ""; t.innerHTML += `<tr><td style="padding:10px; border-bottom:1px solid #ccc;">${j.title}</td><td style="border-bottom:1px solid #ccc;">${j.openings}</td><td style="border-bottom:1px solid #ccc;">${j.exp}</td><td style="border-bottom:1px solid #ccc;">${j.status}</td><td style="border-bottom:1px solid #ccc;"><button style="background:#007bb5; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;" onclick="editJob('${doc.id}', '${safeTitle}', '${j.openings}', '${j.exp}')"><i class="fa-solid fa-pen"></i></button> <button style="background:#e34f26; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;" onclick="deleteDoc('jobs', '${doc.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; });
-            });
-        }
-
-        // ====================================================
-        // CRUD: USERS
-        // ====================================================
-        let editUserId = null;
-        function editUser(id, name, email, role) { editUserId = id; document.getElementById('addUserName').value = name; document.getElementById('addUserEmail').value = email; document.getElementById('addUserEmail').disabled = true; document.getElementById('addUserPass').disabled = true; document.getElementById('addUserPass').placeholder = "Disabled"; document.getElementById('addUserRole').value = role; document.getElementById('btnSaveUser').innerText = "Update User Role"; document.getElementById('btnCancelUser').style.display = "inline-block"; window.scrollTo({ top: 0, behavior: 'smooth' }); }
-        function saveUser() {
-            let name = document.getElementById('addUserName').value; let email = document.getElementById('addUserEmail').value; let pass = document.getElementById('addUserPass').value; let role = document.getElementById('addUserRole').value;
-            if(!name || (!editUserId && (!email || !pass))) return;
-            if(editUserId) { db.collection("users").doc(editUserId).update({ name: name, role: role }).then(() => { alert("Updated!"); cancelEdit('user'); });
-            } else {
-                if(pass.length < 6) return alert("Min 6 chars.");
-                secondaryApp.auth().createUserWithEmailAndPassword(email, pass).then((cred) => {
-                    secondaryApp.auth().signOut(); db.collection("users").doc(cred.user.uid).set({ name: name, email: email, role: role, status: "Active", createdAt: firebase.firestore.FieldValue.serverTimestamp() }).then(() => { alert("User Created!"); cancelEdit('user'); });
-                }).catch(err => alert(err.message));
-            }
-        }
-        function fetchUsers() {
-            db.collection("users").orderBy("createdAt", "desc").onSnapshot((snap) => {
-                let t = document.getElementById('userTbody'); if(!t) return; t.innerHTML = '';
-                snap.forEach(doc => { let u = doc.data(); let safeName = u.name ? u.name.replace(/'/g, "\\'") : ""; t.innerHTML += `<tr><td style="padding:10px; border-bottom:1px solid #ccc;">${u.name}</td><td style="border-bottom:1px solid #ccc;">${u.email}</td><td style="color:#007bb5; font-weight:600; border-bottom:1px solid #ccc;">${u.role}</td><td style="border-bottom:1px solid #ccc;">${u.status}</td><td style="border-bottom:1px solid #ccc;"><button style="background:#007bb5; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;" onclick="editUser('${doc.id}', '${safeName}', '${u.email}', '${u.role}')"><i class="fa-solid fa-pen"></i></button> <button style="background:#e34f26; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;" onclick="deleteDoc('users', '${doc.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; });
-            });
-        }
-        
-        function deleteDoc(col, id) { if(confirm("Permanently delete?")) db.collection(col).doc(id).delete(); }
-
-        function cancelEdit(type) {
-            if(type==='prod') { editProdId = null; document.getElementById('addProdName').value=''; document.getElementById('addProdColor').value=''; document.getElementById('addProdQty').value=''; document.getElementById('addProdHidden').checked=false; document.getElementById('btnSaveProd').innerText='Save Product'; document.getElementById('btnCancelProd').style.display='none'; }
-            if(type==='job') { editJobId = null; document.getElementById('addJobTitle').value=''; document.getElementById('addJobReq').value=''; document.getElementById('addJobExp').value=''; document.getElementById('addJobLoc').value=''; document.getElementById('btnSaveJob').innerText='Post Job'; document.getElementById('btnCancelJob').style.display='none'; }
-            if(type==='user') { editUserId = null; document.getElementById('addUserName').value=''; document.getElementById('addUserEmail').value=''; document.getElementById('addUserPass').value=''; document.getElementById('addUserEmail').disabled=false; document.getElementById('addUserPass').disabled=false; document.getElementById('addUserPass').placeholder="Password (Min 6 chars)"; document.getElementById('btnSaveUser').innerText='Create & Sync User'; document.getElementById('btnCancelUser').style.display='none'; }
-        }
-
-        // ====================================================
-        // PUBLIC FETCH & GENERAL UI LOGIC
+        // PUBLIC FETCH (UPDATED WITH IMAGE & CATALOG)
         // ====================================================
         function fetchPublicData() {
             db.collection("products").where("status", "==", "Public").onSnapshot(snapshot => {
-                let container = document.getElementById('publicProductsContainer');
-                if(!container) return; container.innerHTML = '';
-                snapshot.forEach(doc => {
-                    let p = doc.data();
+                let container = document.getElementById('publicProductsContainer'); if(!container) return; container.innerHTML = '';
+                snapshot.forEach(doc => { 
+                    let p = doc.data(); 
+                    let imgTag = p.imageUrl ? `<img src="${p.imageUrl}" style="width:100%; height:150px; object-fit:cover; border-radius:8px; margin-bottom:10px;">` : `<i class="fa-solid fa-box" style="font-size: 40px; color: #1b8a4f; margin-bottom:10px;"></i>`;
+                    let catBtn = p.catalogUrl ? `<a href="${p.catalogUrl}" target="_blank" style="display:inline-block; margin-top:10px; background:#1b8a4f; color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:12px; font-weight:600;"><i class="fa-solid fa-download"></i> Download Catalogue</a>` : ``;
+
                     container.innerHTML += `
-                        <div style="border: 1px solid #ccc; padding: 20px; border-radius: 10px; width: 200px; text-align: center; background:#fff;">
-                            <i class="fa-solid fa-box" style="font-size: 40px; color: #1b8a4f;"></i>
-                            <h4 style="margin: 10px 0;">${p.name}</h4>
-                            <p style="font-size:13px; color:#666;">${p.category} | Qty: ${p.qty}</p>
+                        <div style="border: 1px solid #dbe8e0; padding: 20px; border-radius: 10px; width: 280px; text-align: center; background:#fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                            ${imgTag}
+                            <h4 style="margin: 10px 0; color:#0d5c34;">${p.name}</h4>
+                            <p style="font-size:13px; color:#666;"><strong>Cat:</strong> ${p.category} | <strong>Qty:</strong> ${p.qty}</p>
+                            <div style="font-size:12px; color:#555; margin-top:10px; text-align:left; height:70px; overflow-y:auto; padding:5px; background:#f8fbf9; border-radius:4px;">
+                                <strong>Specs:</strong><br>${p.specifications ? p.specifications.replace(/\n/g, '<br>') : 'Not specified'}
+                            </div>
+                            ${catBtn}
                         </div>
-                    `;
+                    `; 
                 });
             });
 
             db.collection("jobs").where("status", "==", "Active").onSnapshot(snapshot => {
-                let container = document.getElementById('publicJobsContainer');
-                if(!container) return; container.innerHTML = '';
-                snapshot.forEach(doc => {
-                    let j = doc.data();
-                    container.innerHTML += `
-                        <div style="border-left: 4px solid #1b8a4f; background: #f0f7f3; padding: 20px; margin-top: 20px; border-radius: 5px;">
-                            <h4 style="color: #0d5c34;">${j.title}</h4>
-                            <p style="font-size: 14px; margin-bottom: 10px;"><strong>Openings:</strong> ${j.openings} | <strong>Experience:</strong> ${j.exp}</p>
-                            <button style="background: #1b8a4f; color: #fff; padding: 8px 15px; border: none; border-radius: 4px; margin-top: 10px; cursor: pointer;">Apply Now</button>
-                        </div>
-                    `;
-                });
+                let container = document.getElementById('publicJobsContainer'); if(!container) return; container.innerHTML = '';
+                snapshot.forEach(doc => { let j = doc.data(); container.innerHTML += `<div style="border-left: 4px solid #1b8a4f; background: #f0f7f3; padding: 20px; margin-top: 20px; border-radius: 5px;"><h4 style="color: #0d5c34;">${j.title}</h4><p style="font-size: 14px; margin-bottom: 10px;"><strong>Openings:</strong> ${j.openings} | <strong>Experience:</strong> ${j.exp}</p><button style="background: #1b8a4f; color: #fff; padding: 8px 15px; border: none; border-radius: 4px; margin-top: 10px; cursor: pointer;">Apply Now</button></div>`; });
             });
         }
 
+        // ====================================================
+        // CRUD: CAREERS & USERS
+        // ====================================================
+        let editJobId = null;
+        function editJob(id, title, req, exp, loc, desc) { editJobId = id; document.getElementById('addJobTitle').value = title; document.getElementById('addJobReq').value = req; document.getElementById('addJobExp').value = exp; document.getElementById('addJobLoc').value = loc; document.getElementById('addJobDesc').value = desc; document.getElementById('btnSaveJob').innerHTML = "<i class='fa-solid fa-save'></i> Update Job"; document.getElementById('btnCancelJob').style.display = "inline-block"; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function saveJob() { let title = document.getElementById('addJobTitle').value; let req = document.getElementById('addJobReq').value; let exp = document.getElementById('addJobExp').value; let loc = document.getElementById('addJobLoc').value; let desc = document.getElementById('addJobDesc').value; if(!title || !req) return alert("Title and Req positions required!"); let data = { title: title, openings: req, exp: exp, location: loc, description: desc, status: "Active" }; if(editJobId) { db.collection("jobs").doc(editJobId).update(data).then(() => { alert("Job Updated!"); cancelEdit('job'); }); } else { data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); db.collection("jobs").add(data).then(() => { alert("Job Posted!"); cancelEdit('job'); }); } }
+        function fetchJobs() { db.collection("jobs").orderBy("createdAt", "desc").onSnapshot((snap) => { let t = document.getElementById('jobTbody'); if(!t) return; t.innerHTML = ''; snap.forEach(doc => { let j = doc.data(); let safeTitle = j.title ? j.title.replace(/'/g, "\\'") : ""; let safeDesc = j.description ? j.description.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : ""; t.innerHTML += `<tr><td>${j.title}</td><td>${j.openings}</td><td>${j.exp}</td><td><span class="status-badge status-active">${j.status}</span></td><td><button class="btn-small btn-edit" onclick="editJob('${doc.id}', '${safeTitle}', '${j.openings}', '${j.exp}', '${j.location}', '${safeDesc}')"><i class="fa-solid fa-pen"></i></button> <button class="btn-small btn-delete" onclick="deleteDoc('jobs', '${doc.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; }); }); }
+
+        let editUserId = null;
+        function editUser(id, name, email, role) { editUserId = id; document.getElementById('addUserName').value = name; document.getElementById('addUserEmail').value = email; document.getElementById('addUserEmail').disabled = true; document.getElementById('addUserPass').disabled = true; document.getElementById('addUserPass').placeholder = "Disabled during edit"; document.getElementById('addUserRole').value = role; document.getElementById('btnSaveUser').innerHTML = "<i class='fa-solid fa-save'></i> Update User Role"; document.getElementById('btnCancelUser').style.display = "inline-block"; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function saveUser() { let name = document.getElementById('addUserName').value; let email = document.getElementById('addUserEmail').value; let pass = document.getElementById('addUserPass').value; let role = document.getElementById('addUserRole').value; if(!name || (!editUserId && (!email || !pass))) return alert("All fields are required!"); if(editUserId) { db.collection("users").doc(editUserId).update({ name: name, role: role }).then(() => { alert("User access updated!"); cancelEdit('user'); }); } else { if(pass.length < 6) return alert("Password min 6 chars."); secondaryApp.auth().createUserWithEmailAndPassword(email, pass).then((cred) => { secondaryApp.auth().signOut(); db.collection("users").doc(cred.user.uid).set({ name: name, email: email, role: role, status: "Active", createdAt: firebase.firestore.FieldValue.serverTimestamp() }).then(() => { alert("User Created!"); cancelEdit('user'); }); }).catch(err => alert(err.message)); } }
+        function fetchUsers() { db.collection("users").orderBy("createdAt", "desc").onSnapshot((snap) => { let t = document.getElementById('userTbody'); if(!t) return; t.innerHTML = ''; snap.forEach(doc => { let u = doc.data(); let safeName = u.name ? u.name.replace(/'/g, "\\'") : ""; t.innerHTML += `<tr><td>${u.name}</td><td>${u.email}</td><td><span style="color:#007bb5; font-weight:600;">${u.role}</span></td><td><span class="status-badge status-active">${u.status}</span></td><td><button class="btn-small btn-edit" onclick="editUser('${doc.id}', '${safeName}', '${u.email}', '${u.role}')"><i class="fa-solid fa-pen"></i></button> <button class="btn-small btn-delete" onclick="deleteDoc('users', '${doc.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; }); }); }
+        
+        function cancelEdit(type) {
+            if(type==='prod') { editProdId = null; existingImgUrl=""; existingCatUrl=""; document.getElementById('addProdName').value=''; document.getElementById('addProdColor').value=''; document.getElementById('addProdQty').value=''; document.getElementById('addProdDesc').value=''; document.getElementById('addProdSpec').value=''; document.getElementById('addProdImage').value=''; document.getElementById('addProdCatalog').value=''; document.getElementById('addProdHidden').checked=false; document.getElementById('btnSaveProd').innerHTML='<i class="fa-solid fa-save"></i> Save Product'; document.getElementById('btnCancelProd').style.display='none'; }
+            if(type==='job') { editJobId = null; document.getElementById('addJobTitle').value=''; document.getElementById('addJobReq').value=''; document.getElementById('addJobExp').value=''; document.getElementById('addJobLoc').value=''; document.getElementById('addJobDesc').value=''; document.getElementById('btnSaveJob').innerHTML='<i class="fa-solid fa-upload"></i> Post Job'; document.getElementById('btnCancelJob').style.display='none'; }
+            if(type==='user') { editUserId = null; document.getElementById('addUserName').value=''; document.getElementById('addUserEmail').value=''; document.getElementById('addUserPass').value=''; document.getElementById('addUserEmail').disabled=false; document.getElementById('addUserPass').disabled=false; document.getElementById('addUserPass').placeholder="Password (Min 6 chars)"; document.getElementById('btnSaveUser').innerHTML='<i class="fa-solid fa-plus"></i> Create & Sync User'; document.getElementById('btnCancelUser').style.display='none'; }
+        }
+
+        function deleteDoc(col, id) { let msg = col === 'users' ? "Remove user's Role and Access from Dashboard?" : "Permanently delete?"; if(confirm(msg)) db.collection(col).doc(id).delete(); }
+
+        // General Navigation
         function showHome() { document.getElementById('homePage').style.display = 'block'; document.getElementById('tabContainer').style.display = 'none'; document.getElementById('aboutFullscreenBg').style.display = 'none'; window.scrollTo({ top: 0, behavior: 'smooth' }); }
-        function selectTab(tabName) { document.getElementById('homePage').style.display = 'none'; document.getElementById('tabContainer').style.display = 'block'; let panels = document.querySelectorAll('.tab-panel'); panels.forEach(p => p.classList.remove('active')); let activePanel = document.getElementById('panel-' + tabName); if(activePanel) { activePanel.classList.add('active'); let bgAbout = document.getElementById('aboutFullscreenBg'); if(tabName === 'about') { bgAbout.style.display = 'block'; } else { bgAbout.style.display = 'none'; } if(tabName === 'contact' || tabName === 'about') { let animatedItems = activePanel.querySelectorAll('.animate-text'); animatedItems.forEach(item => { item.style.animation = 'none'; item.offsetHeight; item.style.animation = null; }); } window.scrollTo({ top: 0, behavior: 'smooth' }); } }
+        function selectTab(tabName) { document.getElementById('homePage').style.display = 'none'; document.getElementById('tabContainer').style.display = 'block'; document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active')); let activePanel = document.getElementById('panel-' + tabName); if(activePanel) { activePanel.classList.add('active'); let bgAbout = document.getElementById('aboutFullscreenBg'); if(tabName === 'about') { bgAbout.style.display = 'block'; } else { bgAbout.style.display = 'none'; } if(tabName === 'contact' || tabName === 'about') { let animatedItems = activePanel.querySelectorAll('.animate-text'); animatedItems.forEach(item => { item.style.animation = 'none'; item.offsetHeight; item.style.animation = null; }); } window.scrollTo({ top: 0, behavior: 'smooth' }); } }
 
         let carouselSpinner = document.getElementById('carouselSpinner'); let carouselScene = document.getElementById('carouselScene'); let currentAngle = 0; let startX = 0; let isDraggingCarousel = false; let didDrag = false;
         function moveCarousel(direction) { currentAngle += direction * 72; carouselSpinner.style.transform = `rotateY(${currentAngle}deg)`; }
