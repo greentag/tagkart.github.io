@@ -1,0 +1,167 @@
+#adminPortal { 
+    background: #f8fbf9; 
+    padding: 0; 
+    border: none; 
+    overflow: hidden; 
+    min-height: 100vh;
+}
+
+.admin-topbar {
+    background: #056664;
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.admin-layout { 
+    display: flex; 
+    min-height: calc(100vh - 60px); 
+}
+
+.admin-sidebar {
+    width: 260px; 
+    background: #0d1e15; 
+    color: #fff; 
+    padding: 30px 0; 
+    display: flex; 
+    flex-direction: column;
+}
+
+.admin-profile { 
+    text-align: center; 
+    padding-bottom: 20px; 
+    border-bottom: 1px solid rgba(255,255,255,0.1); 
+    margin-bottom: 20px; 
+}
+
+.admin-profile i { 
+    font-size: 50px; 
+    color: #a3f3c4; 
+    margin-bottom: 10px; 
+}
+
+#adminNameDisplay {
+    word-wrap: break-word;
+    padding: 0 15px;
+    font-size: 16px;
+    line-height: 1.3;
+}
+
+.admin-menu a {
+    display: block; 
+    padding: 15px 25px; 
+    color: #ccc; 
+    text-decoration: none; 
+    font-size: 15px; 
+    transition: 0.3s; 
+    cursor: pointer;
+}
+
+.admin-menu a i { width: 25px; }
+.admin-menu a:hover, .admin-menu a.active { 
+    background: #1b8a4f; 
+    color: #fff; 
+    border-left: 4px solid #a3f3c4; 
+}
+
+.admin-content { 
+    flex: 1; 
+    padding: 40px; 
+    background: #ffffff; 
+    overflow-y: auto; 
+    height: calc(100vh - 60px); 
+}
+
+.admin-section { display: none; animation: fadeIn 0.4s; }
+.admin-section.active { display: block; }
+
+.admin-card { 
+    background: #f0f7f3; 
+    border: 1px solid #dbe8e0; 
+    border-radius: 10px; 
+    padding: 25px; 
+    margin-bottom: 20px; 
+}
+
+.admin-card h4 { 
+    color: #0d5c34; 
+    margin-bottom: 15px; 
+    border-bottom: 2px dashed #ccc; 
+    padding-bottom: 10px; 
+}
+
+.form-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 15px; 
+    margin-bottom: 15px; 
+}
+
+.form-grid input, .form-grid select { 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    width: 100%; 
+}
+
+.action-btn { 
+    background: #1b8a4f; 
+    color: white; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    font-weight: 600; 
+}
+
+.admin-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 15px; 
+    background: #fff; 
+}
+
+.admin-table th, .admin-table td { 
+    border: 1px solid #dbe8e0; 
+    padding: 12px; 
+    text-align: left; 
+    font-size: 14px; 
+}
+
+.admin-table th { 
+    background-color: #e4f5eb; 
+    color: #0d5c34; 
+    font-weight: 600; 
+}
+
+.status-badge { 
+    padding: 4px 10px; 
+    border-radius: 20px; 
+    font-size: 12px; 
+    font-weight: 600; 
+    display: inline-block; 
+    text-align: center; 
+}
+
+.status-active { background: #d4edda; color: #155724; }
+.status-inactive { background: #f8d7da; color: #721c24; }
+
+.btn-small { 
+    padding: 6px 12px; 
+    font-size: 12px; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    border: none; 
+    font-weight: 600; 
+    color: white; 
+    transition: 0.3s; 
+    margin-right: 5px; 
+}
+
+.btn-edit { background: #007bb5; }
+.btn-edit:hover { background: #005a87; }
+.btn-delete { background: #e34f26; }
+.btn-delete:hover { background: #b83b1a; }
