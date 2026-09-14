@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dhami Group Digital Commerce & Solutions</title>
-    
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <!-- CSS Styles -->
+    <!-- CSS Link -->
     <link rel="stylesheet" href="css/styles.css">
 
-    <!-- Firebase App/Auth/Firestore -->
+    <!-- FIREBASE CLOUD SDKS -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
@@ -19,8 +20,8 @@
 </head>
 <body>
     
+    <!-- PUBLIC WEBSITE VIEW -->
     <div id="websiteView">
-        <!-- Floating Leaves Background -->
         <div class="leaf-container">
             <i class="fa-solid fa-leaf leaf"></i>
             <i class="fa-solid fa-leaf leaf"></i>
@@ -29,7 +30,6 @@
             <i class="fa-solid fa-leaf leaf"></i>
         </div>
 
-        <!-- About Fullscreen Interactive Net Background -->
         <div id="aboutFullscreenBg" class="about-fullscreen-bg">
             <div class="bouncing-net"></div>
             <i class="fa-solid fa-child-reaching kid kid-1"></i>
@@ -37,7 +37,6 @@
             <i class="fa-solid fa-paper-plane interactive-plane"></i>
         </div>
 
-        <!-- Header -->
         <header>
             <div class="logo" onclick="showHome()">
                 <i class="fa-solid fa-earth-americas earth-icon"></i>
@@ -69,7 +68,7 @@
                     <li><a onclick="selectTab('support')" data-i18n="nav_support">Support</a></li>
                     <li><a onclick="selectTab('career')" data-i18n="nav_career">Career</a></li>
                     
-                    <li class="login-btn" id="loginNavBtn"><a href="admin.html"><i class="fa-solid fa-user-circle"></i> <span data-i18n="nav_login">Portal Login</span></a></li>
+                    <li class="login-btn" id="loginNavBtn"><a href="admin.html" target="_blank"><i class="fa-solid fa-user-circle"></i> <span data-i18n="nav_login">Portal Login</span></a></li>
 
                     <li>
                         <select class="lang-select" onchange="changeLanguage(this.value)">
@@ -85,7 +84,6 @@
             </nav>
         </header>
 
-        <!-- Home Content Area -->
         <div id="homePage">
             <section class="hero" id="home">
                 <div class="advanced-bg">
@@ -101,6 +99,7 @@
                 
                 <div class="hero-content-box">
                     <h1 data-i18n="hero_h1">Our Expertise</h1>
+                    
                     <div class="animated-services-container">
                         <div class="service-slide active" id="h-slide-1">
                             <i class="fa-brands fa-salesforce color-sf"></i>
@@ -175,7 +174,6 @@
             </div>
         </div>
 
-        <!-- Dynamic Panels Section -->
         <div class="dynamic-tab-section" id="tabContainer" style="display: none;">
             
             <div id="panel-about" class="tab-panel">
@@ -307,7 +305,6 @@
             </div>
         </div>
 
-        <!-- Footer -->
         <footer>
             <div class="social-links">
                 <a href="https://www.linkedin.com/in/prakashsinghdhami" target="_blank" class="li-icon"><i class="fa-brands fa-linkedin-in"></i></a>
@@ -320,342 +317,12 @@
         </footer>
     </div>
 
-    <!-- Floating Chat / Back to Top -->
+    <!-- WHATSAPP & SCROLL UP -->
     <a href="https://wa.me/?text=Hello%20Dhami%20Group,%20I%20want%20to%20know%20more." class="chat-btn" target="_blank"><i class="fa-brands fa-whatsapp" style="font-size: 20px;"></i> <span data-i18n="chat">Chat</span></a>
     <button id="scrollTopBtn" onclick="scrollToTop()"><i class="fa-solid fa-arrow-up"></i></button>
 
-    <!-- Scripts -->
+    <!-- SCRIPTS -->
     <script src="js/translations.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/admin.js"<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dhami Group Digital Commerce & Solutions</title>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- CSS Styles -->
-    <link rel="stylesheet" href="css/styles.css">
-
-    <!-- Firebase App/Auth/Firestore -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-storage-compat.js"></script>
-</head>
-<body>
-    
-    <div id="websiteView">
-        <!-- Floating Leaves Background -->
-        <div class="leaf-container">
-            <i class="fa-solid fa-leaf leaf"></i>
-            <i class="fa-solid fa-leaf leaf"></i>
-            <i class="fa-solid fa-leaf leaf"></i>
-            <i class="fa-solid fa-leaf leaf"></i>
-            <i class="fa-solid fa-leaf leaf"></i>
-        </div>
-
-        <!-- About Fullscreen Interactive Net Background -->
-        <div id="aboutFullscreenBg" class="about-fullscreen-bg">
-            <div class="bouncing-net"></div>
-            <i class="fa-solid fa-child-reaching kid kid-1"></i>
-            <i class="fa-solid fa-child kid kid-2"></i>
-            <i class="fa-solid fa-paper-plane interactive-plane"></i>
-        </div>
-
-        <!-- Header -->
-        <header>
-            <div class="logo" onclick="showHome()">
-                <i class="fa-solid fa-earth-americas earth-icon"></i>
-                <img src="Dhami group logo.png" alt="Dhami Group Logo" class="logo-icon">
-                <div class="logo-text-container">
-                    <span class="logo-title">DHAMI GROUP</span>
-                    <span class="logo-subtitle">DHAMI DIGITAL SOLUTION</span>
-                </div>
-            </div>
-            <nav>
-                <ul>
-                    <li><a onclick="showHome()" data-i18n="nav_home">Home</a></li>
-                    <li><a onclick="selectTab('about')" data-i18n="nav_about">About Us</a></li>
-                    <li><a onclick="selectTab('product')" data-i18n="nav_product">Product</a></li>
-                    <li><a onclick="selectTab('partners')" data-i18n="nav_partners">Our Partners</a></li>
-                    
-                    <li class="dropdown">
-                        <a style="cursor: pointer;"><span data-i18n="nav_services">Our Services</span> <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:3px;"></i></a>
-                        <div class="dropdown-content">
-                            <a onclick="selectTab('serv-erp')" data-i18n="nav_serv_erp">ERP Services</a>
-                            <a onclick="selectTab('serv-crm')" data-i18n="nav_serv_crm">CRM Services</a>
-                            <a onclick="selectTab('serv-web')" data-i18n="nav_serv_web">Web Services</a>
-                            <a onclick="selectTab('serv-env')" data-i18n="nav_serv_env">Environmental Services</a>
-                        </div>
-                    </li>
-
-                    <li><a onclick="selectTab('contact')" data-i18n="nav_contact">Contact</a></li>
-                    <li><a onclick="selectTab('enquire')" data-i18n="nav_enquire">Enquire</a></li>
-                    <li><a onclick="selectTab('support')" data-i18n="nav_support">Support</a></li>
-                    <li><a onclick="selectTab('career')" data-i18n="nav_career">Career</a></li>
-                    
-                    <li class="login-btn" id="loginNavBtn"><a href="admin.html"><i class="fa-solid fa-user-circle"></i> <span data-i18n="nav_login">Portal Login</span></a></li>
-
-                    <li>
-                        <select class="lang-select" onchange="changeLanguage(this.value)">
-                            <option value="en">English</option>
-                            <option value="hi">Hindi</option>
-                            <option value="es">Español (Spanish)</option>
-                            <option value="fr">Français (French)</option>
-                            <option value="de">Deutsch (German)</option>
-                            <option value="zh">中文 (Chinese)</option>
-                        </select>
-                    </li>
-                </ul>
-            </nav>
-        </header>
-
-        <!-- Home Content Area -->
-        <div id="homePage">
-            <section class="hero" id="home">
-                <div class="advanced-bg">
-                    <i class="fa-solid fa-earth-americas huge-earth"></i>
-                    <i class="fa-solid fa-gear gear-1"></i>
-                    <i class="fa-solid fa-cogs gear-2"></i>
-                    <div class="binary-stream b1">10101101</div>
-                    <div class="binary-stream b2">01100010</div>
-                    <div class="binary-stream b3">11010011</div>
-                    <i class="fa-solid fa-network-wired net-1"></i>
-                    <i class="fa-solid fa-seedling plant-1"></i>
-                </div>
-                
-                <div class="hero-content-box">
-                    <h1 data-i18n="hero_h1">Our Expertise</h1>
-                    <div class="animated-services-container">
-                        <div class="service-slide active" id="h-slide-1">
-                            <i class="fa-brands fa-salesforce color-sf"></i>
-                            <h2 data-i18n="h_slide_sf_title">Salesforce Integration</h2>
-                            <p data-i18n="h_slide_sf_desc">Advanced CRM & Automation Solutions</p>
-                        </div>
-                        <div class="service-slide" id="h-slide-2">
-                            <i class="fa-solid fa-network-wired color-sap"></i>
-                            <h2 data-i18n="h_slide_sap_title">SAP B1 & ERP Systems</h2>
-                            <p data-i18n="h_slide_sap_desc">Accounting & Production Flow Optimization</p>
-                        </div>
-                        <div class="service-slide" id="h-slide-3">
-                            <i class="fa-solid fa-laptop-code color-web"></i>
-                            <h2 data-i18n="h_slide_web_title">Web Design & IT Support</h2>
-                            <p data-i18n="h_slide_web_desc">Modern Digital Experiences & Security</p>
-                        </div>
-                        <div class="service-slide" id="h-slide-4">
-                            <i class="fa-solid fa-seedling color-env"></i>
-                            <h2 data-i18n="h_slide_env_title">Environmental Projects</h2>
-                            <p data-i18n="h_slide_env_desc">Green Tech & Sustainability Initiatives</p>
-                        </div>
-                        <div class="service-slide" id="h-slide-5">
-                            <i class="fa-solid fa-microchip color-erp"></i>
-                            <h2 data-i18n="h_slide_dig_title">Business Process Automation</h2>
-                            <p data-i18n="h_slide_dig_desc">Smart, Reliable & Scalable IT Solutions</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <div class="core-offerings-section">
-                <div class="water-waves-container">
-                    <div class="ocean-wave w1"></div>
-                    <div class="ocean-wave w2"></div>
-                    <div class="ocean-wave w3"></div>
-                    <i class="fa-solid fa-sailboat boat-icon"></i>
-                </div>
-                
-                <div class="water-bubbles">
-                    <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
-                </div>
-                
-                <div class="bg-graphics-layer">
-                    <i class="fa-solid fa-laptop-code bg-computer"></i>
-                    <div class="bg-signal-wrapper"><div class="bg-signal-line"></div><div class="bg-signal-particle"></div><div class="bg-binary-flow">10110 01101 ERP 10011</div></div>
-                    <i class="fa-solid fa-earth-americas bg-globe"></i>
-                </div>
-                
-                <h2 data-i18n="core_offerings">Core Offerings</h2>
-                
-                <div class="carousel-scene" id="carouselScene">
-                    <div class="carousel-spinner" id="carouselSpinner">
-                        <div class="slide-card" style="--i:0;" onclick="handleCardClick('serv-crm')">
-                            <i class="fa-brands fa-salesforce color-sf"></i><h3 data-i18n="card_sf_h3">Salesforce Services</h3><p data-i18n="card_sf_p">Implementation, Support, Automation</p>
-                        </div>
-                        <div class="slide-card" style="--i:1;" onclick="handleCardClick('serv-erp')">
-                            <i class="fa-solid fa-chart-line color-sap"></i><h3 data-i18n="card_sap_h3">SAP Business One</h3><p data-i18n="card_sap_p">Setup, Optimization, Technical Support</p>
-                        </div>
-                        <div class="slide-card" style="--i:2;" onclick="handleCardClick('serv-web')">
-                            <i class="fa-solid fa-code color-web"></i><h3 data-i18n="card_web_h3">Website Support</h3><p data-i18n="card_web_p">Security, Maintenance, Performance</p>
-                        </div>
-                        <div class="slide-card" style="--i:3;" onclick="handleCardClick('serv-env')">
-                            <i class="fa-solid fa-seedling color-env"></i><h3 data-i18n="card_env_h3">Environmental Work</h3><p data-i18n="card_env_p">Sustainability Initiatives & Awareness</p>
-                        </div>
-                        <div class="slide-card" style="--i:4;" onclick="handleCardClick('product')">
-                            <i class="fa-solid fa-book-open color-erp"></i><h3 data-i18n="card_av_h3">Avernus</h3><p data-i18n="card_av_p">Books, Poetry & Thoughtful Writing</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="carousel-drag-hint"><i class="fa-solid fa-hand-pointer"></i> <span data-i18n="drag_hint">Drag or Swipe to Rotate</span></div>
-            </div>
-        </div>
-
-        <!-- Dynamic Panels Section -->
-        <div class="dynamic-tab-section" id="tabContainer" style="display: none;">
-            
-            <div id="panel-about" class="tab-panel">
-                <div class="about-content-wrapper">
-                    <h3 class="animate-text" data-i18n="tab_about_h3">About Dhami Group</h3>
-                    <p class="animate-text" data-i18n="tab_about_p1"><strong>Dhami Group</strong> provides sustainable and eco-friendly engineering & digital solutions aligned with modern industrial standards.</p>
-                    <p class="animate-text delay-1" style="margin-top: 10px;" data-i18n="tab_about_p2">We focus on quality, safety, compliance, and long-term value delivery across industrial, ERP, cloud, and automation projects.</p>
-
-                    <h4 class="animate-text delay-2" style="margin-top: 25px; margin-bottom: 10px; color: #1b8a4f; font-size: 18px;" data-i18n="tab_about_what">What We Do</h4>
-                    <p class="animate-text delay-2" data-i18n="tab_about_what_p">Our key areas of services include:</p>
-                    <ul class="animate-text delay-2 service-list-ul">
-                        <li data-i18n="tab_about_li1"><strong>Salesforce CRM</strong> – Implementation, customization, automation, user support, and process improvement.</li>
-                        <li data-i18n="tab_about_li2"><strong>SAP Business One</strong> – Implementation support, configuration, optimization, reporting, and technical-functional assistance.</li>
-                        <li data-i18n="tab_about_li3"><strong>Website Solutions</strong> – Website development, maintenance, security, performance improvement, and ongoing support.</li>
-                        <li data-i18n="tab_about_li4"><strong>Business Process Automation</strong> – Helping organizations reduce manual work and improve operational efficiency.</li>
-                        <li data-i18n="tab_about_li5"><strong>Digital & Technical Support</strong> – Practical technology solutions tailored to individual business requirements.</li>
-                    </ul>
-
-                    <h4 class="animate-text delay-3" style="margin-top: 25px; margin-bottom: 10px; color: #1b8a4f; font-size: 18px;" data-i18n="tab_about_app_h">Our Approach</h4>
-                    <p class="animate-text delay-3" data-i18n="tab_about_app_p1">At Dhami Group, we believe technology should solve business problems rather than create unnecessary complexity.</p>
-                    <p class="animate-text delay-3" style="margin-top: 10px;" data-i18n="tab_about_app_p2">We focus on understanding the business process first and then recommending the right technology or solution. Our approach is based on transparency, practical implementation, responsive support, and long-term value.</p>
-
-                    <h4 class="animate-text delay-4" style="margin-top: 25px; margin-bottom: 10px; color: #1b8a4f; font-size: 18px;" data-i18n="tab_about_vis_h">Our Vision</h4>
-                    <p class="animate-text delay-4" data-i18n="tab_about_vis_p">Our vision is to build Dhami Group as a trusted technology and digital solutions partner for businesses by delivering simple, reliable, and effective solutions that create measurable value.</p>
-                    
-                    <div class="animate-text delay-4" style="margin-top: 30px; padding: 15px 20px; background: rgba(255, 255, 255, 0.7); border-left: 5px solid #1b8a4f; border-radius: 5px;">
-                        <p style="margin-bottom: 5px; color: #333;"><strong data-i18n="tab_about_est">Established:</strong> 2025</p>
-                        <p style="margin-bottom: 5px; color: #333;"><strong data-i18n="tab_about_fnd">Founder:</strong> Prakash</p>
-                        <p style="color: #0d5c34; font-weight: 600;">Dhami Group Digital Commerce & Solutions</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="panel-serv-erp" class="tab-panel">
-                <h3 class="animate-text"><i class="fa-solid fa-chart-line color-sap"></i> <span data-i18n="serv_erp_h3">ERP Services (SAP B1)</span></h3>
-                <p class="animate-text delay-1" data-i18n="serv_erp_desc">We specialize in providing comprehensive SAP Business One services tailored to optimize your internal business processes.</p>
-                <ul class="animate-text delay-2 service-list-ul">
-                    <li data-i18n="serv_erp_li1"><strong>System Implementation & Setup:</strong> End-to-end SAP Business One installation and seamless module configuration.</li>
-                    <li data-i18n="serv_erp_li2"><strong>Financial & Accounting Optimization:</strong> Deep expertise in General Ledger (G/L) mapping, Expense Clearing accounts, and managing complex Journal Entries in multiple currencies.</li>
-                    <li data-i18n="serv_erp_li3"><strong>Production & Inventory Management:</strong> Streamlining production orders, profit analysis, and fixed asset mappings for smooth business operations.</li>
-                    <li data-i18n="serv_erp_li4"><strong>Ongoing Tech Support:</strong> 24/7 technical assistance, error troubleshooting, and system upgrades.</li>
-                </ul>
-            </div>
-
-            <div id="panel-serv-crm" class="tab-panel">
-                <h3 class="animate-text"><i class="fa-brands fa-salesforce color-sf"></i> <span data-i18n="serv_crm_h3">CRM Services (Salesforce)</span></h3>
-                <p class="animate-text delay-1" data-i18n="serv_crm_desc">Maximize your customer relationships and internal efficiency with our dedicated Salesforce solutions.</p>
-                <ul class="animate-text delay-2 service-list-ul">
-                    <li data-i18n="serv_crm_li1"><strong>Org Management & Security:</strong> Complete Salesforce setup, user profiling, role hierarchy, and permission set management.</li>
-                    <li data-i18n="serv_crm_li2"><strong>Custom Development:</strong> Building customized Lightning Web Components (LWC) and tailored internal tools (like custom Recruitment tracking applications) to match your workflow.</li>
-                    <li data-i18n="serv_crm_li3"><strong>Process Automation:</strong> Designing complex workflows, custom Case escalation triggers, and automated approval processes to reduce manual effort.</li>
-                    <li data-i18n="serv_crm_li4"><strong>System Maintenance:</strong> Regular health checks, API integration support, and smooth data handling.</li>
-                </ul>
-            </div>
-
-            <div id="panel-serv-web" class="tab-panel">
-                <h3 class="animate-text"><i class="fa-solid fa-code color-web"></i> <span data-i18n="serv_web_h3">Web Services</span></h3>
-                <p class="animate-text delay-1" data-i18n="serv_web_desc">We create dynamic, secure, and highly interactive digital experiences for modern businesses.</p>
-                <ul class="animate-text delay-2 service-list-ul">
-                    <li data-i18n="serv_web_li1"><strong>Custom Website Development:</strong> Building responsive, highly graphical, and interactive business websites.</li>
-                    <li data-i18n="serv_web_li2"><strong>UI/UX & Animations:</strong> Creating engaging user interfaces with modern trends like glassmorphism, 3D elements, and smooth scrolling animations.</li>
-                    <li data-i18n="serv_web_li3"><strong>Hosting & Security:</strong> Secure server deployment, continuous monitoring, and SSL integration.</li>
-                    <li data-i18n="serv_web_li4"><strong>Performance Optimization:</strong> Speed tuning, backend maintenance, and bug fixing to ensure zero downtime.</li>
-                </ul>
-            </div>
-
-            <div id="panel-serv-env" class="tab-panel">
-                <h3 class="animate-text"><i class="fa-solid fa-seedling color-env"></i> <span data-i18n="serv_env_h3">Environmental Services</span></h3>
-                <p class="animate-text delay-1" data-i18n="serv_env_desc">Aligning technological growth with ecological responsibility for a sustainable future.</p>
-                <ul class="animate-text delay-2 service-list-ul">
-                    <li data-i18n="serv_env_li1"><strong>Green Tech Consulting:</strong> Helping businesses adopt eco-friendly IT operations and digital solutions.</li>
-                    <li data-i18n="serv_env_li2"><strong>Paperless Infrastructure:</strong> Designing automated digital workflows to significantly reduce organizational carbon footprints.</li>
-                    <li data-i18n="serv_env_li3"><strong>Nature Conservation Initiatives:</strong> Supporting and integrating practical environmental awareness projects into corporate models.</li>
-                    <li data-i18n="serv_env_li4"><strong>Sustainability Audits:</strong> Assisting organizations in tracking and reporting their eco-friendly initiatives.</li>
-                </ul>
-            </div>
-
-            <div id="panel-product" class="tab-panel">
-                <h3 data-i18n="tab_prod_h3">Our Products</h3>
-                <p data-i18n="tab_prod_p">Explore our next-gen digital commerce products, ERP toolkits, and sustainability automation modules designed for high performance.</p>
-                <div id="publicProductsContainer" style="display: flex; gap: 20px; margin-top: 20px; flex-wrap: wrap;"></div>
-            </div>
-
-            <div id="panel-partners" class="tab-panel">
-                <h3 data-i18n="tab_part_h3">Our Partners</h3>
-                <p data-i18n="tab_part_p">We work closely with global tech giants including Salesforce, SAP, AWS, and modern green technology alliances to deliver reliable enterprise solutions.</p>
-            </div>
-
-            <div id="panel-contact" class="tab-panel">
-                <h3 class="animate-text" data-i18n="tab_cont_h3">Contact Us</h3>
-                <div class="contact-wrapper animate-text delay-1">
-                    <div class="contact-left">
-                        <div class="globe-container">
-                            <div class="animated-globe"></div>
-                            <div class="location-pin"><i class="fa-solid fa-location-dot"></i><span data-i18n="cont_pin">Laxmi Nagar, Delhi</span></div>
-                        </div>
-                        <div class="contact-details">
-                            <p><i class="fa-solid fa-phone"></i> <span data-i18n="cont_phone"><strong>Phone:</strong> 9716938334 / 8586888178</span></p>
-                            <p><i class="fa-solid fa-envelope"></i> <span data-i18n="cont_email"><strong>Email:</strong> pspujari88@gmail.com</span></p>
-                        </div>
-                    </div>
-                    <div class="contact-right">
-                        <form action="https://formsubmit.co/pspujari88@gmail.com" method="POST" class="contact-form">
-                            <input type="text" name="Name" data-i18n-placeholder="form_name" placeholder="Name" required>
-                            <input type="email" name="Email" data-i18n-placeholder="form_email" placeholder="Email" required>
-                            <input type="tel" name="Mobile" data-i18n-placeholder="form_mobile" placeholder="Mobile Number" required>
-                            <textarea name="Message" rows="4" data-i18n-placeholder="form_msg" placeholder="Message" required></textarea>
-                            <button type="submit" data-i18n="form_btn">Send Message</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <div id="panel-enquire" class="tab-panel">
-                <h3 data-i18n="tab_enq_h3">Enquiry Form</h3>
-                <p data-i18n="tab_enq_p">Submit your requirements for custom enterprise solutions, cloud integrations, or sustainability audits.</p>
-                <iframe src="salesforce-enquiry.html" width="100%" height="600px" style="border:none; border-radius:10px; overflow:hidden; margin-top: 20px;"></iframe>
-            </div>
-
-            <div id="panel-support" class="tab-panel">
-                <h3 data-i18n="tab_sup_h3">24/7 Technical Support</h3>
-                <p data-i18n="tab_sup_p">Our dedicated support team is available round-the-clock to handle system maintenance, patch updates, and site uptime.</p>
-            </div>
-
-            <div id="panel-career" class="tab-panel">
-                <h3 data-i18n="tab_car_h3">Careers at Dhami Group</h3>
-                <p data-i18n="tab_car_p">Join our dynamic green tech team! Send your updated CV to <strong>careers@dhamigroup.com</strong>.</p>
-                <div id="publicJobsContainer"></div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <footer>
-            <div class="social-links">
-                <a href="https://www.linkedin.com/in/prakashsinghdhami" target="_blank" class="li-icon"><i class="fa-brands fa-linkedin-in"></i></a>
-                <a href="https://www.youtube.com/@mepahadi" target="_blank" class="yt-icon"><i class="fa-brands fa-youtube"></i></a>
-                <a href="https://www.instagram.com/mepahadi" target="_blank" class="ig-icon"><i class="fa-brands fa-instagram"></i></a>
-                <a href="https://www.facebook.com/share/1DTpCmtq9H/" target="_blank" class="fb-icon"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="https://x.com/maipahadi" target="_blank" class="tw-icon"><i class="fa-brands fa-twitter"></i></a>
-            </div>
-            <p data-i18n="footer_text">&copy; 2026 Dhami Digital Solutions. All Rights Reserved.</p>
-        </footer>
-    </div>
-
-    <!-- Floating Chat / Back to Top -->
-    <a href="https://wa.me/?text=Hello%20Dhami%20Group,%20I%20want%20to%20know%20more." class="chat-btn" target="_blank"><i class="fa-brands fa-whatsapp" style="font-size: 20px;"></i> <span data-i18n="chat">Chat</span></a>
-    <button id="scrollTopBtn" onclick="scrollToTop()"><i class="fa-solid fa-arrow-up"></i></button>
-
-    <!-- Scripts -->
-    <script src="js/translations.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/admin.js"></script>
 </body>
 </html>
