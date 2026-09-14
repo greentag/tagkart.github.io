@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhami Group Cloud Portal & Dashboard</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/admin.css">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-storage-compat.js"></script>
+</head>
+<body>
+
+    <!-- SECURE DASHBOARD -->
+    <div id="adminPortal">
+        <div class="admin-topbar">
+            <h2><i class="fa-solid fa-earth-americas"></i> Dhami Group Cloud Portal</h2>
+            <button onclick="logoutUser()" style="background: #e34f26; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>
+        </div>
+        
+        <div class="admin-layout">
+            <!-- Sidebar -->
+            <div class="admin-sidebar">
+                <div class="admin-profile">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <h3 id="adminNameDisplay">Loading...</h3>
+                    <p id="adminRoleDisplay">Checking Role...</p>
+                </div>
+                <div class="admin-menu">
+                    <a id="nav-manage-prod" class="active" onclick="switchAdminTab('manage-prod')" style="display:none;"><i class="fa-solid fa-boxes-stacked"></i> Manage Products</a>
+                    <a id="nav-manage-car" onclick="switchAdminTab('manage-car')" style="display:none;"><i class="fa-solid fa-briefcase"></i> Manage Careers</a>
+                    <a id="nav-manage-user" onclick="switchAdminTab('manage-user')" style="display:none;"><i class="fa-solid fa-users-gear"></i> Manage Users</a>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="admin-content">
+                <!-- Manage Products -->
+                <div id="admin-manage-prod" class="admin-section active">
+                    <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">Manage Products (Free Link Version)</h2>
+                    <div class="admin-card">
+                        <h4 style="color: #0d5c34; margin-bottom: 15px;"><i class="fa-solid fa-plus-circle"></i> Add / Edit Product</h4>
+                        
+                        <div class="form-grid">
+                            <input type="text" id="addProdName" placeholder="Product Name (Mandatory)">
+                            <select id="addProdCat"><option>ERP Software</option><option>Hardware</option><option>Service</option></select>
+                            <input type="text" id="addProdColor" placeholder="Variant / Color (Optional)">
+                            <input type="number" id="addProdQty" placeholder="Quantity Available (Optional)">
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div>
+                                <label style="font-size: 13px; color: #e34f26; font-weight: 600;">Product Image URL * (Mandatory)</label>
+                                <input type="url" id="addProdImage" placeholder="Paste Image Link (ImgBB/Drive)" style="border: 1px solid #ccc; padding: 10px; width: 100%; border-radius: 5px; background: #fff;">
+                            </div>
+                            <div>
+                                <label style="font-size: 13px; color: #555; font-weight: 600;">Catalogue (PDF) URL (Optional)</label>
+                                <input type="url" id="addProdCatalog" placeholder="Paste Google Drive/PDF Link" style="border: 1px solid #ccc; padding: 10px; width: 100%; border-radius: 5px; background: #fff;">
+                            </div>
+                        </div>
+
+                        <label style="font-size: 13px; color: #e34f26; font-weight: 600;">Detailed Specifications * (Mandatory)</label>
+                        <textarea id="addProdSpec" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;" rows="3" placeholder="Detailed Specifications..."></textarea>
+                        
+                        <label style="font-size: 13px; color: #555; font-weight: 600;">Brief Description (Optional)</label>
+                        <textarea id="addProdDesc" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;" rows="2" placeholder="Brief Description..."></textarea>
+
+                        <button id="btnSaveProd" onclick="saveProduct()" class="action-btn"><i class="fa-solid fa-save"></i> Save Product</button>
+                        <button id="btnCancelProd" onclick="cancelEdit('prod')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none;">Cancel</button>
+                        <label style="margin-left: 15px; font-weight: 600;"><input type="checkbox" id="addProdHidden"> Hide from Public View</label>
+                    </div>
+                    <table class="admin-table">
+                        <thead><tr><th>Product Name</th><th>Category</th><th>Qty</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="prodTbody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Manage Careers -->
+                <div id="admin-manage-car" class="admin-section">
+                    <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">Manage Careers (Cloud)</h2>
+                    <div class="admin-card">
+                        <h4 style="color: #0d5c34; margin-bottom: 15px;"><i class="fa-solid fa-file-signature"></i> Post / Edit Job Vacancy</h4>
+                        <div class="form-grid">
+                            <input type="text" id="addJobTitle" placeholder="Designation">
+                            <input type="number" id="addJobReq" placeholder="Total Requirement">
+                            <input type="text" id="addJobExp" placeholder="Experience Required">
+                            <input type="text" id="addJobLoc" placeholder="Location">
+                        </div>
+                        <textarea id="addJobDesc" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;" rows="4" placeholder="Detailed Job Description..."></textarea>
+                        <button id="btnSaveJob" onclick="saveJob()" style="background: #e34f26;" class="action-btn"><i class="fa-solid fa-upload"></i> Post Job</button>
+                        <button id="btnCancelJob" onclick="cancelEdit('job')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none;">Cancel</button>
+                    </div>
+                    <table class="admin-table">
+                        <thead><tr><th>Designation</th><th>Openings</th><th>Experience</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="jobTbody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Manage Users -->
+                <div id="admin-manage-user" class="admin-section">
+                    <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">User Management (Cloud)</h2>
+                    <div class="admin-card">
+                        <h4 style="color: #0d5c34; margin-bottom: 15px;"><i class="fa-solid fa-user-plus"></i> Create / Update User</h4>
+                        <div class="form-grid">
+                            <input type="text" id="addUserName" placeholder="Full Name">
+                            <input type="email" id="addUserEmail" placeholder="Email Address">
+                            <input type="password" id="addUserPass" placeholder="Password (Min 6 chars)">
+                            <select id="addUserRole">
+                                <option value="Only Manage Product">Only Manage Product</option>
+                                <option value="Only Manage Career">Only Manage Career</option>
+                                <option value="Manager - Both">Manager - Both (Product & Career)</option>
+                                <option value="System Administrator">System Administrator (Full Access)</option>
+                            </select>
+                        </div>
+                        <button id="btnSaveUser" onclick="saveUser()" class="action-btn"><i class="fa-solid fa-plus"></i> Create & Sync User</button>
+                        <button id="btnCancelUser" onclick="cancelEdit('user')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none;">Cancel</button>
+                    </div>
+                    <table class="admin-table">
+                        <thead><tr><th>Full Name</th><th>Email ID</th><th>Assigned Role</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="userTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="login-box">
+            <i class="fa-solid fa-xmark close-modal" onclick="closeLoginModal()"></i>
+            <h2>Secure Portal Login</h2>
+            <div class="input-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" id="loginId" placeholder="Email Address" required>
+            </div>
+            <div class="input-group">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="loginPass" placeholder="Password" required>
+            </div>
+            
+            <div class="captcha-box" style="display: flex; justify-content: space-between; align-items: center; background: #f0f7f3; padding: 10px 15px; border-radius: 6px; border: 1px dashed #1b8a4f; margin-bottom: 20px;">
+                <span id="captchaQuestion" style="font-weight: 700; color: #0d5c34; font-size: 16px; letter-spacing: 2px;"></span>
+                <input type="number" id="captchaAnswer" placeholder="Answer" style="width: 100px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; text-align: center; font-weight: 600;" required>
+            </div>
+            
+            <a class="forgot-link" onclick="openForgotModal()">Forgot Password?</a>
+            <button onclick="handleLogin()">Verify & Login</button>
+            <div class="login-error" id="loginError">Invalid Credentials.</div>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal -->
+    <div class="modal-overlay" id="forgotPassModal">
+        <div class="login-box">
+            <i class="fa-solid fa-xmark close-modal" onclick="closeForgotModal()"></i>
+            <h2>Reset Password</h2>
+            <div class="input-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" id="resetEmail" placeholder="Email Address" required>
+            </div>
+            <button onclick="sendResetLink()" style="background: #e34f26;">Send Reset Link</button>
+            <p id="resetMessage" style="color: #1b8a4f; font-size: 13px; text-align: center; margin-top: 10px; display: none;">Reset link sent successfully to your email!</p>
+            <a class="forgot-link" style="margin-top: 15px; text-align: center;" onclick="openLoginModal()">Back to Login</a>
+        </div>
+    </div>
+
+    <script src="js/translations.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
