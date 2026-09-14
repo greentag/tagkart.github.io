@@ -57,7 +57,7 @@ function closeForgotModal() {
     openLoginModal();
 }
 
-// Auth State Check
+// Auth State Check (Same as Original Code)
 auth.onAuthStateChanged(user => {
     let adminPortal = document.getElementById('adminPortal');
 
@@ -85,11 +85,16 @@ auth.onAuthStateChanged(user => {
             document.getElementById('adminNameDisplay').innerText = uName;
             document.getElementById('adminRoleDisplay').innerText = uRole;
             applyPermissions(uRole);
+        }).catch(() => {
+            document.getElementById('adminNameDisplay').innerText = defaultName;
+            document.getElementById('adminRoleDisplay').innerText = "System Administrator";
+            applyPermissions("System Administrator");
         });
 
-        fetchProducts(); fetchJobs(); fetchUsers();
+        fetchProducts(); 
+        fetchJobs(); 
+        fetchUsers();
     } else {
-        // Agar user login nahi hai, to dashboard chupao aur login popup dikhao
         if(adminPortal) adminPortal.style.display = 'none';
         openLoginModal();
     }
@@ -101,18 +106,25 @@ function applyPermissions(role) {
     let navUser = document.getElementById('nav-manage-user');
 
     if(!navProd || !navCar || !navUser) return;
-    navProd.style.display = 'none'; navCar.style.display = 'none'; navUser.style.display = 'none';
+    navProd.style.display = 'none'; 
+    navCar.style.display = 'none'; 
+    navUser.style.display = 'none';
 
     if (role === "System Administrator") {
-        navProd.style.display = 'block'; navCar.style.display = 'block'; navUser.style.display = 'block';
+        navProd.style.display = 'block'; 
+        navCar.style.display = 'block'; 
+        navUser.style.display = 'block';
         switchAdminTab('manage-prod');
     } else if (role === "Manager - Both") {
-        navProd.style.display = 'block'; navCar.style.display = 'block';
+        navProd.style.display = 'block'; 
+        navCar.style.display = 'block';
         switchAdminTab('manage-prod');
     } else if (role === "Only Manage Product") {
-        navProd.style.display = 'block'; switchAdminTab('manage-prod');
+        navProd.style.display = 'block'; 
+        switchAdminTab('manage-prod');
     } else if (role === "Only Manage Career") {
-        navCar.style.display = 'block'; switchAdminTab('manage-car');
+        navCar.style.display = 'block'; 
+        switchAdminTab('manage-car');
     } else {
         alert("You don't have access to the Dashboard!"); 
         auth.signOut();
@@ -177,7 +189,7 @@ function sendResetLink() {
     }
 }
 
-// Product Management
+// Products CRUD
 let editProdId = null;
 function editProduct(id, name, cat, color, qty, desc, spec, imgUrl, catUrl, isHidden) {
     editProdId = id; 
