@@ -20,7 +20,7 @@
 <body>
 
     <!-- SECURE DASHBOARD -->
-    <div id="adminPortal">
+    <div id="adminPortal" style="display: none; min-height: 100vh; background: #f8fbf9;">
         <div class="admin-topbar">
             <h2><i class="fa-solid fa-earth-americas"></i> Dhami Group Cloud Portal</h2>
             <button onclick="logoutUser()" style="background: #e34f26; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>
@@ -35,9 +35,9 @@
                     <p id="adminRoleDisplay">Checking Role...</p>
                 </div>
                 <div class="admin-menu">
-                    <a id="nav-manage-prod" class="active" onclick="switchAdminTab('manage-prod')" style="display:none;"><i class="fa-solid fa-boxes-stacked"></i> Manage Products</a>
-                    <a id="nav-manage-car" onclick="switchAdminTab('manage-car')" style="display:none;"><i class="fa-solid fa-briefcase"></i> Manage Careers</a>
-                    <a id="nav-manage-user" onclick="switchAdminTab('manage-user')" style="display:none;"><i class="fa-solid fa-users-gear"></i> Manage Users</a>
+                    <a id="nav-manage-prod" class="active" onclick="switchAdminTab('manage-prod')"><i class="fa-solid fa-boxes-stacked"></i> Manage Products</a>
+                    <a id="nav-manage-car" onclick="switchAdminTab('manage-car')"><i class="fa-solid fa-briefcase"></i> Manage Careers</a>
+                    <a id="nav-manage-user" onclick="switchAdminTab('manage-user')"><i class="fa-solid fa-users-gear"></i> Manage Users</a>
                 </div>
             </div>
 
@@ -84,7 +84,7 @@
                 </div>
 
                 <!-- Manage Careers -->
-                <div id="admin-manage-car" class="admin-section">
+                <div id="admin-manage-car" class="admin-section" style="display: none;">
                     <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">Manage Careers (Cloud)</h2>
                     <div class="admin-card">
                         <h4 style="color: #0d5c34; margin-bottom: 15px;"><i class="fa-solid fa-file-signature"></i> Post / Edit Job Vacancy</h4>
@@ -105,7 +105,7 @@
                 </div>
 
                 <!-- Manage Users -->
-                <div id="admin-manage-user" class="admin-section">
+                <div id="admin-manage-user" class="admin-section" style="display: none;">
                     <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">User Management (Cloud)</h2>
                     <div class="admin-card">
                         <h4 style="color: #0d5c34; margin-bottom: 15px;"><i class="fa-solid fa-user-plus"></i> Create / Update User</h4>
@@ -172,8 +172,6 @@
         </div>
     </div>
 
-    <script src="js/translations.js"></script>
-    <script src="js/main.js"></script>
     <script src="js/admin.js"></script>
 </body>
 </html>
