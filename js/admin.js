@@ -18,11 +18,50 @@ if (firebase.apps.length < 2) {
     secondaryApp = firebase.app("Secondary"); 
 }
 
+// Captcha Logic
+let captchaCorrect = 0;
+function generateCaptcha() {
+    let n1 = Math.floor(Math.random() * 10) + 1;
+    let n2 = Math.floor(Math.random() * 10) + 1;
+    captchaCorrect = n1 + n2;
+    let el = document.getElementById('captchaQuestion');
+    if(el) el.innerText = `${n1} + ${n2} = ?`;
+    let a = document.getElementById('captchaAnswer');
+    if(a) a.value = '';
+}
+
+function openLoginModal() { 
+    const modal = document.getElementById('loginModal');
+    if(modal) { 
+        modal.style.display = 'flex'; 
+        generateCaptcha(); 
+    }
+}
+
+function closeLoginModal() { 
+    const modal = document.getElementById('loginModal');
+    if(modal) modal.style.display = 'none';
+    const err = document.getElementById('loginError');
+    if(err) err.style.display = 'none';
+}
+
+function openForgotModal() { 
+    closeLoginModal();
+    const fModal = document.getElementById('forgotPassModal');
+    if(fModal) fModal.style.display = 'flex';
+}
+
+function closeForgotModal() { 
+    const fModal = document.getElementById('forgotPassModal');
+    if(fModal) fModal.style.display = 'none';
+    openLoginModal();
+}
+
+// Auth State Check
 auth.onAuthStateChanged(user => {
+    let adminPortal = document.getElementById('adminPortal');
+
     if (user) {
-        let websiteView = document.getElementById('websiteView');
-        let adminPortal = document.getElementById('adminPortal');
-        if(websiteView) websiteView.style.display = 'none';
         if(adminPortal) adminPortal.style.display = 'block';
         closeLoginModal();
 
@@ -50,12 +89,10 @@ auth.onAuthStateChanged(user => {
 
         fetchProducts(); fetchJobs(); fetchUsers();
     } else {
-        let websiteView = document.getElementById('websiteView');
-        let adminPortal = document.getElementById('adminPortal');
-        if(websiteView) websiteView.style.display = 'flex';
+        // Agar user login nahi hai, to dashboard chupao aur login popup dikhao
         if(adminPortal) adminPortal.style.display = 'none';
+        openLoginModal();
     }
-    fetchPublicData();
 });
 
 function applyPermissions(role) {
@@ -119,7 +156,10 @@ function handleLogin() {
 }
 
 function logoutUser() { 
-    auth.signOut().then(() => { window.location.href = "index.html"; }); 
+    auth.signOut().then(() => { 
+        window.close();
+        window.location.href = "index.html"; 
+    }); 
 }
 
 function sendResetLink() {
@@ -212,41 +252,6 @@ function fetchProducts() {
                     <button class="btn-small btn-delete" onclick="deleteDoc('products', '${doc.id}')"><i class="fa-solid fa-trash"></i></button>
                 </td>
             </tr>`; 
-        });
-    });
-}
-
-function fetchPublicData() {
-    db.collection("products").where("status", "==", "Public").onSnapshot(snapshot => {
-        let container = document.getElementById('publicProductsContainer'); 
-        if(!container) return; 
-        container.innerHTML = '';
-        snapshot.forEach(doc => { 
-            let p = doc.data(); 
-            let imgTag = p.imageUrl ? `<img src="${p.imageUrl}" style="width:100%; height:150px; object-fit:cover; border-radius:8px; margin-bottom:10px;">` : `<i class="fa-solid fa-box" style="font-size: 40px; color: #1b8a4f; margin-bottom:10px;"></i>`;
-            let catBtn = p.catalogUrl ? `<a href="${p.catalogUrl}" target="_blank" style="display:inline-block; margin-top:10px; background:#1b8a4f; color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:12px; font-weight:600;"><i class="fa-solid fa-download"></i> Download Catalogue</a>` : ``;
-
-            container.innerHTML += `
-                <div style="border: 1px solid #dbe8e0; padding: 20px; border-radius: 10px; width: 280px; text-align: center; background:#fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                    ${imgTag}
-                    <h4 style="margin: 10px 0; color:#0d5c34;">${p.name}</h4>
-                    <p style="font-size:13px; color:#666;"><strong>Cat:</strong> ${p.category}</p>
-                    <div style="font-size:12px; color:#555; margin-top:10px; text-align:left; height:70px; overflow-y:auto; padding:5px; background:#f8fbf9; border-radius:4px;">
-                        <strong>Specs:</strong><br>${p.specifications ? p.specifications.replace(/\n/g, '<br>') : 'Not specified'}
-                    </div>
-                    ${catBtn}
-                </div>
-            `; 
-        });
-    });
-
-    db.collection("jobs").where("status", "==", "Active").onSnapshot(snapshot => {
-        let container = document.getElementById('publicJobsContainer'); 
-        if(!container) return; 
-        container.innerHTML = '';
-        snapshot.forEach(doc => { 
-            let j = doc.data(); 
-            container.innerHTML += `<div style="border-left: 4px solid #1b8a4f; background: #f0f7f3; padding: 20px; margin-top: 20px; border-radius: 5px;"><h4 style="color: #0d5c34;">${j.title}</h4><p style="font-size: 14px; margin-bottom: 10px;"><strong>Openings:</strong> ${j.openings} | <strong>Experience:</strong> ${j.exp}</p><button style="background: #1b8a4f; color: #fff; padding: 8px 15px; border: none; border-radius: 4px; margin-top: 10px; cursor: pointer;">Apply Now</button></div>`; 
         });
     });
 }
