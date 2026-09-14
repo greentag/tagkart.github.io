@@ -1,4 +1,4 @@
-// --- FIREBASE INITIALIZATION FOR PUBLIC PAGE ---
+// FIREBASE CLOUD CONFIG
 const firebaseConfig = {
     apiKey: "AIzaSyD0sQgLV32_ZoB26eYzBY_Elv8JKa4v5wQ",
     authDomain: "dhami-group.firebaseapp.com",
@@ -13,7 +13,18 @@ if (!firebase.apps.length) {
 }
 const db = firebase.firestore();
 
-// --- PUBLIC FETCH FUNCTION (EXACT ORIGINAL LOGIC) ---
+// Helper to fix Google Drive preview URLs to direct images
+function formatImageUrl(url) {
+    if (!url) return "";
+    let cleanUrl = url.trim();
+    if (cleanUrl.includes("drive.google.com/file/d/")) {
+        let fileId = cleanUrl.split("/file/d/")[1].split("/")[0];
+        return `https://drive.google.com/uc?export=view&id=${fileId}`;
+    }
+    return cleanUrl;
+}
+
+// PUBLIC FETCH DATA (Products & Jobs Live Sync)
 function fetchPublicData() {
     db.collection("products").where("status", "==", "Public").onSnapshot(snapshot => {
         let container = document.getElementById('publicProductsContainer'); 
@@ -21,7 +32,11 @@ function fetchPublicData() {
         container.innerHTML = '';
         snapshot.forEach(doc => { 
             let p = doc.data(); 
-            let imgTag = p.imageUrl ? `<img src="${p.imageUrl}" style="width:100%; height:150px; object-fit:cover; border-radius:8px; margin-bottom:10px;">` : `<i class="fa-solid fa-box" style="font-size: 40px; color: #1b8a4f; margin-bottom:10px;"></i>`;
+            let directImg = formatImageUrl(p.imageUrl);
+            let imgTag = directImg 
+                ? `<img src="${directImg}" style="width:100%; height:150px; object-fit:cover; border-radius:8px; margin-bottom:10px;" onerror="this.onerror=null; this.src='https://placehold.co/280x150?text=No+Image';">` 
+                : `<i class="fa-solid fa-box" style="font-size: 40px; color: #1b8a4f; margin-bottom:10px;"></i>`;
+            
             let catBtn = p.catalogUrl ? `<a href="${p.catalogUrl}" target="_blank" style="display:inline-block; margin-top:10px; background:#1b8a4f; color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:12px; font-weight:600;"><i class="fa-solid fa-download"></i> Download Catalogue</a>` : ``;
 
             container.innerHTML += `
@@ -49,12 +64,11 @@ function fetchPublicData() {
     });
 }
 
-// --- NAVIGATION & TABS ---
+// Navigation & Panels
 function showHome() { 
     document.getElementById('homePage').style.display = 'block'; 
     document.getElementById('tabContainer').style.display = 'none'; 
-    let bgAbout = document.getElementById('aboutFullscreenBg');
-    if(bgAbout) bgAbout.style.display = 'none'; 
+    document.getElementById('aboutFullscreenBg').style.display = 'none'; 
     window.scrollTo({ top: 0, behavior: 'smooth' }); 
 }
 
@@ -66,9 +80,11 @@ function selectTab(tabName) {
     if(activePanel) { 
         activePanel.classList.add('active'); 
         let bgAbout = document.getElementById('aboutFullscreenBg'); 
-        if(bgAbout) {
-            bgAbout.style.display = (tabName === 'about') ? 'block' : 'none'; 
-        }
+        if(tabName === 'about') { 
+            bgAbout.style.display = 'block'; 
+        } else { 
+            bgAbout.style.display = 'none'; 
+        } 
         if(tabName === 'contact' || tabName === 'about') { 
             let animatedItems = activePanel.querySelectorAll('.animate-text'); 
             animatedItems.forEach(item => { 
@@ -81,7 +97,7 @@ function selectTab(tabName) {
     } 
 }
 
-// --- 3D CAROUSEL ---
+// 3D Carousel
 let carouselSpinner = document.getElementById('carouselSpinner'); 
 let carouselScene = document.getElementById('carouselScene'); 
 let currentAngle = 0; 
@@ -90,12 +106,12 @@ let isDraggingCarousel = false;
 let didDrag = false;
 
 function moveCarousel(direction) { 
-    if(!carouselSpinner) return;
     currentAngle += direction * 72; 
     carouselSpinner.style.transform = `rotateY(${currentAngle}deg)`; 
 }
 
 let autoRotate = setInterval(() => { moveCarousel(-1); }, 5000);
+
 function resetAutoRotate() { 
     clearInterval(autoRotate); 
     autoRotate = setInterval(() => { moveCarousel(-1); }, 5000); 
@@ -114,10 +130,9 @@ function handleCardClick(tabName) {
     } 
 }
 
-// --- SCROLL TO TOP ---
+// Scroll to Top
 let topBtn = document.getElementById("scrollTopBtn"); 
 window.onscroll = function() { 
-    if(!topBtn) return;
     if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) { 
         topBtn.style.display = "block"; 
     } else { 
@@ -129,17 +144,16 @@ function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' }); 
 }
 
-// --- HERO SLIDER ---
+// Hero Text Animation
 let currentHeroSlide = 1; 
 const totalHeroSlides = 5; 
 setInterval(() => { 
     document.querySelectorAll('.service-slide').forEach(slide => { slide.classList.remove('active'); }); 
     currentHeroSlide = currentHeroSlide >= totalHeroSlides ? 1 : currentHeroSlide + 1; 
-    let el = document.getElementById('h-slide-' + currentHeroSlide);
-    if(el) el.classList.add('active'); 
+    document.getElementById('h-slide-' + currentHeroSlide).classList.add('active'); 
 }, 3000);
 
-// --- INIT ON LOAD ---
+// Init on Load
 window.addEventListener('DOMContentLoaded', () => { 
     if(typeof changeLanguage === 'function') {
         changeLanguage('en'); 
