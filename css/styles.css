@@ -11,6 +11,7 @@ html, body {
     background-color: #f0f7f3;
     color: #333;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #websiteView {
@@ -60,6 +61,7 @@ header {
     top: 0;
     z-index: 1000;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: background 0.3s ease;
 }
 
 .logo {
@@ -492,7 +494,7 @@ nav ul li a:hover, nav ul li a.active-link {
     100% { left: 100%; opacity: 0; }
 }
 
-/* 3D Carousel (Compact Height) */
+/* 3D Carousel */
 .carousel-scene {
     perspective: 1500px;
     width: 100%;
@@ -531,6 +533,7 @@ nav ul li a:hover, nav ul li a.active-link {
     justify-content: center;
     align-items: center;
     user-select: none;
+    transition: background 0.3s ease;
 }
 
 .slide-card i { font-size: 2.6rem; margin-bottom: 12px; }
@@ -793,7 +796,7 @@ nav ul li a:hover, nav ul li a.active-link {
 
 .contact-form button:hover { background: #0d5c34; }
 
-/* Footer - Tight bottom fit without extra blank gap */
+/* Footer */
 footer { 
     background: #0d1e15; 
     color: #fff; 
@@ -816,3 +819,192 @@ footer p { font-size: 12.5px; opacity: 0.85; }
 #scrollTopBtn:hover { background-color: #0d5c34; transform: translateY(-3px); }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ====================================================
+   BULB TOGGLE BUTTON & GLOW ANIMATION
+   ==================================================== */
+.theme-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 6px 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    color: #444;
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.15);
+}
+
+/* Light Mode Bulb Icon */
+.bulb-icon {
+    color: #555;
+    transition: all 0.3s ease;
+}
+
+/* Jab Dark Mode ON hoga tab bulb jalega (Luminate) */
+body.dark-mode .bulb-icon {
+    color: #ffea00 !important;
+    font-weight: 900;
+    filter: drop-shadow(0 0 8px #ffea00) drop-shadow(0 0 16px #ffc107);
+    transform: scale(1.1);
+}
+
+/* ====================================================
+   DARK MODE COLORS & THEME OVERRIDES
+   ==================================================== */
+body.dark-mode {
+    background-color: #0b1310;
+    color: #e2e8f0;
+}
+
+body.dark-mode header {
+    background: #111e18;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid #1c3327;
+}
+
+body.dark-mode nav ul li a {
+    color: #e2e8f0;
+}
+
+body.dark-mode .lang-select {
+    background: #182c22;
+    color: #e2e8f0;
+    border-color: #274737;
+}
+
+body.dark-mode .dropdown-content {
+    background-color: #111e18;
+    border-color: #1c3327;
+    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.6);
+}
+
+body.dark-mode .dropdown-content a {
+    color: #e2e8f0 !important;
+    border-bottom-color: #1c3327;
+}
+
+body.dark-mode .dropdown-content a:hover {
+    background-color: #1b3a2a !important;
+    color: #55ef94 !important;
+}
+
+body.dark-mode .hero {
+    background: radial-gradient(circle at center, transparent 0%, rgba(10, 35, 25, 0.7) 40%, rgba(5, 20, 15, 0.9) 100%);
+}
+
+body.dark-mode .hero-content-box {
+    background: rgba(17, 30, 24, 0.85);
+    border-color: rgba(85, 239, 148, 0.2);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .hero h1 {
+    color: #55ef94;
+    text-shadow: 0 0 15px rgba(85, 239, 148, 0.4);
+}
+
+body.dark-mode .service-slide p {
+    color: #cbd5e1;
+}
+
+/* Carousel cards in dark mode */
+body.dark-mode .slide-card {
+    background: linear-gradient(135deg, #162a20 0%, #0d1e15 100%);
+    border-color: rgba(85, 239, 148, 0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(85, 239, 148, 0.1);
+}
+
+body.dark-mode .slide-card h3 {
+    color: #a3f3c4;
+}
+
+body.dark-mode .slide-card p {
+    color: #94a3b8;
+}
+
+/* Tab Panels in dark mode */
+body.dark-mode .tab-panel {
+    background: #111e18;
+    border-color: #1c3327;
+    color: #e2e8f0;
+}
+
+body.dark-mode .about-content-wrapper {
+    background: rgba(17, 30, 24, 0.9);
+    border-color: rgba(85, 239, 148, 0.2);
+}
+
+body.dark-mode .tab-panel p,
+body.dark-mode .service-list-ul {
+    color: #cbd5e1;
+}
+
+body.dark-mode .tab-panel h3 {
+    color: #55ef94;
+}
+
+body.dark-mode .contact-details {
+    background: #162a20;
+    border-left-color: #55ef94;
+}
+
+body.dark-mode .contact-details p {
+    color: #e2e8f0;
+}
+
+body.dark-mode .contact-form {
+    background: #111e18;
+    border-color: #1c3327;
+}
+
+body.dark-mode .contact-form input,
+body.dark-mode .contact-form textarea {
+    background: #182c22;
+    border-color: #274737;
+    color: #fff;
+}
+
+/* ====================================================
+   LUMINATING / GLOWING MOVING ELEMENTS IN DARK MODE
+   ==================================================== */
+body.dark-mode .gear-1,
+body.dark-mode .gear-2 {
+    color: rgba(85, 239, 148, 0.25) !important;
+    filter: drop-shadow(0 0 12px rgba(85, 239, 148, 0.4));
+}
+
+body.dark-mode .huge-earth {
+    color: rgba(85, 239, 148, 0.12) !important;
+    filter: drop-shadow(0 0 25px rgba(85, 239, 148, 0.2));
+}
+
+body.dark-mode .binary-stream {
+    color: #55ef94 !important;
+    text-shadow: 0 0 10px #55ef94, 0 0 20px rgba(85, 239, 148, 0.8) !important;
+}
+
+body.dark-mode .boat-icon {
+    color: #55ef94 !important;
+    filter: drop-shadow(0 0 12px #55ef94) drop-shadow(0 0 20px #00f2fe);
+}
+
+body.dark-mode .bubble {
+    background: rgba(85, 239, 148, 0.35) !important;
+    box-shadow: 0 0 10px rgba(85, 239, 148, 0.7);
+}
+
+body.dark-mode .leaf {
+    color: rgba(85, 239, 148, 0.5) !important;
+    filter: drop-shadow(0 0 8px rgba(85, 239, 148, 0.6));
+}
+
+body.dark-mode .bg-signal-particle {
+    box-shadow: 0 0 20px #00f2fe, 0 0 40px #55ef94;
+}
