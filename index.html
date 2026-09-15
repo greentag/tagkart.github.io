@@ -81,6 +81,18 @@
                         </select>
                     </li>
 
+                    <!-- Multi-Theme Color Presets & Picker -->
+                    <li class="theme-picker-container" style="display: flex; align-items: center; gap: 6px;">
+                        <select id="themeSelect" onchange="selectPresetTheme(this.value)" class="lang-select" style="padding: 4px 6px;">
+                            <option value="emerald">🟢 Emerald</option>
+                            <option value="royal-blue">🔵 Royal Blue</option>
+                            <option value="cyber-purple">🟣 Purple</option>
+                            <option value="sunset-orange">🟠 Sunset</option>
+                        </select>
+                        <input type="color" id="customColorPicker" onchange="applyCustomColor(this.value)" title="Choose Custom Color" style="width: 28px; height: 28px; border: none; cursor: pointer; border-radius: 50%; background: none;">
+                    </li>
+
+                    <!-- Dark / Light Mode Bulb Toggle -->
                     <li>
                         <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
                             <i class="fa-regular fa-lightbulb bulb-icon" id="bulbIcon"></i>
