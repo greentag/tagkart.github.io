@@ -40,7 +40,7 @@ function fetchPublicData() {
             let imgTag = directImg 
                 ? `<img src="${directImg}" style="width:100%; height:150px; object-fit:cover; border-radius:8px; margin-bottom:10px;" onerror="this.onerror=null; this.src='https://placehold.co/280x150?text=No+Image';">` 
                 : `<i class="fa-solid fa-box" style="font-size: 40px; color: var(--primary-color, #1b8a4f); margin-bottom:10px;"></i>`;
-            
+
             let catBtn = p.catalogUrl ? `<a href="${p.catalogUrl}" target="_blank" style="display:inline-block; margin-top:10px; background:var(--primary-color, #1b8a4f); color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:12px; font-weight:600;"><i class="fa-solid fa-download"></i> Download Catalogue</a>` : ``;
 
             container.innerHTML += `
@@ -74,7 +74,7 @@ function fetchPublicData() {
 function showHome() { 
     document.getElementById('homePage').style.display = 'block'; 
     document.getElementById('tabContainer').style.display = 'none'; 
-    let bgAbout = document.getElementById('aboutFullscreenBg');
+    let bgAbout = document.getElementById('aboutFullscreenBg'); 
     if(bgAbout) bgAbout.style.display = 'none'; 
     window.scrollTo({ top: 0, behavior: 'smooth' }); 
 }
@@ -115,8 +115,8 @@ let isDraggingCarousel = false;
 let didDrag = false;
 
 function moveCarousel(direction) { 
-    if(!carouselSpinner) carouselSpinner = document.getElementById('carouselSpinner');
-    if(!carouselSpinner) return;
+    if(!carouselSpinner) carouselSpinner = document.getElementById('carouselSpinner'); 
+    if(!carouselSpinner) return; 
     currentAngle += direction * 72; 
     carouselSpinner.style.transform = `rotateY(${currentAngle}deg)`; 
 }
@@ -176,8 +176,8 @@ function handleCardClick(tabName) {
 // ====================================================
 let topBtn = document.getElementById("scrollTopBtn"); 
 window.onscroll = function() { 
-    if (!topBtn) topBtn = document.getElementById("scrollTopBtn");
-    if (!topBtn) return;
+    if (!topBtn) topBtn = document.getElementById("scrollTopBtn"); 
+    if (!topBtn) return; 
     if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) { 
         topBtn.style.display = "block"; 
     } else { 
@@ -194,7 +194,7 @@ const totalHeroSlides = 5;
 setInterval(() => { 
     document.querySelectorAll('.service-slide').forEach(slide => { slide.classList.remove('active'); }); 
     currentHeroSlide = currentHeroSlide >= totalHeroSlides ? 1 : currentHeroSlide + 1; 
-    let el = document.getElementById('h-slide-' + currentHeroSlide);
+    let el = document.getElementById('h-slide-' + currentHeroSlide); 
     if(el) el.classList.add('active'); 
 }, 3000);
 
@@ -204,34 +204,14 @@ setInterval(() => {
 function toggleTheme() {
     const isDark = document.body.classList.toggle('dark-mode');
     const bulb = document.getElementById('bulbIcon');
-    
+
     if (isDark) {
         if(bulb) {
             bulb.classList.remove('fa-regular');
             bulb.classList.add('fa-solid');
         }
-        localStorage.setItem('dhami_theme', 'dark');
     } else {
         if(bulb) {
-            bulb.classList.remove('fa-solid');
-            bulb.classList.add('fa-regular');
-        }
-        localStorage.setItem('dhami_theme', 'light');
-    }
-}
-
-function applyStoredTheme() {
-    const savedTheme = localStorage.getItem('dhami_theme');
-    const bulb = document.getElementById('bulbIcon');
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        if (bulb) {
-            bulb.classList.remove('fa-regular');
-            bulb.classList.add('fa-solid');
-        }
-    } else {
-        document.body.classList.remove('dark-mode');
-        if (bulb) {
             bulb.classList.remove('fa-solid');
             bulb.classList.add('fa-regular');
         }
@@ -243,23 +223,26 @@ function applyStoredTheme() {
 // ====================================================
 function selectPresetTheme(themeName) {
     document.documentElement.setAttribute('data-theme', themeName);
-    localStorage.setItem('dhami_selected_theme', themeName);
-    localStorage.removeItem('dhami_custom_color');
-    
-    // Clear inline style overrides so preset works cleanly
+
+    // Clear inline style overrides so preset works cleanly across all elements
     document.documentElement.style.removeProperty('--primary-color');
     document.documentElement.style.removeProperty('--primary-hover');
     document.documentElement.style.removeProperty('--accent-color');
     document.documentElement.style.removeProperty('--glow-color');
+
+    const select = document.getElementById('themeSelect');
+    if (select) select.value = themeName;
 }
 
 function applyCustomColor(hexColor) {
+    const hoverColor = adjustBrightness(hexColor, -20);
     document.documentElement.style.setProperty('--primary-color', hexColor);
-    document.documentElement.style.setProperty('--primary-hover', adjustBrightness(hexColor, -20));
+    document.documentElement.style.setProperty('--primary-hover', hoverColor);
     document.documentElement.style.setProperty('--accent-color', hexColor);
     document.documentElement.style.setProperty('--glow-color', hexColor);
-    
-    localStorage.setItem('dhami_custom_color', hexColor);
+
+    const picker = document.getElementById('customColorPicker');
+    if (picker) picker.value = hexColor;
 }
 
 function adjustBrightness(hex, percent) {
@@ -271,27 +254,16 @@ function adjustBrightness(hex, percent) {
     return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (B<255?B<1?0:B:255)*0x100 + (G<255?G<1?0:G:255)).toString(16).slice(1);
 }
 
-function loadUserTheme() {
-    const savedCustom = localStorage.getItem('dhami_custom_color');
-    const savedPreset = localStorage.getItem('dhami_selected_theme');
-    
-    if (savedCustom) {
-        applyCustomColor(savedCustom);
-        const picker = document.getElementById('customColorPicker');
-        if (picker) picker.value = savedCustom;
-    } else if (savedPreset) {
-        selectPresetTheme(savedPreset);
-        const select = document.getElementById('themeSelect');
-        if (select) select.value = savedPreset;
-    }
+// By default har reload/open par Standard Emerald Green theme force karega
+function loadDefaultTheme() {
+    selectPresetTheme('emerald');
 }
 
 // ====================================================
 // 8. INIT ON DOM LOAD
 // ====================================================
 window.addEventListener('DOMContentLoaded', () => { 
-    applyStoredTheme();
-    loadUserTheme();
+    loadDefaultTheme();
     if(typeof changeLanguage === 'function') {
         changeLanguage('en'); 
     }
