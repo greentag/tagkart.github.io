@@ -990,21 +990,70 @@ body.dark-mode .binary-stream {
     text-shadow: 0 0 10px #55ef94, 0 0 20px rgba(85, 239, 148, 0.8) !important;
 }
 
-body.dark-mode .boat-icon {
-    color: #55ef94 !important;
-    filter: drop-shadow(0 0 12px #55ef94) drop-shadow(0 0 20px #00f2fe);
-}
-
-body.dark-mode .bubble {
-    background: rgba(85, 239, 148, 0.35) !important;
-    box-shadow: 0 0 10px rgba(85, 239, 148, 0.7);
-}
-
-body.dark-mode .leaf {
-    color: rgba(85, 239, 148, 0.5) !important;
-    filter: drop-shadow(0 0 8px rgba(85, 239, 148, 0.6));
-}
-
 body.dark-mode .bg-signal-particle {
     box-shadow: 0 0 20px #00f2fe, 0 0 40px #55ef94;
+}
+
+/* ====================================================
+   GLOWING / LUMINATING ELEMENTS (BOAT, WATER, LOGO, NAME)
+   ==================================================== */
+
+/* 1. LOGO ICON & SPINNING EARTH LUMINATE */
+body.dark-mode .earth-icon {
+    color: #55ef94 !important;
+    filter: drop-shadow(0 0 10px #55ef94) drop-shadow(0 0 20px #1b8a4f) !important;
+}
+
+body.dark-mode .logo-icon {
+    filter: drop-shadow(0 0 8px rgba(85, 239, 148, 0.8)) drop-shadow(0 0 15px rgba(0, 242, 254, 0.4)) !important;
+}
+
+/* 2. WEBSITE TITLE & SUBTITLE LUMINATE */
+body.dark-mode .logo-title {
+    color: #55ef94 !important;
+    text-shadow: 0 0 10px rgba(85, 239, 148, 0.7), 0 0 20px rgba(85, 239, 148, 0.4) !important;
+}
+
+body.dark-mode .logo-subtitle {
+    color: #00f2fe !important;
+    text-shadow: 0 0 8px rgba(0, 242, 254, 0.8) !important;
+}
+
+/* 3. MOVING BOAT LUMINATE */
+body.dark-mode .boat-icon {
+    color: #55ef94 !important;
+    filter: drop-shadow(0 0 12px #55ef94) drop-shadow(0 0 25px #00f2fe) drop-shadow(0 0 35px #55ef94) !important;
+}
+
+/* 4. MOVING WATER WAVES GLOW & COLOR SHIFT */
+body.dark-mode .core-offerings-section {
+    background: linear-gradient(180deg, #05261e 0%, #031410 100%) !important;
+}
+
+body.dark-mode .ocean-wave {
+    filter: drop-shadow(0 -4px 12px rgba(0, 242, 254, 0.6)) hue-rotate(85deg) brightness(1.2) !important;
+}
+
+body.dark-mode .ocean-wave.w1 {
+    opacity: 0.6;
+}
+
+body.dark-mode .ocean-wave.w2 {
+    opacity: 0.75;
+}
+
+body.dark-mode .ocean-wave.w3 {
+    opacity: 0.9;
+}
+
+/* 5. WATER BUBBLES */
+body.dark-mode .bubble {
+    background: rgba(85, 239, 148, 0.4) !important;
+    box-shadow: 0 0 12px rgba(85, 239, 148, 0.8), 0 0 20px rgba(0, 242, 254, 0.5) !important;
+}
+
+/* 6. FLOATING LEAVES */
+body.dark-mode .leaf {
+    color: rgba(85, 239, 148, 0.6) !important;
+    filter: drop-shadow(0 0 10px rgba(85, 239, 148, 0.8)) !important;
 }
