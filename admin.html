@@ -48,7 +48,7 @@
         }
         .close-modal:hover { color: #e34f26; }
         .login-box h2 {
-            color: #0d5c34;
+            color: var(--primary-hover, #0d5c34);
             text-align: center;
             margin-bottom: 20px;
             font-size: 24px;
@@ -78,12 +78,12 @@
             background: #f0f7f3;
             padding: 10px 15px;
             border-radius: 6px;
-            border: 1px dashed #1b8a4f;
+            border: 1px dashed var(--primary-color, #1b8a4f);
             margin-bottom: 20px;
         }
         .captcha-box span {
             font-weight: 700;
-            color: #0d5c34;
+            color: var(--primary-hover, #0d5c34);
             font-size: 16px;
             letter-spacing: 2px;
         }
@@ -97,7 +97,7 @@
         }
         .login-box button {
             width: 100%;
-            background: #1b8a4f;
+            background: var(--primary-color, #1b8a4f);
             color: white;
             padding: 12px;
             border: none;
@@ -107,7 +107,7 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        .login-box button:hover { background: #0d5c34; }
+        .login-box button:hover { background: var(--primary-hover, #0d5c34); }
         .login-error {
             color: #e34f26;
             font-size: 13px;
@@ -119,11 +119,19 @@
             display: block;
             text-align: right;
             font-size: 13px;
-            color: #1b8a4f;
+            color: var(--primary-color, #1b8a4f);
             margin-top: -10px;
             margin-bottom: 20px;
             cursor: pointer;
             text-decoration: underline;
+        }
+        .theme-picker-container select {
+            background: #ffffff;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
         }
     </style>
 
@@ -132,13 +140,27 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 </head>
-<body style="background-color: #f0f7f3; margin: 0; font-family: 'Poppins', sans-serif;">
+<body style="background-color: var(--bg-main, #f0f7f3); margin: 0; font-family: 'Poppins', sans-serif;">
 
     <!-- SECURE DASHBOARD -->
     <div id="adminPortal" style="display: none; min-height: 100vh; background: #f8fbf9;">
-        <div class="admin-topbar">
+        <div class="admin-topbar" style="background: var(--accent-color, #056664); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
             <h2><i class="fa-solid fa-earth-americas"></i> Dhami Group Cloud Portal</h2>
-            <button onclick="logoutUser()" style="background: #e34f26; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>
+            
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <!-- Theme Picker in Admin Header -->
+                <div class="theme-picker-container" style="display: flex; align-items: center; gap: 6px;">
+                    <select id="themeSelectAdmin" onchange="selectPresetTheme(this.value)" style="padding: 4px 6px;">
+                        <option value="emerald">🟢 Emerald</option>
+                        <option value="royal-blue">🔵 Royal Blue</option>
+                        <option value="cyber-purple">🟣 Purple</option>
+                        <option value="sunset-orange">🟠 Sunset</option>
+                    </select>
+                    <input type="color" id="customColorPickerAdmin" onchange="applyCustomColor(this.value)" title="Choose Custom Color" style="width: 28px; height: 28px; border: none; cursor: pointer; border-radius: 50%; background: none;">
+                </div>
+
+                <button onclick="logoutUser()" style="background: #e34f26; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>
+            </div>
         </div>
         
         <div class="admin-layout">
@@ -160,9 +182,9 @@
             <div class="admin-content">
                 <!-- Manage Products -->
                 <div id="admin-manage-prod" class="admin-section active">
-                    <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">Manage Products (Free Link Version)</h2>
+                    <h2 style="color: var(--primary-hover, #0d5c34); border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">Manage Products (Free Link Version)</h2>
                     <div class="admin-card">
-                        <h4 style="color: #0d5c34; margin-bottom: 15px;"><i class="fa-solid fa-plus-circle"></i> Add / Edit Product</h4>
+                        <h4 style="color: var(--primary-hover, #0d5c34); margin-bottom: 15px;"><i class="fa-solid fa-plus-circle"></i> Add / Edit Product</h4>
                         
                         <div class="form-grid">
                             <input type="text" id="addProdName" placeholder="Product Name (Mandatory)">
@@ -200,9 +222,9 @@
 
                 <!-- Manage Careers -->
                 <div id="admin-manage-car" class="admin-section" style="display: none;">
-                    <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">Manage Careers (Cloud)</h2>
+                    <h2 style="color: var(--primary-hover, #0d5c34); border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">Manage Careers (Cloud)</h2>
                     <div class="admin-card">
-                        <h4 style="color: #0d5c34; margin-bottom: 15px;"><i class="fa-solid fa-file-signature"></i> Post / Edit Job Vacancy</h4>
+                        <h4 style="color: var(--primary-hover, #0d5c34); margin-bottom: 15px;"><i class="fa-solid fa-file-signature"></i> Post / Edit Job Vacancy</h4>
                         <div class="form-grid">
                             <input type="text" id="addJobTitle" placeholder="Designation">
                             <input type="number" id="addJobReq" placeholder="Total Requirement">
@@ -221,9 +243,9 @@
 
                 <!-- Manage Users -->
                 <div id="admin-manage-user" class="admin-section" style="display: none;">
-                    <h2 style="color: #0d5c34; border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">User Management (Cloud)</h2>
+                    <h2 style="color: var(--primary-hover, #0d5c34); border-bottom: 2px solid #a3f3c4; padding-bottom: 10px; margin-bottom: 20px;">User Management (Cloud)</h2>
                     <div class="admin-card">
-                        <h4 style="color: #0d5c34; margin-bottom: 15px;"><i class="fa-solid fa-user-plus"></i> Create / Update User</h4>
+                        <h4 style="color: var(--primary-hover, #0d5c34); margin-bottom: 15px;"><i class="fa-solid fa-user-plus"></i> Create / Update User</h4>
                         <div class="form-grid">
                             <input type="text" id="addUserName" placeholder="Full Name">
                             <input type="email" id="addUserEmail" placeholder="Email Address">
@@ -250,6 +272,17 @@
     <!-- Login Modal -->
     <div class="modal-overlay" id="loginModal" style="display: flex;">
         <div class="login-box">
+            <!-- Theme Picker inside Login Modal -->
+            <div style="position: absolute; top: 15px; left: 20px; display: flex; align-items: center; gap: 6px;">
+                <select id="themeSelectModal" onchange="selectPresetTheme(this.value)" style="padding: 2px 4px; font-size: 11px;">
+                    <option value="emerald">🟢 Emerald</option>
+                    <option value="royal-blue">🔵 Blue</option>
+                    <option value="cyber-purple">🟣 Purple</option>
+                    <option value="sunset-orange">🟠 Sunset</option>
+                </select>
+                <input type="color" id="customColorPickerModal" onchange="applyCustomColor(this.value)" title="Choose Custom Color" style="width: 22px; height: 22px; border: none; cursor: pointer; border-radius: 50%; background: none;">
+            </div>
+
             <i class="fa-solid fa-xmark close-modal" onclick="closeLoginModal()"></i>
             <h2>Secure Portal Login</h2>
             <div class="input-group">
@@ -289,8 +322,50 @@
 
     <script src="js/admin.js"></script>
     <script>
-        // Ensure captcha loads immediately on page load
+        // Theme Functions for Admin Page
+        function selectPresetTheme(themeName) {
+            document.documentElement.setAttribute('data-theme', themeName);
+            localStorage.setItem('dhami_selected_theme', themeName);
+            localStorage.removeItem('dhami_custom_color');
+            syncThemeSelectors(themeName, null);
+        }
+
+        function applyCustomColor(hexColor) {
+            document.documentElement.style.setProperty('--primary-color', hexColor);
+            document.documentElement.style.setProperty('--primary-hover', hexColor);
+            document.documentElement.style.setProperty('--accent-color', hexColor);
+            document.documentElement.style.setProperty('--glow-color', hexColor);
+            localStorage.setItem('dhami_custom_color', hexColor);
+            syncThemeSelectors(null, hexColor);
+        }
+
+        function syncThemeSelectors(preset, customHex) {
+            const adminSel = document.getElementById('themeSelectAdmin');
+            const modalSel = document.getElementById('themeSelectModal');
+            const adminPick = document.getElementById('customColorPickerAdmin');
+            const modalPick = document.getElementById('customColorPickerModal');
+
+            if (preset) {
+                if(adminSel) adminSel.value = preset;
+                if(modalSel) modalSel.value = preset;
+            }
+            if (customHex) {
+                if(adminPick) adminPick.value = customHex;
+                if(modalPick) modalPick.value = customHex;
+            }
+        }
+
+        // Auto-load Theme & Captcha on Load
         window.addEventListener('DOMContentLoaded', () => {
+            const savedCustom = localStorage.getItem('dhami_custom_color');
+            const savedPreset = localStorage.getItem('dhami_selected_theme');
+            
+            if (savedCustom) {
+                applyCustomColor(savedCustom);
+            } else if (savedPreset) {
+                selectPresetTheme(savedPreset);
+            }
+
             if (typeof generateCaptcha === 'function') {
                 generateCaptcha();
             }
