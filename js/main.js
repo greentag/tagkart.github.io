@@ -39,16 +39,16 @@ function fetchPublicData() {
             let directImg = formatImageUrl(p.imageUrl);
             let imgTag = directImg 
                 ? `<img src="${directImg}" style="width:100%; height:150px; object-fit:cover; border-radius:8px; margin-bottom:10px;" onerror="this.onerror=null; this.src='https://placehold.co/280x150?text=No+Image';">` 
-                : `<i class="fa-solid fa-box" style="font-size: 40px; color: #1b8a4f; margin-bottom:10px;"></i>`;
+                : `<i class="fa-solid fa-box" style="font-size: 40px; color: var(--primary-color, #1b8a4f); margin-bottom:10px;"></i>`;
             
-            let catBtn = p.catalogUrl ? `<a href="${p.catalogUrl}" target="_blank" style="display:inline-block; margin-top:10px; background:#1b8a4f; color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:12px; font-weight:600;"><i class="fa-solid fa-download"></i> Download Catalogue</a>` : ``;
+            let catBtn = p.catalogUrl ? `<a href="${p.catalogUrl}" target="_blank" style="display:inline-block; margin-top:10px; background:var(--primary-color, #1b8a4f); color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:12px; font-weight:600;"><i class="fa-solid fa-download"></i> Download Catalogue</a>` : ``;
 
             container.innerHTML += `
-                <div style="border: 1px solid #dbe8e0; padding: 20px; border-radius: 10px; width: 280px; text-align: center; background:#fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="border: 1px solid var(--border-color, #dbe8e0); padding: 20px; border-radius: 10px; width: 280px; text-align: center; background:var(--card-bg, #fff); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                     ${imgTag}
-                    <h4 style="margin: 10px 0; color:#0d5c34;">${p.name}</h4>
-                    <p style="font-size:13px; color:#666;"><strong>Cat:</strong> ${p.category}</p>
-                    <div style="font-size:12px; color:#555; margin-top:10px; text-align:left; height:70px; overflow-y:auto; padding:5px; background:#f8fbf9; border-radius:4px;">
+                    <h4 style="margin: 10px 0; color:var(--primary-hover, #0d5c34);">${p.name}</h4>
+                    <p style="font-size:13px; color:var(--text-muted, #666);"><strong>Cat:</strong> ${p.category}</p>
+                    <div style="font-size:12px; color:var(--text-main, #555); margin-top:10px; text-align:left; height:70px; overflow-y:auto; padding:5px; background:#f8fbf9; border-radius:4px;">
                         <strong>Specs:</strong><br>${p.specifications ? p.specifications.replace(/\n/g, '<br>') : 'Not specified'}
                     </div>
                     ${catBtn}
@@ -63,7 +63,7 @@ function fetchPublicData() {
         container.innerHTML = '';
         snapshot.forEach(doc => { 
             let j = doc.data(); 
-            container.innerHTML += `<div style="border-left: 4px solid #1b8a4f; background: #f0f7f3; padding: 20px; margin-top: 20px; border-radius: 5px;"><h4 style="color: #0d5c34;">${j.title}</h4><p style="font-size: 14px; margin-bottom: 10px;"><strong>Openings:</strong> ${j.openings} | <strong>Experience:</strong> ${j.exp}</p><button style="background: #1b8a4f; color: #fff; padding: 8px 15px; border: none; border-radius: 4px; margin-top: 10px; cursor: pointer;">Apply Now</button></div>`; 
+            container.innerHTML += `<div style="border-left: 4px solid var(--primary-color, #1b8a4f); background: #f0f7f3; padding: 20px; margin-top: 20px; border-radius: 5px;"><h4 style="color: var(--primary-hover, #0d5c34);">${j.title}</h4><p style="font-size: 14px; margin-bottom: 10px;"><strong>Openings:</strong> ${j.openings} | <strong>Experience:</strong> ${j.exp}</p><button style="background: var(--primary-color, #1b8a4f); color: #fff; padding: 8px 15px; border: none; border-radius: 4px; margin-top: 10px; cursor: pointer;">Apply Now</button></div>`; 
         });
     });
 }
@@ -239,10 +239,59 @@ function applyStoredTheme() {
 }
 
 // ====================================================
-// 7. INIT ON DOM LOAD
+// 7. MULTI-THEME PRESETS & CUSTOM COLOR PICKER
+// ====================================================
+function selectPresetTheme(themeName) {
+    document.documentElement.setAttribute('data-theme', themeName);
+    localStorage.setItem('dhami_selected_theme', themeName);
+    localStorage.removeItem('dhami_custom_color');
+    
+    // Clear inline style overrides so preset works cleanly
+    document.documentElement.style.removeProperty('--primary-color');
+    document.documentElement.style.removeProperty('--primary-hover');
+    document.documentElement.style.removeProperty('--accent-color');
+    document.documentElement.style.removeProperty('--glow-color');
+}
+
+function applyCustomColor(hexColor) {
+    document.documentElement.style.setProperty('--primary-color', hexColor);
+    document.documentElement.style.setProperty('--primary-hover', adjustBrightness(hexColor, -20));
+    document.documentElement.style.setProperty('--accent-color', hexColor);
+    document.documentElement.style.setProperty('--glow-color', hexColor);
+    
+    localStorage.setItem('dhami_custom_color', hexColor);
+}
+
+function adjustBrightness(hex, percent) {
+    let num = parseInt(hex.replace("#",""), 16),
+        amt = Math.round(2.55 * percent),
+        R = (num >> 16) + amt,
+        B = ((num >> 8) & 0x00FF) + amt,
+        G = (num & 0x0000FF) + amt;
+    return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (B<255?B<1?0:B:255)*0x100 + (G<255?G<1?0:G:255)).toString(16).slice(1);
+}
+
+function loadUserTheme() {
+    const savedCustom = localStorage.getItem('dhami_custom_color');
+    const savedPreset = localStorage.getItem('dhami_selected_theme');
+    
+    if (savedCustom) {
+        applyCustomColor(savedCustom);
+        const picker = document.getElementById('customColorPicker');
+        if (picker) picker.value = savedCustom;
+    } else if (savedPreset) {
+        selectPresetTheme(savedPreset);
+        const select = document.getElementById('themeSelect');
+        if (select) select.value = savedPreset;
+    }
+}
+
+// ====================================================
+// 8. INIT ON DOM LOAD
 // ====================================================
 window.addEventListener('DOMContentLoaded', () => { 
     applyStoredTheme();
+    loadUserTheme();
     if(typeof changeLanguage === 'function') {
         changeLanguage('en'); 
     }
