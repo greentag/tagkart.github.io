@@ -18,6 +18,72 @@ if (firebase.apps.length < 2) {
     secondaryApp = firebase.app("Secondary"); 
 }
 
+// ====================================================
+// THEME MANAGEMENT & SYNC LOGIC (FOR ADMIN PORTAL)
+// ====================================================
+function selectPresetTheme(themeName) {
+    document.documentElement.setAttribute('data-theme', themeName);
+    localStorage.setItem('dhami_selected_theme', themeName);
+    localStorage.removeItem('dhami_custom_color');
+    
+    // Reset any manual inline style overrides
+    document.documentElement.style.removeProperty('--primary-color');
+    document.documentElement.style.removeProperty('--primary-hover');
+    document.documentElement.style.removeProperty('--accent-color');
+    document.documentElement.style.removeProperty('--glow-color');
+
+    syncAdminThemePickers(themeName, null);
+}
+
+function applyCustomColor(hexColor) {
+    const hoverColor = adjustBrightness(hexColor, -20);
+    document.documentElement.style.setProperty('--primary-color', hexColor);
+    document.documentElement.style.setProperty('--primary-hover', hoverColor);
+    document.documentElement.style.setProperty('--accent-color', hexColor);
+    document.documentElement.style.setProperty('--glow-color', hexColor);
+    
+    localStorage.setItem('dhami_custom_color', hexColor);
+    syncAdminThemePickers(null, hexColor);
+}
+
+function adjustBrightness(hex, percent) {
+    let num = parseInt(hex.replace("#",""), 16),
+        amt = Math.round(2.55 * percent),
+        R = (num >> 16) + amt,
+        B = ((num >> 8) & 0x00FF) + amt,
+        G = (num & 0x0000FF) + amt;
+    return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (B<255?B<1?0:B:255)*0x100 + (G<255?G<1?0:G:255)).toString(16).slice(1);
+}
+
+function syncAdminThemePickers(preset, customHex) {
+    const selectors = ['themeSelectAdmin', 'themeSelectModal', 'themeSelect'];
+    const pickers = ['customColorPickerAdmin', 'customColorPickerModal', 'customColorPicker'];
+
+    if (preset) {
+        selectors.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = preset;
+        });
+    }
+    if (customHex) {
+        pickers.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = customHex;
+        });
+    }
+}
+
+function loadUserTheme() {
+    const savedCustom = localStorage.getItem('dhami_custom_color');
+    const savedPreset = localStorage.getItem('dhami_selected_theme');
+    
+    if (savedCustom) {
+        applyCustomColor(savedCustom);
+    } else if (savedPreset) {
+        selectPresetTheme(savedPreset);
+    }
+}
+
 // Captcha Logic
 let captchaCorrect = 0;
 function generateCaptcha() {
@@ -117,7 +183,7 @@ function applyPermissions(role) {
         switchAdminTab('manage-prod');
     } else if (role === "Manager - Both") {
         navProd.style.display = 'block'; 
-        navCar.style.display = 'block';
+        navCar.style.display = 'block'; 
         switchAdminTab('manage-prod');
     } else if (role === "Only Manage Product") {
         navProd.style.display = 'block'; 
@@ -202,7 +268,7 @@ function editProduct(id, name, cat, color, qty, desc, spec, imgUrl, catUrl, isHi
     document.getElementById('addProdImage').value = imgUrl !== 'undefined' ? imgUrl : "";
     document.getElementById('addProdCatalog').value = catUrl !== 'undefined' ? catUrl : "";
     document.getElementById('addProdHidden').checked = isHidden; 
-    
+
     document.getElementById('btnSaveProd').innerHTML = "<i class='fa-solid fa-save'></i> Update Product"; 
     document.getElementById('btnCancelProd').style.display = "inline-block";
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -409,3 +475,8 @@ function deleteDoc(col, id) {
     let msg = col === 'users' ? "Remove user's Role and Access from Dashboard?" : "Permanently delete?"; 
     if(confirm(msg)) db.collection(col).doc(id).delete(); 
 }
+
+// Auto-load Theme on Init
+window.addEventListener('DOMContentLoaded', () => {
+    loadUserTheme();
+});
