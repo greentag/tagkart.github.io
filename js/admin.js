@@ -23,9 +23,7 @@ if (firebase.apps.length < 2) {
 // ====================================================
 function selectPresetTheme(themeName) {
     document.documentElement.setAttribute('data-theme', themeName);
-    localStorage.setItem('dhami_selected_theme', themeName);
-    localStorage.removeItem('dhami_custom_color');
-    
+
     // Reset any manual inline style overrides
     document.documentElement.style.removeProperty('--primary-color');
     document.documentElement.style.removeProperty('--primary-hover');
@@ -41,8 +39,7 @@ function applyCustomColor(hexColor) {
     document.documentElement.style.setProperty('--primary-hover', hoverColor);
     document.documentElement.style.setProperty('--accent-color', hexColor);
     document.documentElement.style.setProperty('--glow-color', hexColor);
-    
-    localStorage.setItem('dhami_custom_color', hexColor);
+
     syncAdminThemePickers(null, hexColor);
 }
 
@@ -73,15 +70,9 @@ function syncAdminThemePickers(preset, customHex) {
     }
 }
 
-function loadUserTheme() {
-    const savedCustom = localStorage.getItem('dhami_custom_color');
-    const savedPreset = localStorage.getItem('dhami_selected_theme');
-    
-    if (savedCustom) {
-        applyCustomColor(savedCustom);
-    } else if (savedPreset) {
-        selectPresetTheme(savedPreset);
-    }
+// Har baar fresh open par Emerald Green theme load karega
+function loadDefaultAdminTheme() {
+    selectPresetTheme('emerald');
 }
 
 // Captcha Logic
@@ -476,7 +467,7 @@ function deleteDoc(col, id) {
     if(confirm(msg)) db.collection(col).doc(id).delete(); 
 }
 
-// Auto-load Theme on Init
+// Auto-load Standard Default Theme on Init
 window.addEventListener('DOMContentLoaded', () => {
-    loadUserTheme();
+    loadDefaultAdminTheme();
 });
