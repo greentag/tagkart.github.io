@@ -1,4 +1,6 @@
-// FIREBASE CLOUD CONFIG
+// ====================================================
+// 1. FIREBASE CLOUD CONFIG
+// ====================================================
 const firebaseConfig = {
     apiKey: "AIzaSyD0sQgLV32_ZoB26eYzBY_Elv8JKa4v5wQ",
     authDomain: "dhami-group.firebaseapp.com",
@@ -24,7 +26,9 @@ function formatImageUrl(url) {
     return cleanUrl;
 }
 
-// PUBLIC FETCH DATA (Products & Jobs Live Sync)
+// ====================================================
+// 2. PUBLIC FETCH DATA (Products & Jobs Live Sync)
+// ====================================================
 function fetchPublicData() {
     db.collection("products").where("status", "==", "Public").onSnapshot(snapshot => {
         let container = document.getElementById('publicProductsContainer'); 
@@ -64,11 +68,14 @@ function fetchPublicData() {
     });
 }
 
-// Navigation & Panels
+// ====================================================
+// 3. NAVIGATION & TABS
+// ====================================================
 function showHome() { 
     document.getElementById('homePage').style.display = 'block'; 
     document.getElementById('tabContainer').style.display = 'none'; 
-    document.getElementById('aboutFullscreenBg').style.display = 'none'; 
+    let bgAbout = document.getElementById('aboutFullscreenBg');
+    if(bgAbout) bgAbout.style.display = 'none'; 
     window.scrollTo({ top: 0, behavior: 'smooth' }); 
 }
 
@@ -81,9 +88,9 @@ function selectTab(tabName) {
         activePanel.classList.add('active'); 
         let bgAbout = document.getElementById('aboutFullscreenBg'); 
         if(tabName === 'about') { 
-            bgAbout.style.display = 'block'; 
+            if(bgAbout) bgAbout.style.display = 'block'; 
         } else { 
-            bgAbout.style.display = 'none'; 
+            if(bgAbout) bgAbout.style.display = 'none'; 
         } 
         if(tabName === 'contact' || tabName === 'about') { 
             let animatedItems = activePanel.querySelectorAll('.animate-text'); 
@@ -97,7 +104,9 @@ function selectTab(tabName) {
     } 
 }
 
-// 3D Carousel
+// ====================================================
+// 4. 3D CAROUSEL
+// ====================================================
 let carouselSpinner = document.getElementById('carouselSpinner'); 
 let carouselScene = document.getElementById('carouselScene'); 
 let currentAngle = 0; 
@@ -106,6 +115,8 @@ let isDraggingCarousel = false;
 let didDrag = false;
 
 function moveCarousel(direction) { 
+    if(!carouselSpinner) carouselSpinner = document.getElementById('carouselSpinner');
+    if(!carouselSpinner) return;
     currentAngle += direction * 72; 
     carouselSpinner.style.transform = `rotateY(${currentAngle}deg)`; 
 }
@@ -118,10 +129,40 @@ function resetAutoRotate() {
 }
 
 if(carouselScene) {
-    carouselScene.addEventListener('mousedown', (e) => { isDraggingCarousel = true; didDrag = false; startX = e.clientX; resetAutoRotate(); });
-    window.addEventListener('mouseup', (e) => { if(!isDraggingCarousel) return; isDraggingCarousel = false; let endX = e.clientX; let diff = startX - endX; if(Math.abs(diff) > 50) { didDrag = true; if(diff > 0) moveCarousel(-1); else moveCarousel(1); } });
-    carouselScene.addEventListener('touchstart', (e) => { isDraggingCarousel = true; didDrag = false; startX = e.touches[0].clientX; resetAutoRotate(); });
-    window.addEventListener('touchend', (e) => { if(!isDraggingCarousel) return; isDraggingCarousel = false; let endX = e.changedTouches[0].clientX; let diff = startX - endX; if(Math.abs(diff) > 50) { didDrag = true; if(diff > 0) moveCarousel(-1); else moveCarousel(1); } });
+    carouselScene.addEventListener('mousedown', (e) => { 
+        isDraggingCarousel = true; 
+        didDrag = false; 
+        startX = e.clientX; 
+        resetAutoRotate(); 
+    });
+    window.addEventListener('mouseup', (e) => { 
+        if(!isDraggingCarousel) return; 
+        isDraggingCarousel = false; 
+        let endX = e.clientX; 
+        let diff = startX - endX; 
+        if(Math.abs(diff) > 50) { 
+            didDrag = true; 
+            if(diff > 0) moveCarousel(-1); 
+            else moveCarousel(1); 
+        } 
+    });
+    carouselScene.addEventListener('touchstart', (e) => { 
+        isDraggingCarousel = true; 
+        didDrag = false; 
+        startX = e.touches[0].clientX; 
+        resetAutoRotate(); 
+    });
+    window.addEventListener('touchend', (e) => { 
+        if(!isDraggingCarousel) return; 
+        isDraggingCarousel = false; 
+        let endX = e.changedTouches[0].clientX; 
+        let diff = startX - endX; 
+        if(Math.abs(diff) > 50) { 
+            didDrag = true; 
+            if(diff > 0) moveCarousel(-1); 
+            else moveCarousel(1); 
+        } 
+    });
 }
 
 function handleCardClick(tabName) { 
@@ -130,9 +171,13 @@ function handleCardClick(tabName) {
     } 
 }
 
-// Scroll to Top
+// ====================================================
+// 5. SCROLL TO TOP & HERO ANIMATION
+// ====================================================
 let topBtn = document.getElementById("scrollTopBtn"); 
 window.onscroll = function() { 
+    if (!topBtn) topBtn = document.getElementById("scrollTopBtn");
+    if (!topBtn) return;
     if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) { 
         topBtn.style.display = "block"; 
     } else { 
@@ -144,17 +189,60 @@ function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' }); 
 }
 
-// Hero Text Animation
 let currentHeroSlide = 1; 
 const totalHeroSlides = 5; 
 setInterval(() => { 
     document.querySelectorAll('.service-slide').forEach(slide => { slide.classList.remove('active'); }); 
     currentHeroSlide = currentHeroSlide >= totalHeroSlides ? 1 : currentHeroSlide + 1; 
-    document.getElementById('h-slide-' + currentHeroSlide).classList.add('active'); 
+    let el = document.getElementById('h-slide-' + currentHeroSlide);
+    if(el) el.classList.add('active'); 
 }, 3000);
 
-// Init on Load
+// ====================================================
+// 6. DARK / LIGHT THEME TOGGLE
+// ====================================================
+function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    const bulb = document.getElementById('bulbIcon');
+    
+    if (isDark) {
+        if(bulb) {
+            bulb.classList.remove('fa-regular');
+            bulb.classList.add('fa-solid');
+        }
+        localStorage.setItem('dhami_theme', 'dark');
+    } else {
+        if(bulb) {
+            bulb.classList.remove('fa-solid');
+            bulb.classList.add('fa-regular');
+        }
+        localStorage.setItem('dhami_theme', 'light');
+    }
+}
+
+function applyStoredTheme() {
+    const savedTheme = localStorage.getItem('dhami_theme');
+    const bulb = document.getElementById('bulbIcon');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (bulb) {
+            bulb.classList.remove('fa-regular');
+            bulb.classList.add('fa-solid');
+        }
+    } else {
+        document.body.classList.remove('dark-mode');
+        if (bulb) {
+            bulb.classList.remove('fa-solid');
+            bulb.classList.add('fa-regular');
+        }
+    }
+}
+
+// ====================================================
+// 7. INIT ON DOM LOAD
+// ====================================================
 window.addEventListener('DOMContentLoaded', () => { 
+    applyStoredTheme();
     if(typeof changeLanguage === 'function') {
         changeLanguage('en'); 
     }
