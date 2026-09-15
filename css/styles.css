@@ -1,3 +1,74 @@
+/* ====================================================
+   1. CSS VARIABLES & MULTI-THEME PRESETS
+   ==================================================== */
+:root {
+    --primary-color: #1b8a4f;
+    --primary-hover: #0d5c34;
+    --accent-color: #056664;
+    --bg-main: #f0f7f3;
+    --card-bg: #ffffff;
+    --text-main: #333333;
+    --text-muted: #666666;
+    --border-color: #dbe8e0;
+    --glow-color: rgba(27, 138, 79, 0.4);
+}
+
+/* Preset: Emerald Green (Default) */
+[data-theme="emerald"] {
+    --primary-color: #1b8a4f;
+    --primary-hover: #0d5c34;
+    --accent-color: #056664;
+    --bg-main: #f0f7f3;
+    --card-bg: #ffffff;
+    --text-main: #333333;
+    --glow-color: rgba(27, 138, 79, 0.5);
+}
+
+/* Preset: Royal Blue */
+[data-theme="royal-blue"] {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --accent-color: #1e3a8a;
+    --bg-main: #eff6ff;
+    --card-bg: #ffffff;
+    --text-main: #1e293b;
+    --glow-color: rgba(37, 99, 235, 0.5);
+}
+
+/* Preset: Cyber Purple */
+[data-theme="cyber-purple"] {
+    --primary-color: #9333ea;
+    --primary-hover: #7e22ce;
+    --accent-color: #581c87;
+    --bg-main: #faf5ff;
+    --card-bg: #ffffff;
+    --text-main: #2e1065;
+    --glow-color: rgba(147, 51, 234, 0.5);
+}
+
+/* Preset: Sunset Orange */
+[data-theme="sunset-orange"] {
+    --primary-color: #ea580c;
+    --primary-hover: #c2410c;
+    --accent-color: #7c2d12;
+    --bg-main: #fff7ed;
+    --card-bg: #ffffff;
+    --text-main: #431407;
+    --glow-color: rgba(234, 88, 12, 0.5);
+}
+
+/* Dark Mode Overrides */
+body.dark-mode {
+    --bg-main: #0b1310;
+    --card-bg: #111e18;
+    --text-main: #e2e8f0;
+    --text-muted: #94a3b8;
+    --border-color: #1c3327;
+}
+
+/* ====================================================
+   2. GLOBAL BASE STYLES
+   ==================================================== */
 * {
     margin: 0;
     padding: 0;
@@ -8,8 +79,8 @@
 
 html, body {
     height: 100%;
-    background-color: #f0f7f3;
-    color: #333;
+    background-color: var(--bg-main);
+    color: var(--text-main);
     overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -50,9 +121,11 @@ html, body {
     100% { top: 110%; transform: translateX(-30px) rotate(360deg); opacity: 0.2; }
 }
 
-/* Header */
+/* ====================================================
+   3. HEADER & NAVIGATION
+   ==================================================== */
 header {
-    background: #ffffff;
+    background: var(--card-bg);
     padding: 10px 5%;
     display: flex;
     align-items: center;
@@ -73,7 +146,7 @@ header {
 }
 
 .earth-icon {
-    color: #1b8a4f;
+    color: var(--primary-color);
     font-size: 28px;
     animation: spinGlobe 8s linear infinite;
 }
@@ -92,7 +165,7 @@ header {
 .logo-title {
     font-size: 24px;
     font-weight: 700;
-    color: #056664;
+    color: var(--accent-color);
     letter-spacing: 2px;
     line-height: 1.1;
     text-transform: uppercase;
@@ -102,7 +175,7 @@ header {
 .logo-subtitle {
     font-size: 10.5px;
     font-weight: 600;
-    color: #1b8a4f;
+    color: var(--primary-color);
     letter-spacing: 2.5px;
     line-height: 1;
     text-transform: uppercase;
@@ -121,7 +194,7 @@ nav ul {
 }
 
 nav ul li a {
-    color: #333333;
+    color: var(--text-main);
     text-decoration: none;
     font-size: 13px;
     font-weight: 600;
@@ -133,7 +206,7 @@ nav ul li a {
 
 nav ul li a:hover, nav ul li a.active-link {
     background: rgba(27, 138, 79, 0.1);
-    color: #1b8a4f;
+    color: var(--primary-color);
 }
 
 /* Dropdown */
@@ -145,7 +218,7 @@ nav ul li a:hover, nav ul li a.active-link {
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #ffffff;
+    background-color: var(--card-bg);
     min-width: 220px;
     box-shadow: 0px 8px 25px rgba(0,0,0,0.15);
     border-radius: 8px;
@@ -153,7 +226,7 @@ nav ul li a:hover, nav ul li a.active-link {
     left: 0;
     z-index: 1001;
     overflow: hidden;
-    border: 1px solid #dbe8e0;
+    border: 1px solid var(--border-color);
 }
 
 .dropdown:hover .dropdown-content {
@@ -162,19 +235,19 @@ nav ul li a:hover, nav ul li a.active-link {
 }
 
 .dropdown-content a {
-    color: #333333 !important;
+    color: var(--text-main) !important;
     padding: 10px 16px !important;
     text-decoration: none;
     display: block;
     font-weight: 500 !important;
-    border-bottom: 1px solid #f0f7f3;
+    border-bottom: 1px solid var(--border-color);
     transition: all 0.3s ease;
     cursor: pointer;
 }
 
 .dropdown-content a:hover {
     background-color: #e4f5eb !important;
-    color: #1b8a4f !important;
+    color: var(--primary-color) !important;
     padding-left: 20px !important;
 }
 
@@ -183,14 +256,14 @@ nav ul li a:hover, nav ul li a.active-link {
 }
 
 .login-btn a {
-    background: #1b8a4f;
+    background: var(--primary-color);
     color: #fff !important;
     padding: 6px 15px !important;
     border-radius: 20px !important;
 }
 
 .login-btn a:hover {
-    background: #0d5c34 !important;
+    background: var(--primary-hover) !important;
     color: #fff !important;
     transform: translateY(-2px);
 }
@@ -199,20 +272,21 @@ nav ul li a:hover, nav ul li a.active-link {
     padding: 4px 8px;
     border-radius: 4px;
     border: 1px solid #ccc;
-    background: #ffffff;
-    color: #333;
+    background: var(--card-bg);
+    color: var(--text-main);
     cursor: pointer;
     font-weight: 600;
 }
 
-/* Home Page Container */
+/* ====================================================
+   4. HOME & HERO SECTION
+   ==================================================== */
 #homePage {
     display: flex;
     flex-direction: column;
     flex: 1 0 auto;
 }
 
-/* Hero Section */
 .hero {
     background: radial-gradient(circle at center, transparent 0%, rgba(194, 240, 210, 0.4) 40%, rgba(163, 243, 196, 0.2) 100%);
     text-align: center;
@@ -301,7 +375,7 @@ nav ul li a:hover, nav ul li a.active-link {
 
 .hero h1 {
     font-size: 2.5rem;
-    color: #0d5c34;
+    color: var(--primary-hover);
     margin-bottom: 12px;
     font-weight: 800;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
@@ -348,8 +422,8 @@ nav ul li a:hover, nav ul li a.active-link {
     100% { transform: scale(1.15); filter: drop-shadow(0px 15px 15px rgba(0,0,0,0.25)); }
 }
 
-.service-slide h2 { font-size: 1.35rem; color: #0d5c34; font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
-.service-slide p { font-size: 0.95rem; color: #555; font-weight: 600; }
+.service-slide h2 { font-size: 1.35rem; color: var(--primary-hover); font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+.service-slide p { font-size: 0.95rem; color: var(--text-muted); font-weight: 600; }
 
 .color-sf { color: #00a1e0; }
 .color-sap { color: #008fd3; }
@@ -357,7 +431,9 @@ nav ul li a:hover, nav ul li a.active-link {
 .color-env { color: #22c55e; }
 .color-erp { color: #741B47; }
 
-/* Core Offerings Section */
+/* ====================================================
+   5. CORE OFFERINGS & 3D CAROUSEL
+   ==================================================== */
 .core-offerings-section {
     background: linear-gradient(180deg, #0f6c88 0%, #063140 100%);
     position: relative;
@@ -494,7 +570,6 @@ nav ul li a:hover, nav ul li a.active-link {
     100% { left: 100%; opacity: 0; }
 }
 
-/* 3D Carousel */
 .carousel-scene {
     perspective: 1500px;
     width: 100%;
@@ -567,7 +642,9 @@ nav ul li a:hover, nav ul li a.active-link {
     .slide-card h3 { font-size: 15px; }
 }
 
-/* Tabs and Dynamic Inner Sections */
+/* ====================================================
+   6. INNER TABS, FORMS & SUB-PAGES
+   ==================================================== */
 .dynamic-tab-section {
     max-width: 1200px;
     margin: 20px auto;
@@ -579,11 +656,11 @@ nav ul li a:hover, nav ul li a.active-link {
 
 .tab-panel {
     display: none;
-    background: #ffffff;
+    background: var(--card-bg);
     padding: 35px;
     border-radius: 10px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.06);
-    border: 1px solid #dbe8e0;
+    border: 1px solid var(--border-color);
 }
 
 #panel-about {
@@ -665,8 +742,8 @@ nav ul li a:hover, nav ul li a.active-link {
 }
 
 .tab-panel.active { display: block; animation: fadeIn 0.4s ease-in-out; }
-.tab-panel h3 { color: #0d5c34; font-size: 22px; margin-bottom: 12px; }
-.tab-panel p { font-size: 14.5px; line-height: 1.7; color: #444; }
+.tab-panel h3 { color: var(--primary-hover); font-size: 22px; margin-bottom: 12px; }
+.tab-panel p { font-size: 14.5px; line-height: 1.7; color: var(--text-main); }
 
 .animate-text { opacity: 0; animation: fadeUp 0.8s ease-out forwards; }
 .delay-1 { animation-delay: 0.2s; }
@@ -680,7 +757,7 @@ nav ul li a:hover, nav ul li a.active-link {
 }
 
 .service-list-ul {
-    margin-left: 20px; margin-top: 12px; margin-bottom: 15px; color: #555; font-size: 14px; line-height: 1.7;
+    margin-left: 20px; margin-top: 12px; margin-bottom: 15px; color: var(--text-muted); font-size: 14px; line-height: 1.7;
 }
 .service-list-ul li { margin-bottom: 6px; }
 
@@ -761,29 +838,29 @@ nav ul li a:hover, nav ul li a.active-link {
     background: #f8fbf9;
     padding: 16px;
     border-radius: 8px;
-    border-left: 5px solid #1b8a4f;
+    border-left: 5px solid var(--primary-color);
 }
 
 .contact-details p {
     margin-bottom: 8px;
     font-size: 0.95rem;
-    color: #444;
+    color: var(--text-main);
     display: flex;
     align-items: center;
 }
 
 .contact-details i {
-    color: #1b8a4f;
+    color: var(--primary-color);
     width: 25px;
     font-size: 1.1rem;
 }
 
 .contact-form {
-    background: #fff;
+    background: var(--card-bg);
     padding: 25px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    border: 1px solid #e1ebe5;
+    border: 1px solid var(--border-color);
 }
 
 .contact-form input, .contact-form textarea {
@@ -791,12 +868,14 @@ nav ul li a:hover, nav ul li a.active-link {
 }
 
 .contact-form button {
-    background: #1b8a4f; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; font-size: 0.95rem; transition: 0.3s;
+    background: var(--primary-color); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; font-size: 0.95rem; transition: 0.3s;
 }
 
-.contact-form button:hover { background: #0d5c34; }
+.contact-form button:hover { background: var(--primary-hover); }
 
-/* Footer */
+/* ====================================================
+   7. FOOTER
+   ==================================================== */
 footer { 
     background: #0d1e15; 
     color: #fff; 
@@ -815,13 +894,13 @@ footer {
 footer p { font-size: 12.5px; opacity: 0.85; }
 
 .chat-btn { position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; padding: 10px 18px; border-radius: 30px; display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600; font-size: 13px; z-index: 999; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-#scrollTopBtn { display: none; position: fixed; bottom: 75px; right: 20px; z-index: 999; background-color: #1b8a4f; color: white; border: none; cursor: pointer; padding: 10px 13px; border-radius: 50%; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background-color 0.3s, transform 0.3s; }
-#scrollTopBtn:hover { background-color: #0d5c34; transform: translateY(-3px); }
+#scrollTopBtn { display: none; position: fixed; bottom: 75px; right: 20px; z-index: 999; background-color: var(--primary-color); color: white; border: none; cursor: pointer; padding: 10px 13px; border-radius: 50%; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background-color 0.3s, transform 0.3s; }
+#scrollTopBtn:hover { background-color: var(--primary-hover); transform: translateY(-3px); }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ====================================================
-   BULB TOGGLE BUTTON & GLOW ANIMATION
+   8. BULB TOGGLE BUTTON & THEME PICKER STYLES
    ==================================================== */
 .theme-toggle-btn {
     background: none;
@@ -841,7 +920,6 @@ footer p { font-size: 12.5px; opacity: 0.85; }
     transform: scale(1.15);
 }
 
-/* Light Mode Bulb Icon */
 .bulb-icon {
     color: #555;
     transition: all 0.3s ease;
@@ -855,16 +933,18 @@ body.dark-mode .bulb-icon {
     transform: scale(1.1);
 }
 
-/* ====================================================
-   DARK MODE COLORS & THEME OVERRIDES
-   ==================================================== */
-body.dark-mode {
-    background-color: #0b1310;
-    color: #e2e8f0;
+/* Theme picker palette container */
+.theme-picker-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
+/* ====================================================
+   9. DARK MODE THEME OVERRIDES
+   ==================================================== */
 body.dark-mode header {
-    background: #111e18;
+    background: #111e18 !important;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     border-bottom: 1px solid #1c3327;
 }
@@ -972,8 +1052,27 @@ body.dark-mode .contact-form textarea {
 }
 
 /* ====================================================
-   LUMINATING / GLOWING MOVING ELEMENTS IN DARK MODE
+   10. LUMINATING / GLOWING ELEMENTS IN DARK MODE
    ==================================================== */
+body.dark-mode .earth-icon {
+    color: #55ef94 !important;
+    filter: drop-shadow(0 0 10px #55ef94) drop-shadow(0 0 20px #1b8a4f) !important;
+}
+
+body.dark-mode .logo-icon {
+    filter: drop-shadow(0 0 8px rgba(85, 239, 148, 0.8)) drop-shadow(0 0 15px rgba(0, 242, 254, 0.4)) !important;
+}
+
+body.dark-mode .logo-title {
+    color: #55ef94 !important;
+    text-shadow: 0 0 10px rgba(85, 239, 148, 0.7), 0 0 20px rgba(85, 239, 148, 0.4) !important;
+}
+
+body.dark-mode .logo-subtitle {
+    color: #00f2fe !important;
+    text-shadow: 0 0 8px rgba(0, 242, 254, 0.8) !important;
+}
+
 body.dark-mode .gear-1,
 body.dark-mode .gear-2 {
     color: rgba(85, 239, 148, 0.25) !important;
@@ -990,42 +1089,11 @@ body.dark-mode .binary-stream {
     text-shadow: 0 0 10px #55ef94, 0 0 20px rgba(85, 239, 148, 0.8) !important;
 }
 
-body.dark-mode .bg-signal-particle {
-    box-shadow: 0 0 20px #00f2fe, 0 0 40px #55ef94;
-}
-
-/* ====================================================
-   GLOWING / LUMINATING ELEMENTS (BOAT, WATER, LOGO, NAME)
-   ==================================================== */
-
-/* 1. LOGO ICON & SPINNING EARTH LUMINATE */
-body.dark-mode .earth-icon {
-    color: #55ef94 !important;
-    filter: drop-shadow(0 0 10px #55ef94) drop-shadow(0 0 20px #1b8a4f) !important;
-}
-
-body.dark-mode .logo-icon {
-    filter: drop-shadow(0 0 8px rgba(85, 239, 148, 0.8)) drop-shadow(0 0 15px rgba(0, 242, 254, 0.4)) !important;
-}
-
-/* 2. WEBSITE TITLE & SUBTITLE LUMINATE */
-body.dark-mode .logo-title {
-    color: #55ef94 !important;
-    text-shadow: 0 0 10px rgba(85, 239, 148, 0.7), 0 0 20px rgba(85, 239, 148, 0.4) !important;
-}
-
-body.dark-mode .logo-subtitle {
-    color: #00f2fe !important;
-    text-shadow: 0 0 8px rgba(0, 242, 254, 0.8) !important;
-}
-
-/* 3. MOVING BOAT LUMINATE */
 body.dark-mode .boat-icon {
     color: #55ef94 !important;
     filter: drop-shadow(0 0 12px #55ef94) drop-shadow(0 0 25px #00f2fe) drop-shadow(0 0 35px #55ef94) !important;
 }
 
-/* 4. MOVING WATER WAVES GLOW & COLOR SHIFT */
 body.dark-mode .core-offerings-section {
     background: linear-gradient(180deg, #05261e 0%, #031410 100%) !important;
 }
@@ -1034,26 +1102,20 @@ body.dark-mode .ocean-wave {
     filter: drop-shadow(0 -4px 12px rgba(0, 242, 254, 0.6)) hue-rotate(85deg) brightness(1.2) !important;
 }
 
-body.dark-mode .ocean-wave.w1 {
-    opacity: 0.6;
-}
+body.dark-mode .ocean-wave.w1 { opacity: 0.6; }
+body.dark-mode .ocean-wave.w2 { opacity: 0.75; }
+body.dark-mode .ocean-wave.w3 { opacity: 0.9; }
 
-body.dark-mode .ocean-wave.w2 {
-    opacity: 0.75;
-}
-
-body.dark-mode .ocean-wave.w3 {
-    opacity: 0.9;
-}
-
-/* 5. WATER BUBBLES */
 body.dark-mode .bubble {
     background: rgba(85, 239, 148, 0.4) !important;
     box-shadow: 0 0 12px rgba(85, 239, 148, 0.8), 0 0 20px rgba(0, 242, 254, 0.5) !important;
 }
 
-/* 6. FLOATING LEAVES */
 body.dark-mode .leaf {
     color: rgba(85, 239, 148, 0.6) !important;
     filter: drop-shadow(0 0 10px rgba(85, 239, 148, 0.8)) !important;
+}
+
+body.dark-mode .bg-signal-particle {
+    box-shadow: 0 0 20px #00f2fe, 0 0 40px #55ef94;
 }
