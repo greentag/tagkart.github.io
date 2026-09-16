@@ -9,10 +9,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/admin.css">
+    <!-- Fixed Paths using ../ -->
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/admin.css">
 
-    <!-- Direct Modal Styling so it never goes blank -->
     <style>
         .modal-overlay {
             display: none;
@@ -140,7 +140,6 @@
             <h2><i class="fa-solid fa-earth-americas"></i> Dhami Group Cloud Portal</h2>
             
             <div style="display: flex; align-items: center; gap: 15px;">
-                <!-- Theme Picker in Admin Header -->
                 <div class="theme-picker-container" style="display: flex; align-items: center; gap: 6px;">
                     <select id="themeSelectAdmin" onchange="selectPresetTheme(this.value)" style="padding: 4px 6px; border-radius: 4px; border: 1px solid #ccc; font-weight: 600;">
                         <option value="emerald">🟢 Emerald</option>
@@ -156,7 +155,6 @@
         </div>
         
         <div class="admin-layout">
-            <!-- Sidebar -->
             <div class="admin-sidebar">
                 <div class="admin-profile">
                     <i class="fa-solid fa-user-shield"></i>
@@ -170,9 +168,7 @@
                 </div>
             </div>
 
-            <!-- Content Area -->
             <div class="admin-content">
-                <!-- Manage Products -->
                 <div id="admin-manage-prod" class="admin-section active">
                     <h2 style="color: var(--primary-hover, #0d5c34); border-bottom: 2px solid var(--primary-color, #a3f3c4); padding-bottom: 10px; margin-bottom: 20px;">Manage Products (Free Link Version)</h2>
                     <div class="admin-card">
@@ -212,7 +208,6 @@
                     </table>
                 </div>
 
-                <!-- Manage Careers -->
                 <div id="admin-manage-car" class="admin-section" style="display: none;">
                     <h2 style="color: var(--primary-hover, #0d5c34); border-bottom: 2px solid var(--primary-color, #a3f3c4); padding-bottom: 10px; margin-bottom: 20px;">Manage Careers (Cloud)</h2>
                     <div class="admin-card">
@@ -233,7 +228,6 @@
                     </table>
                 </div>
 
-                <!-- Manage Users -->
                 <div id="admin-manage-user" class="admin-section" style="display: none;">
                     <h2 style="color: var(--primary-hover, #0d5c34); border-bottom: 2px solid var(--primary-color, #a3f3c4); padding-bottom: 10px; margin-bottom: 20px;">User Management (Cloud)</h2>
                     <div class="admin-card">
@@ -264,7 +258,6 @@
     <!-- Login Modal -->
     <div class="modal-overlay" id="loginModal" style="display: flex;">
         <div class="login-box">
-            <!-- Theme Picker inside Login Modal -->
             <div style="position: absolute; top: 15px; left: 20px; display: flex; align-items: center; gap: 6px;">
                 <select id="themeSelectModal" onchange="selectPresetTheme(this.value)" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #ccc; font-weight: 600;">
                     <option value="emerald">🟢 Emerald</option>
@@ -287,7 +280,7 @@
             </div>
             
             <div class="captcha-box">
-                <span id="captchaQuestion"></span>
+                <span id="captchaQuestion">Loading...</span>
                 <input type="number" id="captchaAnswer" placeholder="Answer" required>
             </div>
             
@@ -312,7 +305,7 @@
         </div>
     </div>
 
-    <!-- Single Unified JS File -->
-    <script src="js/admin.js"></script>
+    <!-- Point to root js folder using ../ -->
+    <script src="../js/admin.js"></script>
 </body>
 </html>
