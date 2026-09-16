@@ -470,4 +470,5 @@ function deleteDoc(col, id) {
 // Auto-load Standard Default Theme on Init
 window.addEventListener('DOMContentLoaded', () => {
     loadDefaultAdminTheme();
+    generateCaptcha();
 });
