@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <!-- Fixed Paths using ../ -->
+    <!-- CSS Paths -->
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/admin.css">
 
@@ -70,6 +70,7 @@
             border-radius: 6px;
             font-family: 'Poppins', sans-serif;
             font-size: 14px;
+            box-sizing: border-box;
         }
         .captcha-box {
             display: flex;
@@ -94,6 +95,7 @@
             border-radius: 4px;
             text-align: center;
             font-weight: 600;
+            box-sizing: border-box;
         }
         .login-box button {
             width: 100%;
@@ -127,7 +129,7 @@
         }
     </style>
 
-    <!-- Supabase JS Library (Replaced Firebase) -->
+    <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body style="background-color: var(--bg-main, #f0f7f3); margin: 0; font-family: 'Poppins', sans-serif;">
@@ -182,19 +184,19 @@
                         <div class="form-grid">
                             <div>
                                 <label style="font-size: 13px; color: #e34f26; font-weight: 600;">Product Image URL * (Mandatory)</label>
-                                <input type="url" id="addProdImage" placeholder="Paste Image Link (ImgBB/Drive)" style="border: 1px solid #ccc; padding: 10px; width: 100%; border-radius: 5px; background: #fff;">
+                                <input type="url" id="addProdImage" placeholder="Paste Image Link (ImgBB/Drive)" style="border: 1px solid #ccc; padding: 10px; width: 100%; border-radius: 5px; background: #fff; box-sizing: border-box;">
                             </div>
                             <div>
                                 <label style="font-size: 13px; color: #555; font-weight: 600;">Catalogue (PDF) URL (Optional)</label>
-                                <input type="url" id="addProdCatalog" placeholder="Paste Google Drive/PDF Link" style="border: 1px solid #ccc; padding: 10px; width: 100%; border-radius: 5px; background: #fff;">
+                                <input type="url" id="addProdCatalog" placeholder="Paste Google Drive/PDF Link" style="border: 1px solid #ccc; padding: 10px; width: 100%; border-radius: 5px; background: #fff; box-sizing: border-box;">
                             </div>
                         </div>
 
                         <label style="font-size: 13px; color: #e34f26; font-weight: 600;">Detailed Specifications * (Mandatory)</label>
-                        <textarea id="addProdSpec" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;" rows="3" placeholder="Detailed Specifications..."></textarea>
+                        <textarea id="addProdSpec" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" rows="3" placeholder="Detailed Specifications..."></textarea>
                         
                         <label style="font-size: 13px; color: #555; font-weight: 600;">Brief Description (Optional)</label>
-                        <textarea id="addProdDesc" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;" rows="2" placeholder="Brief Description..."></textarea>
+                        <textarea id="addProdDesc" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" rows="2" placeholder="Brief Description..."></textarea>
 
                         <button id="btnSaveProd" onclick="saveProduct()" class="action-btn"><i class="fa-solid fa-save"></i> Save Product</button>
                         <button id="btnCancelProd" onclick="cancelEdit('prod')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none;">Cancel</button>
@@ -216,7 +218,7 @@
                             <input type="text" id="addJobExp" placeholder="Experience Required">
                             <input type="text" id="addJobLoc" placeholder="Location">
                         </div>
-                        <textarea id="addJobDesc" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;" rows="4" placeholder="Detailed Job Description..."></textarea>
+                        <textarea id="addJobDesc" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" rows="4" placeholder="Detailed Job Description..."></textarea>
                         <button id="btnSaveJob" onclick="saveJob()" style="background: #e34f26;" class="action-btn"><i class="fa-solid fa-upload"></i> Post Job</button>
                         <button id="btnCancelJob" onclick="cancelEdit('job')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none;">Cancel</button>
                     </div>
@@ -278,7 +280,7 @@
             </div>
             
             <div class="captcha-box">
-                <span id="captchaQuestion">Loading...</span>
+                <span id="captchaQuestion">...</span>
                 <input type="number" id="captchaAnswer" placeholder="Answer" required>
             </div>
             
@@ -303,7 +305,7 @@
         </div>
     </div>
 
-    <!-- Point to root js folder using ../ -->
+    <!-- Relative Path & Fallback Path for GitHub Pages -->
     <script src="../js/admin.js"></script>
 </body>
 </html>
