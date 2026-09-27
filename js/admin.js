@@ -1,23 +1,22 @@
 // ====================================================
 // 1. SUPABASE CLIENT INITIALIZATION
 // ====================================================
-const SUPABASE_URL = "https://yuyndtoqcwawlhrjespt.supabase.co";
+const SUPABASE_URL = "https://yuyndtoqcwawlhrjespt.supabase.co";[cite: 2]
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1eW5kdG9xY3dhd2xocmplc3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MDkzOTIsImV4cCI6MjEwNjA4NTM5Mn0.TJ1DuBlYANnTNogfbt5WB64UsxNjVUyNkLR2gpHqNR0";
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = (typeof window.supabase !== 'undefined' && window.supabase.createClient) 
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
+    : null;
 
 // ====================================================
 // 2. THEME MANAGEMENT & SYNC LOGIC
 // ====================================================
 function selectPresetTheme(themeName) {
     document.documentElement.setAttribute('data-theme', themeName);
-
-    // Reset any manual inline style overrides
     document.documentElement.style.removeProperty('--primary-color');
     document.documentElement.style.removeProperty('--primary-hover');
     document.documentElement.style.removeProperty('--accent-color');
     document.documentElement.style.removeProperty('--glow-color');
-
     syncAdminThemePickers(themeName, null);
 }
 
@@ -27,7 +26,6 @@ function applyCustomColor(hexColor) {
     document.documentElement.style.setProperty('--primary-hover', hoverColor);
     document.documentElement.style.setProperty('--accent-color', hexColor);
     document.documentElement.style.setProperty('--glow-color', hexColor);
-
     syncAdminThemePickers(null, hexColor);
 }
 
@@ -65,20 +63,21 @@ function loadDefaultAdminTheme() {
 // ====================================================
 // 3. CAPTCHA & MODAL LOGIC
 // ====================================================
-let captchaCorrect = 0;
+let captchaCorrect = 12; // default fallback matching 7 + 5
+
 function generateCaptcha() {
-    let n1 = Math.floor(Math.random() * 10) + 1;
-    let n2 = Math.floor(Math.random() * 10) + 1;
+    let n1 = Math.floor(Math.random() * 9) + 1;
+    let n2 = Math.floor(Math.random() * 9) + 1;
     captchaCorrect = n1 + n2;
     let el = document.getElementById('captchaQuestion');
-    if(el) el.innerText = `${n1} + ${n2} = ?`;
+    if (el) el.innerText = `${n1} + ${n2} = ?`;
     let a = document.getElementById('captchaAnswer');
-    if(a) a.value = '';
+    if (a) a.value = '';
 }
 
 function openLoginModal() { 
     const modal = document.getElementById('loginModal');
-    if(modal) { 
+    if (modal) { 
         modal.style.display = 'flex'; 
         generateCaptcha(); 
     }
@@ -86,82 +85,84 @@ function openLoginModal() {
 
 function closeLoginModal() { 
     const modal = document.getElementById('loginModal');
-    if(modal) modal.style.display = 'none'; 
+    if (modal) modal.style.display = 'none'; 
     const err = document.getElementById('loginError');
-    if(err) err.style.display = 'none';
+    if (err) err.style.display = 'none';
 }
 
 function openForgotModal() { 
     closeLoginModal();
     const fModal = document.getElementById('forgotPassModal');
-    if(fModal) fModal.style.display = 'flex';
+    if (fModal) fModal.style.display = 'flex';
 }
 
 function closeForgotModal() { 
     const fModal = document.getElementById('forgotPassModal');
-    if(fModal) fModal.style.display = 'none'; 
+    if (fModal) fModal.style.display = 'none'; 
     openLoginModal();
 }
 
 // ====================================================
 // 4. SUPABASE AUTH STATE & PERMISSIONS
 // ====================================================
-supabase.auth.onAuthStateChange(async (event, session) => {
-    let adminPortal = document.getElementById('adminPortal');
-    const user = session ? session.user : null;
+if (supabase) {
+    supabase.auth.onAuthStateChange(async (event, session) => {
+        let adminPortal = document.getElementById('adminPortal');
+        const user = session ? session.user : null;
 
-    if (user) {
-        if(adminPortal) adminPortal.style.display = 'block';
-        closeLoginModal();
+        if (user) {
+            if (adminPortal) adminPortal.style.display = 'block';
+            closeLoginModal();
 
-        let emailPrefix = user.email.split('@')[0];
-        let defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
+            let emailPrefix = user.email.split('@')[0];
+            let defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
 
-        document.getElementById('adminNameDisplay').innerText = defaultName;
-        document.getElementById('adminRoleDisplay').innerText = "Loading Role...";
+            document.getElementById('adminNameDisplay').innerText = defaultName;
+            document.getElementById('adminRoleDisplay').innerText = "Loading Role...";
 
-        try {
-            const { data, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('email', user.email)
-                .maybeSingle();
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('email', user.email)
+                    .maybeSingle();
 
-            let uRole = "Standard User"; 
-            let uName = defaultName;
+                let uRole = "Standard User"; 
+                let uName = defaultName;
 
-            if (data) {
-                uName = data.name || defaultName; 
-                uRole = data.role || "Standard User";
-            } else if (user.email === 'pspujari88@gmail.com' || user.email === 'admin@dhamigroup.com') {
-                uRole = "System Administrator"; 
-                uName = "Prakash Dhami (Admin)";
+                if (data) {
+                    uName = data.name || defaultName; 
+                    uRole = data.role || "Standard User";
+                } else if (user.email === 'pspujari88@gmail.com' || user.email === 'admin@dhamigroup.com') {
+                    uRole = "System Administrator"; 
+                    uName = "Prakash Dhami (Admin)";
+                }
+
+                document.getElementById('adminNameDisplay').innerText = uName;
+                document.getElementById('adminRoleDisplay').innerText = uRole;
+                applyPermissions(uRole);
+            } catch (e) {
+                document.getElementById('adminNameDisplay').innerText = defaultName;
+                document.getElementById('adminRoleDisplay').innerText = "System Administrator";
+                applyPermissions("System Administrator");
             }
 
-            document.getElementById('adminNameDisplay').innerText = uName;
-            document.getElementById('adminRoleDisplay').innerText = uRole;
-            applyPermissions(uRole);
-        } catch (e) {
-            document.getElementById('adminNameDisplay').innerText = defaultName;
-            document.getElementById('adminRoleDisplay').innerText = "System Administrator";
-            applyPermissions("System Administrator");
+            fetchProducts(); 
+            fetchJobs(); 
+            fetchUsers();
+        } else {
+            if (adminPortal) adminPortal.style.display = 'none';
+            openLoginModal();
         }
-
-        fetchProducts(); 
-        fetchJobs(); 
-        fetchUsers();
-    } else {
-        if(adminPortal) adminPortal.style.display = 'none';
-        openLoginModal();
-    }
-});
+    });
+}
 
 function applyPermissions(role) {
     let navProd = document.getElementById('nav-manage-prod');
     let navCar = document.getElementById('nav-manage-car');
     let navUser = document.getElementById('nav-manage-user');
 
-    if(!navProd || !navCar || !navUser) return;
+    if (!navProd || !navCar || !navUser) return;
     navProd.style.display = 'none'; 
     navCar.style.display = 'none'; 
     navUser.style.display = 'none';
@@ -190,10 +191,10 @@ function applyPermissions(role) {
 function switchAdminTab(id) { 
     document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none'); 
     let activeSec = document.getElementById('admin-' + id);
-    if(activeSec) activeSec.style.display = 'block'; 
+    if (activeSec) activeSec.style.display = 'block'; 
     document.querySelectorAll('.admin-menu a').forEach(a => a.classList.remove('active')); 
-    let navElem = document.getElementById('nav-'+id);
-    if(navElem) navElem.classList.add('active'); 
+    let navElem = document.getElementById('nav-' + id);
+    if (navElem) navElem.classList.add('active'); 
 }
 
 async function handleLogin() {
@@ -202,16 +203,21 @@ async function handleLogin() {
     let ans = parseInt(document.getElementById('captchaAnswer').value, 10);
     let errBox = document.getElementById('loginError');
 
-    if(!email || !pass) { 
+    if (!email || !pass) { 
         errBox.style.display = 'block'; 
         errBox.innerText = "Enter email and password."; 
         return; 
     }
-    if(ans !== captchaCorrect) { 
+    if (ans !== captchaCorrect) { 
         errBox.style.display = 'block'; 
         errBox.innerText = "Incorrect Captcha!"; 
         generateCaptcha(); 
         return; 
+    }
+
+    if (!supabase) {
+        alert("Supabase SDK not loaded. Check internet or adblocker.");
+        return;
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -227,14 +233,14 @@ async function handleLogin() {
 }
 
 async function logoutUser() { 
-    await supabase.auth.signOut();
+    if (supabase) await supabase.auth.signOut();
     window.location.reload();
 }
 
 async function sendResetLink() {
     let email = document.getElementById('resetEmail').value.trim();
     let msg = document.getElementById('resetMessage');
-    if(email) { 
+    if (email && supabase) { 
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
             redirectTo: window.location.href
         });
@@ -252,7 +258,7 @@ async function sendResetLink() {
 }
 
 // ====================================================
-// 5. PRODUCTS CRUD (SUPABASE TABLE: products)
+// 5. PRODUCTS CRUD
 // ====================================================
 let editProdId = null;
 function editProduct(id, name, cat, color, qty, desc, spec, imgUrl, catUrl, isHidden) {
@@ -263,8 +269,8 @@ function editProduct(id, name, cat, color, qty, desc, spec, imgUrl, catUrl, isHi
     document.getElementById('addProdQty').value = qty; 
     document.getElementById('addProdDesc').value = desc;
     document.getElementById('addProdSpec').value = spec;
-    document.getElementById('addProdImage').value = imgUrl !== 'undefined' ? imgUrl : "";
-    document.getElementById('addProdCatalog').value = catUrl !== 'undefined' ? catUrl : "";
+    document.getElementById('addProdImage').value = (imgUrl && imgUrl !== 'undefined') ? imgUrl : "";
+    document.getElementById('addProdCatalog').value = (catUrl && catUrl !== 'undefined') ? catUrl : "";
     document.getElementById('addProdHidden').checked = isHidden; 
 
     document.getElementById('btnSaveProd').innerHTML = "<i class='fa-solid fa-save'></i> Update Product"; 
@@ -283,9 +289,9 @@ async function saveProduct() {
     let catUrl = document.getElementById('addProdCatalog').value.trim();
     let isHidden = document.getElementById('addProdHidden').checked;
 
-    if(!name) return alert("Product Name is required!"); 
-    if(!imgUrl) return alert("Product Image URL is required!"); 
-    if(!spec) return alert("Product Specification is required!"); 
+    if (!name) return alert("Product Name is required!"); 
+    if (!imgUrl) return alert("Product Image URL is required!"); 
+    if (!spec) return alert("Product Specification is required!"); 
 
     let payload = { 
         name: name, 
@@ -299,9 +305,9 @@ async function saveProduct() {
         status: isHidden ? "Hidden" : "Public" 
     };
 
-    if(editProdId) { 
+    if (editProdId) { 
         const { error } = await supabase.from('products').update(payload).eq('id', editProdId);
-        if(error) alert(error.message);
+        if (error) alert(error.message);
         else {
             alert("Product Updated Successfully!"); 
             cancelEdit('prod');
@@ -309,7 +315,7 @@ async function saveProduct() {
         }
     } else { 
         const { error } = await supabase.from('products').insert([payload]);
-        if(error) alert(error.message);
+        if (error) alert(error.message);
         else {
             alert("Product Added Successfully!"); 
             cancelEdit('prod');
@@ -319,16 +325,17 @@ async function saveProduct() {
 }
 
 async function fetchProducts() {
+    if (!supabase) return;
     const { data: products, error } = await supabase
         .from('products')
         .select('*')
         .order('created_at', { ascending: false });
 
     let t = document.getElementById('prodTbody'); 
-    if(!t) return; 
+    if (!t) return; 
     t.innerHTML = '';
 
-    if(error) {
+    if (error) {
         console.error("Products Fetch Error:", error.message);
         return;
     }
@@ -351,7 +358,7 @@ async function fetchProducts() {
 }
 
 // ====================================================
-// 6. CAREERS CRUD (SUPABASE TABLE: jobs)
+// 6. CAREERS CRUD
 // ====================================================
 let editJobId = null;
 function editJob(id, title, req, exp, loc, desc) { 
@@ -373,12 +380,12 @@ async function saveJob() {
     let loc = document.getElementById('addJobLoc').value.trim(); 
     let desc = document.getElementById('addJobDesc').value.trim(); 
 
-    if(!title || !req) return alert("Title and Req positions required!"); 
+    if (!title || !req) return alert("Title and Req positions required!"); 
     let payload = { title: title, openings: req, exp: exp, location: loc, description: desc, status: "Active" }; 
 
-    if(editJobId) { 
+    if (editJobId) { 
         const { error } = await supabase.from('jobs').update(payload).eq('id', editJobId);
-        if(error) alert(error.message);
+        if (error) alert(error.message);
         else {
             alert("Job Updated!"); 
             cancelEdit('job');
@@ -386,7 +393,7 @@ async function saveJob() {
         }
     } else { 
         const { error } = await supabase.from('jobs').insert([payload]);
-        if(error) alert(error.message);
+        if (error) alert(error.message);
         else {
             alert("Job Posted!"); 
             cancelEdit('job');
@@ -396,16 +403,17 @@ async function saveJob() {
 }
 
 async function fetchJobs() { 
+    if (!supabase) return;
     const { data: jobs, error } = await supabase
         .from('jobs')
         .select('*')
         .order('created_at', { ascending: false });
 
     let t = document.getElementById('jobTbody'); 
-    if(!t) return; 
+    if (!t) return; 
     t.innerHTML = ''; 
 
-    if(error) {
+    if (error) {
         console.error("Jobs Fetch Error:", error.message);
         return;
     }
@@ -418,7 +426,7 @@ async function fetchJobs() {
 }
 
 // ====================================================
-// 7. USER MANAGEMENT CRUD (SUPABASE TABLE: users)
+// 7. USER MANAGEMENT CRUD
 // ====================================================
 let editUserId = null;
 function editUser(id, name, email, role) { 
@@ -440,30 +448,26 @@ async function saveUser() {
     let pass = document.getElementById('addUserPass').value; 
     let role = document.getElementById('addUserRole').value; 
 
-    if(!name || (!editUserId && (!email || !pass))) return alert("All fields are required!"); 
+    if (!name || (!editUserId && (!email || !pass))) return alert("All fields are required!"); 
 
-    if(editUserId) { 
+    if (editUserId) { 
         const { error } = await supabase.from('users').update({ name: name, role: role }).eq('id', editUserId);
-        if(error) alert(error.message);
+        if (error) alert(error.message);
         else {
             alert("User access updated!"); 
             cancelEdit('user'); 
             fetchUsers();
         }
     } else { 
-        if(pass.length < 6) return alert("Password min 6 chars."); 
+        if (pass.length < 6) return alert("Password min 6 chars."); 
 
-        // 1. Create User in Supabase Auth
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email: email,
             password: pass
         });
 
-        if(authError) {
-            return alert(authError.message);
-        }
+        if (authError) return alert(authError.message);
 
-        // 2. Insert Record in public 'users' table
         const userId = authData.user ? authData.user.id : crypto.randomUUID();
         const { error: dbError } = await supabase.from('users').insert([{
             id: userId,
@@ -473,7 +477,7 @@ async function saveUser() {
             status: "Active"
         }]);
 
-        if(dbError) alert("Auth created, but table insert note: " + dbError.message);
+        if (dbError) alert("User added with note: " + dbError.message);
         else alert("User Created Successfully!");
 
         cancelEdit('user'); 
@@ -482,16 +486,17 @@ async function saveUser() {
 }
 
 async function fetchUsers() { 
+    if (!supabase) return;
     const { data: users, error } = await supabase
         .from('users')
         .select('*')
         .order('created_at', { ascending: false });
 
     let t = document.getElementById('userTbody'); 
-    if(!t) return; 
+    if (!t) return; 
     t.innerHTML = ''; 
 
-    if(error) {
+    if (error) {
         console.error("Users Fetch Error:", error.message);
         return;
     }
@@ -506,102 +511,63 @@ async function fetchUsers() {
 // 8. HELPERS & GENERAL CLEANUP
 // ====================================================
 function cancelEdit(type) {
-    if(type==='prod') { 
+    if (type === 'prod') { 
         editProdId = null; 
-        document.getElementById('addProdName').value=''; 
-        document.getElementById('addProdColor').value=''; 
-        document.getElementById('addProdQty').value=''; 
-        document.getElementById('addProdDesc').value=''; 
-        document.getElementById('addProdSpec').value=''; 
-        document.getElementById('addProdImage').value=''; 
-        document.getElementById('addProdCatalog').value=''; 
-        document.getElementById('addProdHidden').checked=false; 
-        document.getElementById('btnSaveProd').innerHTML='<i class="fa-solid fa-save"></i> Save Product'; 
-        document.getElementById('btnCancelProd').style.display='none'; 
+        document.getElementById('addProdName').value = ''; 
+        document.getElementById('addProdColor').value = ''; 
+        document.getElementById('addProdQty').value = ''; 
+        document.getElementById('addProdDesc').value = ''; 
+        document.getElementById('addProdSpec').value = ''; 
+        document.getElementById('addProdImage').value = ''; 
+        document.getElementById('addProdCatalog').value = ''; 
+        document.getElementById('addProdHidden').checked = false; 
+        document.getElementById('btnSaveProd').innerHTML = '<i class="fa-solid fa-save"></i> Save Product'; 
+        document.getElementById('btnCancelProd').style.display = 'none'; 
     }
-    if(type==='job') { 
+    if (type === 'job') { 
         editJobId = null; 
-        document.getElementById('addJobTitle').value=''; 
-        document.getElementById('addJobReq').value=''; 
-        document.getElementById('addJobExp').value=''; 
-        document.getElementById('addJobLoc').value=''; 
-        document.getElementById('addJobDesc').value=''; 
-        document.getElementById('btnSaveJob').innerHTML='<i class="fa-solid fa-upload"></i> Post Job'; 
-        document.getElementById('btnCancelJob').style.display='none'; 
+        document.getElementById('addJobTitle').value = ''; 
+        document.getElementById('addJobReq').value = ''; 
+        document.getElementById('addJobExp').value = ''; 
+        document.getElementById('addJobLoc').value = ''; 
+        document.getElementById('addJobDesc').value = ''; 
+        document.getElementById('btnSaveJob').innerHTML = '<i class="fa-solid fa-upload"></i> Post Job'; 
+        document.getElementById('btnCancelJob').style.display = 'none'; 
     }
-    if(type==='user') { 
+    if (type === 'user') { 
         editUserId = null; 
-        document.getElementById('addUserName').value=''; 
-        document.getElementById('addUserEmail').value=''; 
-        document.getElementById('addUserPass').value=''; 
-        document.getElementById('addUserEmail').disabled=false; 
-        document.getElementById('addUserPass').disabled=false; 
-        document.getElementById('addUserPass').placeholder="Password (Min 6 chars)"; 
-        document.getElementById('btnSaveUser').innerHTML='<i class="fa-solid fa-plus"></i> Create & Sync User'; 
-        document.getElementById('btnCancelUser').style.display='none'; 
+        document.getElementById('addUserName').value = ''; 
+        document.getElementById('addUserEmail').value = ''; 
+        document.getElementById('addUserPass').value = ''; 
+        document.getElementById('addUserEmail').disabled = false; 
+        document.getElementById('addUserPass').disabled = false; 
+        document.getElementById('addUserPass').placeholder = "Password (Min 6 chars)"; 
+        document.getElementById('btnSaveUser').innerHTML = '<i class="fa-solid fa-plus"></i> Create & Sync User'; 
+        document.getElementById('btnCancelUser').style.display = 'none'; 
     }
 }
 
 async function deleteDoc(col, id) { 
     let msg = col === 'users' ? "Remove user's Role and Access from Dashboard?" : "Permanently delete?"; 
-    if(confirm(msg)) {
+    if (confirm(msg)) {
         const { error } = await supabase.from(col).delete().eq('id', id);
-        if(error) alert(error.message);
+        if (error) alert(error.message);
         else {
-            if(col === 'products') fetchProducts();
-            if(col === 'jobs') fetchJobs();
-            if(col === 'users') fetchUsers();
+            if (col === 'products') fetchProducts();
+            if (col === 'jobs') fetchJobs();
+            if (col === 'users') fetchUsers();
         }
     }
 }
 
-// Auto-load Standard Default Theme and Captcha on Load
-window.addEventListener('DOMContentLoaded', () => {
+// Initial Load Event
+function initPortal() {
     loadDefaultAdminTheme();
     generateCaptcha();
-});
--- 1. Products Table
-CREATE TABLE IF NOT EXISTS products (
-    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-    name TEXT NOT NULL,
-    category TEXT,
-    color TEXT,
-    qty TEXT,
-    description TEXT,
-    specifications TEXT NOT NULL,
-    image_url TEXT NOT NULL,
-    catalog_url TEXT,
-    status TEXT DEFAULT 'Public',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+}
 
--- 2. Jobs / Careers Table
-CREATE TABLE IF NOT EXISTS jobs (
-    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-    title TEXT NOT NULL,
-    openings INT DEFAULT 1,
-    exp TEXT,
-    location TEXT,
-    description TEXT,
-    status TEXT DEFAULT 'Active',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 3. Users Table
-CREATE TABLE IF NOT EXISTS users (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    role TEXT DEFAULT 'Standard User',
-    status TEXT DEFAULT 'Active',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Disable Row Level Security restrictions for direct client testing
-ALTER TABLE products ENABLE ROW LEVEL SECURITY;
-ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Public Read/Write Products" ON products FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public Read/Write Jobs" ON jobs FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public Read/Write Users" ON users FOR ALL USING (true) WITH CHECK (true);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPortal);
+} else {
+    initPortal();
+}
