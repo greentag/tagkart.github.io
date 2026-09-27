@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <!-- CSS Paths -->
+    <!-- CSS Files -->
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/admin.css">
 
@@ -129,7 +129,7 @@
         }
     </style>
 
-    <!-- Supabase JS Client -->
+    <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body style="background-color: var(--bg-main, #f0f7f3); margin: 0; font-family: 'Poppins', sans-serif;">
@@ -280,7 +280,7 @@
             </div>
             
             <div class="captcha-box">
-                <span id="captchaQuestion">...</span>
+                <span id="captchaQuestion">7 + 5 = ?</span>
                 <input type="number" id="captchaAnswer" placeholder="Answer" required>
             </div>
             
@@ -305,7 +305,477 @@
         </div>
     </div>
 
-    <!-- Relative Path & Fallback Path for GitHub Pages -->
-    <script src="../js/admin.js"></script>
+    <!-- ALL JAVASCRIPT DIRECTLY EMBEDDED TO AVOID 404 / CACHE ISSUES -->
+    <script>
+        const SUPABASE_URL = "https://yuyndtoqcwawlhrjespt.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1eW5kdG9xY3dhd2xocmplc3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MDkzOTIsImV4cCI6MjEwNjA4NTM5Mn0.TJ1DuBlYANnTNogfbt5WB64UsxNjVUyNkLR2gpHqNR0";
+
+        const supabase = (typeof window.supabase !== 'undefined' && window.supabase.createClient) 
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
+            : null;
+
+        function selectPresetTheme(themeName) {
+            document.documentElement.setAttribute('data-theme', themeName);
+            document.documentElement.style.removeProperty('--primary-color');
+            document.documentElement.style.removeProperty('--primary-hover');
+            document.documentElement.style.removeProperty('--accent-color');
+            document.documentElement.style.removeProperty('--glow-color');
+            syncAdminThemePickers(themeName, null);
+        }
+
+        function applyCustomColor(hexColor) {
+            const hoverColor = adjustBrightness(hexColor, -20);
+            document.documentElement.style.setProperty('--primary-color', hexColor);
+            document.documentElement.style.setProperty('--primary-hover', hoverColor);
+            document.documentElement.style.setProperty('--accent-color', hexColor);
+            document.documentElement.style.setProperty('--glow-color', hexColor);
+            syncAdminThemePickers(null, hexColor);
+        }
+
+        function adjustBrightness(hex, percent) {
+            let num = parseInt(hex.replace("#",""), 16),
+                amt = Math.round(2.55 * percent),
+                R = (num >> 16) + amt,
+                B = ((num >> 8) & 0x00FF) + amt,
+                G = (num & 0x0000FF) + amt;
+            return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (B<255?B<1?0:B:255)*0x100 + (G<255?G<1?0:G:255)).toString(16).slice(1);
+        }
+
+        function syncAdminThemePickers(preset, customHex) {
+            const selectors = ['themeSelectAdmin', 'themeSelectModal', 'themeSelect'];
+            const pickers = ['customColorPickerAdmin', 'customColorPickerModal', 'customColorPicker'];
+            if (preset) selectors.forEach(id => { const el = document.getElementById(id); if (el) el.value = preset; });
+            if (customHex) pickers.forEach(id => { const el = document.getElementById(id); if (el) el.value = customHex; });
+        }
+
+        function loadDefaultAdminTheme() {
+            selectPresetTheme('emerald');
+        }
+
+        let captchaCorrect = 12;
+
+        function generateCaptcha() {
+            let n1 = Math.floor(Math.random() * 9) + 1;
+            let n2 = Math.floor(Math.random() * 9) + 1;
+            captchaCorrect = n1 + n2;
+            let el = document.getElementById('captchaQuestion');
+            if (el) el.innerText = `${n1} + ${n2} = ?`;
+            let a = document.getElementById('captchaAnswer');
+            if (a) a.value = '';
+        }
+
+        function openLoginModal() { 
+            const modal = document.getElementById('loginModal');
+            if (modal) { modal.style.display = 'flex'; generateCaptcha(); }
+        }
+
+        function closeLoginModal() { 
+            const modal = document.getElementById('loginModal');
+            if (modal) modal.style.display = 'none'; 
+            const err = document.getElementById('loginError');
+            if (err) err.style.display = 'none';
+        }
+
+        function openForgotModal() { 
+            closeLoginModal();
+            const fModal = document.getElementById('forgotPassModal');
+            if (fModal) fModal.style.display = 'flex';
+        }
+
+        function closeForgotModal() { 
+            const fModal = document.getElementById('forgotPassModal');
+            if (fModal) fModal.style.display = 'none'; 
+            openLoginModal();
+        }
+
+        if (supabase) {
+            supabase.auth.onAuthStateChange(async (event, session) => {
+                let adminPortal = document.getElementById('adminPortal');
+                const user = session ? session.user : null;
+
+                if (user) {
+                    if (adminPortal) adminPortal.style.display = 'block';
+                    closeLoginModal();
+
+                    let emailPrefix = user.email.split('@')[0];
+                    let defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
+
+                    document.getElementById('adminNameDisplay').innerText = defaultName;
+                    document.getElementById('adminRoleDisplay').innerText = "Loading Role...";
+
+                    try {
+                        const { data } = await supabase
+                            .from('users')
+                            .select('*')
+                            .eq('email', user.email)
+                            .maybeSingle();
+
+                        let uRole = "Standard User"; 
+                        let uName = defaultName;
+
+                        if (data) {
+                            uName = data.name || defaultName; 
+                            uRole = data.role || "Standard User";
+                        } else if (user.email === 'pspujari88@gmail.com' || user.email === 'admin@dhamigroup.com') {
+                            uRole = "System Administrator"; 
+                            uName = "Prakash Dhami (Admin)";
+                        }
+
+                        document.getElementById('adminNameDisplay').innerText = uName;
+                        document.getElementById('adminRoleDisplay').innerText = uRole;
+                        applyPermissions(uRole);
+                    } catch (e) {
+                        document.getElementById('adminNameDisplay').innerText = defaultName;
+                        document.getElementById('adminRoleDisplay').innerText = "System Administrator";
+                        applyPermissions("System Administrator");
+                    }
+
+                    fetchProducts(); 
+                    fetchJobs(); 
+                    fetchUsers();
+                } else {
+                    if (adminPortal) adminPortal.style.display = 'none';
+                    openLoginModal();
+                }
+            });
+        }
+
+        function applyPermissions(role) {
+            let navProd = document.getElementById('nav-manage-prod');
+            let navCar = document.getElementById('nav-manage-car');
+            let navUser = document.getElementById('nav-manage-user');
+
+            if (!navProd || !navCar || !navUser) return;
+            navProd.style.display = 'none'; 
+            navCar.style.display = 'none'; 
+            navUser.style.display = 'none';
+
+            if (role === "System Administrator" || role === "Manager - Both") {
+                navProd.style.display = 'block'; 
+                navCar.style.display = 'block'; 
+                if (role === "System Administrator") navUser.style.display = 'block';
+                switchAdminTab('manage-prod');
+            } else if (role === "Only Manage Product") {
+                navProd.style.display = 'block'; 
+                switchAdminTab('manage-prod');
+            } else if (role === "Only Manage Career") {
+                navCar.style.display = 'block'; 
+                switchAdminTab('manage-car');
+            } else {
+                alert("You don't have access to the Dashboard!"); 
+                logoutUser();
+            }
+        }
+
+        function switchAdminTab(id) { 
+            document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none'); 
+            let activeSec = document.getElementById('admin-' + id);
+            if (activeSec) activeSec.style.display = 'block'; 
+            document.querySelectorAll('.admin-menu a').forEach(a => a.classList.remove('active')); 
+            let navElem = document.getElementById('nav-' + id);
+            if (navElem) navElem.classList.add('active'); 
+        }
+
+        async function handleLogin() {
+            let email = document.getElementById('loginId').value.trim(); 
+            let pass = document.getElementById('loginPass').value; 
+            let ans = parseInt(document.getElementById('captchaAnswer').value, 10);
+            let errBox = document.getElementById('loginError');
+
+            if (!email || !pass) { 
+                errBox.style.display = 'block'; 
+                errBox.innerText = "Enter email and password."; 
+                return; 
+            }
+            if (ans !== captchaCorrect) { 
+                errBox.style.display = 'block'; 
+                errBox.innerText = "Incorrect Captcha!"; 
+                generateCaptcha(); 
+                return; 
+            }
+
+            if (!supabase) {
+                alert("Supabase SDK not loaded.");
+                return;
+            }
+
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: pass
+            });
+
+            if (error) {
+                errBox.style.display = 'block'; 
+                errBox.innerText = error.message; 
+                generateCaptcha(); 
+            }
+        }
+
+        async function logoutUser() { 
+            if (supabase) await supabase.auth.signOut();
+            window.location.reload();
+        }
+
+        async function sendResetLink() {
+            let email = document.getElementById('resetEmail').value.trim();
+            let msg = document.getElementById('resetMessage');
+            if (email && supabase) { 
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.href
+                });
+
+                if (error) {
+                    msg.style.display = 'block'; 
+                    msg.style.color = '#e34f26'; 
+                    msg.innerText = error.message; 
+                } else {
+                    msg.style.display = 'block'; 
+                    msg.style.color = '#1b8a4f';
+                    msg.innerText = "Reset link sent successfully to your email!"; 
+                }
+            }
+        }
+
+        // PRODUCTS CRUD
+        let editProdId = null;
+        function editProduct(id, name, cat, color, qty, desc, spec, imgUrl, catUrl, isHidden) {
+            editProdId = id; 
+            document.getElementById('addProdName').value = name; 
+            document.getElementById('addProdCat').value = cat; 
+            document.getElementById('addProdColor').value = color;
+            document.getElementById('addProdQty').value = qty; 
+            document.getElementById('addProdDesc').value = desc;
+            document.getElementById('addProdSpec').value = spec;
+            document.getElementById('addProdImage').value = (imgUrl && imgUrl !== 'undefined') ? imgUrl : "";
+            document.getElementById('addProdCatalog').value = (catUrl && catUrl !== 'undefined') ? catUrl : "";
+            document.getElementById('addProdHidden').checked = isHidden; 
+
+            document.getElementById('btnSaveProd').innerHTML = "<i class='fa-solid fa-save'></i> Update Product"; 
+            document.getElementById('btnCancelProd').style.display = "inline-block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function saveProduct() {
+            let name = document.getElementById('addProdName').value.trim(); 
+            let cat = document.getElementById('addProdCat').value; 
+            let color = document.getElementById('addProdColor').value.trim();
+            let qty = document.getElementById('addProdQty').value; 
+            let desc = document.getElementById('addProdDesc').value.trim(); 
+            let spec = document.getElementById('addProdSpec').value.trim();
+            let imgUrl = document.getElementById('addProdImage').value.trim();
+            let catUrl = document.getElementById('addProdCatalog').value.trim();
+            let isHidden = document.getElementById('addProdHidden').checked;
+
+            if (!name) return alert("Product Name is required!"); 
+            if (!imgUrl) return alert("Product Image URL is required!"); 
+            if (!spec) return alert("Product Specification is required!"); 
+
+            let payload = { 
+                name: name, category: cat, color: color, qty: qty || null, 
+                description: desc, specifications: spec, 
+                image_url: imgUrl, catalog_url: catUrl,
+                status: isHidden ? "Hidden" : "Public" 
+            };
+
+            if (editProdId) { 
+                const { error } = await supabase.from('products').update(payload).eq('id', editProdId);
+                if (error) alert(error.message);
+                else { alert("Product Updated!"); cancelEdit('prod'); fetchProducts(); }
+            } else { 
+                const { error } = await supabase.from('products').insert([payload]);
+                if (error) alert(error.message);
+                else { alert("Product Added!"); cancelEdit('prod'); fetchProducts(); }
+            }
+        }
+
+        async function fetchProducts() {
+            if (!supabase) return;
+            const { data: products, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+            let t = document.getElementById('prodTbody'); 
+            if (!t) return; 
+            t.innerHTML = '';
+            if (error) return console.error(error.message);
+
+            products.forEach(p => { 
+                let safeName = p.name ? p.name.replace(/'/g, "\\'") : ""; 
+                let safeColor = p.color ? p.color.replace(/'/g, "\\'") : ""; 
+                let safeDesc = p.description ? p.description.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : ""; 
+                let safeSpec = p.specifications ? p.specifications.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : ""; 
+
+                t.innerHTML += `<tr>
+                    <td>${p.name}</td><td>${p.category || '-'}</td><td>${p.qty || 'N/A'}</td>
+                    <td><span class="status-badge ${p.status==='Public'?'status-active':'status-inactive'}">${p.status}</span></td>
+                    <td>
+                        <button class="btn-small btn-edit" onclick="editProduct('${p.id}', '${safeName}', '${p.category}', '${safeColor}', '${p.qty}', '${safeDesc}', '${safeSpec}', '${p.image_url}', '${p.catalog_url}', ${p.status==='Hidden'})"><i class="fa-solid fa-pen"></i></button> 
+                        <button class="btn-small btn-delete" onclick="deleteDoc('products', '${p.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>`; 
+            });
+        }
+
+        // JOBS CRUD
+        let editJobId = null;
+        function editJob(id, title, req, exp, loc, desc) { 
+            editJobId = id; 
+            document.getElementById('addJobTitle').value = title; 
+            document.getElementById('addJobReq').value = req; 
+            document.getElementById('addJobExp').value = exp; 
+            document.getElementById('addJobLoc').value = loc; 
+            document.getElementById('addJobDesc').value = desc; 
+            document.getElementById('btnSaveJob').innerHTML = "<i class='fa-solid fa-save'></i> Update Job"; 
+            document.getElementById('btnCancelJob').style.display = "inline-block"; 
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+        }
+
+        async function saveJob() { 
+            let title = document.getElementById('addJobTitle').value.trim(); 
+            let req = document.getElementById('addJobReq').value; 
+            let exp = document.getElementById('addJobExp').value.trim(); 
+            let loc = document.getElementById('addJobLoc').value.trim(); 
+            let desc = document.getElementById('addJobDesc').value.trim(); 
+
+            if (!title || !req) return alert("Title and Req positions required!"); 
+            let payload = { title: title, openings: req, exp: exp, location: loc, description: desc, status: "Active" }; 
+
+            if (editJobId) { 
+                const { error } = await supabase.from('jobs').update(payload).eq('id', editJobId);
+                if (error) alert(error.message);
+                else { alert("Job Updated!"); cancelEdit('job'); fetchJobs(); }
+            } else { 
+                const { error } = await supabase.from('jobs').insert([payload]);
+                if (error) alert(error.message);
+                else { alert("Job Posted!"); cancelEdit('job'); fetchJobs(); }
+            } 
+        }
+
+        async function fetchJobs() { 
+            if (!supabase) return;
+            const { data: jobs, error } = await supabase.from('jobs').select('*').order('created_at', { ascending: false });
+            let t = document.getElementById('jobTbody'); 
+            if (!t) return; 
+            t.innerHTML = ''; 
+            if (error) return console.error(error.message);
+
+            jobs.forEach(j => { 
+                let safeTitle = j.title ? j.title.replace(/'/g, "\\'") : ""; 
+                let safeDesc = j.description ? j.description.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : ""; 
+                t.innerHTML += `<tr><td>${j.title}</td><td>${j.openings}</td><td>${j.exp}</td><td><span class="status-badge status-active">${j.status}</span></td><td><button class="btn-small btn-edit" onclick="editJob('${j.id}', '${safeTitle}', '${j.openings}', '${j.exp}', '${j.location}', '${safeDesc}')"><i class="fa-solid fa-pen"></i></button> <button class="btn-small btn-delete" onclick="deleteDoc('jobs', '${j.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; 
+            }); 
+        }
+
+        // USERS CRUD
+        let editUserId = null;
+        function editUser(id, name, email, role) { 
+            editUserId = id; 
+            document.getElementById('addUserName').value = name; 
+            document.getElementById('addUserEmail').value = email; 
+            document.getElementById('addUserEmail').disabled = true; 
+            document.getElementById('addUserPass').disabled = true; 
+            document.getElementById('addUserPass').placeholder = "Disabled during edit"; 
+            document.getElementById('addUserRole').value = role; 
+            document.getElementById('btnSaveUser').innerHTML = "<i class='fa-solid fa-save'></i> Update User Role"; 
+            document.getElementById('btnCancelUser').style.display = "inline-block"; 
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+        }
+
+        async function saveUser() { 
+            let name = document.getElementById('addUserName').value.trim(); 
+            let email = document.getElementById('addUserEmail').value.trim(); 
+            let pass = document.getElementById('addUserPass').value; 
+            let role = document.getElementById('addUserRole').value; 
+
+            if (!name || (!editUserId && (!email || !pass))) return alert("All fields are required!"); 
+
+            if (editUserId) { 
+                const { error } = await supabase.from('users').update({ name: name, role: role }).eq('id', editUserId);
+                if (error) alert(error.message);
+                else { alert("User access updated!"); cancelEdit('user'); fetchUsers(); }
+            } else { 
+                if (pass.length < 6) return alert("Password min 6 chars."); 
+
+                const { data: authData, error: authError } = await supabase.auth.signUp({ email, password: pass });
+                if (authError) return alert(authError.message);
+
+                const userId = authData.user ? authData.user.id : crypto.randomUUID();
+                const { error: dbError } = await supabase.from('users').insert([{
+                    id: userId, name: name, email: email, role: role, status: "Active"
+                }]);
+
+                if (dbError) alert("Table error: " + dbError.message);
+                else alert("User Created Successfully!");
+
+                cancelEdit('user'); 
+                fetchUsers();
+            } 
+        }
+
+        async function fetchUsers() { 
+            if (!supabase) return;
+            const { data: users, error } = await supabase.from('users').select('*').order('created_at', { ascending: false });
+            let t = document.getElementById('userTbody'); 
+            if (!t) return; 
+            t.innerHTML = ''; 
+            if (error) return console.error(error.message);
+
+            users.forEach(u => { 
+                let safeName = u.name ? u.name.replace(/'/g, "\\'") : ""; 
+                t.innerHTML += `<tr><td>${u.name}</td><td>${u.email}</td><td><span style="color:#007bb5; font-weight:600;">${u.role}</span></td><td><span class="status-badge status-active">${u.status}</span></td><td><button class="btn-small btn-edit" onclick="editUser('${u.id}', '${safeName}', '${u.email}', '${u.role}')"><i class="fa-solid fa-pen"></i></button> <button class="btn-small btn-delete" onclick="deleteDoc('users', '${u.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; 
+            }); 
+        }
+
+        function cancelEdit(type) {
+            if (type === 'prod') { 
+                editProdId = null; 
+                document.getElementById('addProdName').value = ''; 
+                document.getElementById('addProdColor').value = ''; 
+                document.getElementById('addProdQty').value = ''; 
+                document.getElementById('addProdDesc').value = ''; 
+                document.getElementById('addProdSpec').value = ''; 
+                document.getElementById('addProdImage').value = ''; 
+                document.getElementById('addProdCatalog').value = ''; 
+                document.getElementById('addProdHidden').checked = false; 
+                document.getElementById('btnSaveProd').innerHTML = '<i class="fa-solid fa-save"></i> Save Product'; 
+                document.getElementById('btnCancelProd').style.display = 'none'; 
+            }
+            if (type === 'job') { 
+                editJobId = null; 
+                document.getElementById('addJobTitle').value = ''; 
+                document.getElementById('addJobReq').value = ''; 
+                document.getElementById('addJobExp').value = ''; 
+                document.getElementById('addJobLoc').value = ''; 
+                document.getElementById('addJobDesc').value = ''; 
+                document.getElementById('btnSaveJob').innerHTML = '<i class="fa-solid fa-upload"></i> Post Job'; 
+                document.getElementById('btnCancelJob').style.display = 'none'; 
+            }
+            if (type === 'user') { 
+                editUserId = null; 
+                document.getElementById('addUserName').value = ''; 
+                document.getElementById('addUserEmail').value = ''; 
+                document.getElementById('addUserPass').value = ''; 
+                document.getElementById('addUserEmail').disabled = false; 
+                document.getElementById('addUserPass').disabled = false; 
+                document.getElementById('addUserPass').placeholder = "Password (Min 6 chars)"; 
+                document.getElementById('btnSaveUser').innerHTML = '<i class="fa-solid fa-plus"></i> Create & Sync User'; 
+                document.getElementById('btnCancelUser').style.display = 'none'; 
+            }
+        }
+
+        async function deleteDoc(col, id) { 
+            let msg = col === 'users' ? "Remove user access?" : "Permanently delete?"; 
+            if (confirm(msg)) {
+                const { error } = await supabase.from(col).delete().eq('id', id);
+                if (error) alert(error.message);
+                else {
+                    if (col === 'products') fetchProducts();
+                    if (col === 'jobs') fetchJobs();
+                    if (col === 'users') fetchUsers();
+                }
+            }
+        }
+
+        // Run immediately without waiting for DOMContentLoaded
+        loadDefaultAdminTheme();
+        generateCaptcha();
+    </script>
 </body>
 </html>
