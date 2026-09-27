@@ -1,28 +1,492 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhami Group Cloud Portal & Dashboard</title>
+
+    <!-- FontAwesome Icons & Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Linkings -->
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/admin.css">
+
+    <style>
+        :root {
+            --primary-color: #1b8a4f;
+            --primary-hover: #0d5c34;
+            --accent-color: #056664;
+            --glow-color: rgba(27, 138, 79, 0.2);
+            --bg-main: #f0f7f3;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            display: flex;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            background: #fff;
+            padding: 35px 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            position: relative;
+            box-sizing: border-box;
+            animation: modalFade 0.3s ease-out;
+        }
+
+        @keyframes modalFade {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 22px;
+            color: #888;
+            cursor: pointer;
+        }
+        .close-modal:hover { color: #e34f26; }
+
+        .login-box h2 {
+            color: var(--primary-hover);
+            text-align: center;
+            margin: 15px 0 20px 0;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 14px; top: 13px;
+            color: #888;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 11px 11px 11px 38px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .input-group input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .captcha-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f0f7f3;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px dashed var(--primary-color);
+            margin-bottom: 16px;
+        }
+
+        .captcha-box .captcha-text {
+            font-weight: 700;
+            color: var(--primary-hover);
+            font-size: 16px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .captcha-box .captcha-text:hover {
+            opacity: 0.8;
+        }
+
+        .captcha-box input {
+            width: 90px;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 600;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .login-box button {
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .login-box button:hover { background: var(--primary-hover); }
+
+        .login-error {
+            color: #e34f26;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .forgot-link {
+            display: block;
+            text-align: right;
+            font-size: 13px;
+            color: var(--primary-color);
+            margin-top: -8px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Topbar & Admin Layout */
+        .admin-topbar {
+            background: var(--accent-color);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .admin-layout {
+            display: flex;
+            min-height: calc(100vh - 65px);
+        }
+
+        .admin-sidebar {
+            width: 250px;
+            background: #fff;
+            border-right: 1px solid #e0e0e0;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-profile {
+            text-align: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+
+        .admin-profile i {
+            font-size: 40px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .admin-profile h3 {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
+        .admin-profile p {
+            margin: 0;
+            font-size: 12px;
+            color: #777;
+        }
+
+        .admin-menu a {
+            display: block;
+            padding: 12px 25px;
+            color: #555;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .admin-menu a:hover, .admin-menu a.active {
+            background: #f0f7f3;
+            color: var(--primary-color);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .admin-content {
+            flex: 1;
+            padding: 30px;
+            background: #fdfdfd;
+        }
+
+        .admin-card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-grid input, .form-grid select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .admin-table th {
+            background: #f8fbf9;
+            color: #444;
+        }
+
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-active { background: #e6f7ee; color: #1b8a4f; }
+        .status-inactive { background: #ffebee; color: #e34f26; }
+    </style>
+
+    <!-- Supabase CDN Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- SECURE DASHBOARD (MAIN WRAPPER) -->
+    <div id="adminPortal" style="display: none; min-height: 100vh;">
+        <div class="admin-topbar">
+            <h2 style="margin:0; font-size:20px;"><i class="fa-solid fa-earth-americas"></i> Dhami Group Cloud Portal</h2>
+            
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <select id="themeSelectAdmin" onchange="selectPresetTheme(this.value)" style="padding: 4px 6px; border-radius: 4px; border: 1px solid #ccc; font-weight: 600;">
+                        <option value="emerald">🟢 Emerald</option>
+                        <option value="royal-blue">🔵 Royal Blue</option>
+                        <option value="cyber-purple">🟣 Purple</option>
+                        <option value="sunset-orange">🟠 Sunset</option>
+                    </select>
+                    <input type="color" id="customColorPickerAdmin" onchange="applyCustomColor(this.value)" title="Choose Custom Color" style="width: 28px; height: 28px; border: none; cursor: pointer; border-radius: 50%; background: none;">
+                </div>
+
+                <button onclick="logoutUser()" style="background: #e34f26; color: white; border: none; padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+        
+        <div class="admin-layout">
+            <div class="admin-sidebar">
+                <div class="admin-profile">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <h3 id="adminNameDisplay">Loading...</h3>
+                    <p id="adminRoleDisplay">Administrator</p>
+                </div>
+                <div class="admin-menu">
+                    <a id="nav-manage-prod" class="active" onclick="switchAdminTab('manage-prod')"><i class="fa-solid fa-boxes-stacked"></i> Manage Products</a>
+                    <a id="nav-manage-car" onclick="switchAdminTab('manage-car')"><i class="fa-solid fa-briefcase"></i> Manage Careers</a>
+                    <a id="nav-manage-user" onclick="switchAdminTab('manage-user')"><i class="fa-solid fa-users-gear"></i> Manage Users</a>
+                </div>
+            </div>
+
+            <div class="admin-content">
+                <!-- Products Tab -->
+                <div id="admin-manage-prod" class="admin-section">
+                    <h2 style="color: var(--primary-hover); margin-top: 0;">Manage Products</h2>
+                    <div class="admin-card">
+                        <div class="form-grid">
+                            <input type="text" id="addProdName" placeholder="Product Name *">
+                            <select id="addProdCat"><option>ERP Software</option><option>Hardware</option><option>Service</option></select>
+                            <input type="text" id="addProdColor" placeholder="Color / Variant">
+                            <input type="number" id="addProdQty" placeholder="Quantity">
+                        </div>
+                        <div class="form-grid">
+                            <input type="url" id="addProdImage" placeholder="Image URL *">
+                            <input type="url" id="addProdCatalog" placeholder="Catalogue PDF URL">
+                        </div>
+                        <textarea id="addProdSpec" rows="2" placeholder="Specifications *" style="margin-bottom: 15px;"></textarea>
+                        <textarea id="addProdDesc" rows="2" placeholder="Description" style="margin-bottom: 15px;"></textarea>
+                        <button id="btnSaveProd" onclick="saveProduct()" class="action-btn"><i class="fa-solid fa-save"></i> Save Product</button>
+                        <button id="btnCancelProd" onclick="cancelEdit('prod')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none;">Cancel</button>
+                    </div>
+                    <table class="admin-table">
+                        <thead><tr><th>Name</th><th>Category</th><th>Qty</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="prodTbody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Careers Tab -->
+                <div id="admin-manage-car" class="admin-section" style="display: none;">
+                    <h2 style="color: var(--primary-hover); margin-top: 0;">Manage Careers</h2>
+                    <div class="admin-card">
+                        <div class="form-grid">
+                            <input type="text" id="addJobTitle" placeholder="Job Title *">
+                            <input type="number" id="addJobReq" placeholder="Total Requirement">
+                            <input type="text" id="addJobExp" placeholder="Experience">
+                            <input type="text" id="addJobLoc" placeholder="Location">
+                        </div>
+                        <textarea id="addJobDesc" rows="3" placeholder="Job Description *" style="margin-bottom: 15px;"></textarea>
+                        <button id="btnSaveJob" onclick="saveJob()" style="background: #e34f26;" class="action-btn"><i class="fa-solid fa-upload"></i> Post Job</button>
+                        <button id="btnCancelJob" onclick="cancelEdit('job')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none;">Cancel</button>
+                    </div>
+                    <table class="admin-table">
+                        <thead><tr><th>Title</th><th>Openings</th><th>Exp</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="jobTbody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Users Tab -->
+                <div id="admin-manage-user" class="admin-section" style="display: none;">
+                    <h2 style="color: var(--primary-hover); margin-top: 0;">Manage Users</h2>
+                    <div class="admin-card">
+                        <div class="form-grid">
+                            <input type="text" id="addUserName" placeholder="Full Name">
+                            <input type="email" id="addUserEmail" placeholder="Email Address">
+                            <input type="password" id="addUserPass" placeholder="Password (Min 6 chars)">
+                            <select id="addUserRole">
+                                <option value="Only Manage Product">Only Manage Product</option>
+                                <option value="Only Manage Career">Only Manage Career</option>
+                                <option value="Manager - Both">Manager - Both</option>
+                                <option value="System Administrator">System Administrator</option>
+                            </select>
+                        </div>
+                        <button id="btnSaveUser" onclick="saveUser()" class="action-btn"><i class="fa-solid fa-plus"></i> Create User</button>
+                        <button id="btnCancelUser" onclick="cancelEdit('user')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none;">Cancel</button>
+                    </div>
+                    <table class="admin-table">
+                        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="userTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal-overlay" id="loginModal" style="display: flex;">
+        <div class="login-box">
+            <div style="position: absolute; top: 15px; left: 20px; display: flex; align-items: center; gap: 6px;">
+                <select id="themeSelectModal" onchange="selectPresetTheme(this.value)" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #ccc; font-weight: 600;">
+                    <option value="emerald">🟢 Emerald</option>
+                    <option value="royal-blue">🔵 Blue</option>
+                    <option value="cyber-purple">🟣 Purple</option>
+                    <option value="sunset-orange">🟠 Sunset</option>
+                </select>
+                <input type="color" id="customColorPickerModal" onchange="applyCustomColor(this.value)" title="Choose Custom Color" style="width: 22px; height: 22px; border: none; cursor: pointer; border-radius: 50%; background: none;">
+            </div>
+
+            <i class="fa-solid fa-xmark close-modal" onclick="closeLoginModal()"></i>
+            <h2>Secure Portal Login</h2>
+
+            <div class="input-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" id="loginId" placeholder="Email Address" required>
+            </div>
+            <div class="input-group">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="loginPass" placeholder="Password" required>
+            </div>
+            
+            <div class="captcha-box">
+                <span class="captcha-text" id="captchaQuestion" title="Click to refresh captcha" onclick="generateCaptcha()">Loading...</span>
+                <input type="number" id="captchaAnswer" placeholder="Answer" required>
+            </div>
+            
+            <a class="forgot-link" onclick="openForgotModal()">Forgot Password?</a>
+            <button onclick="handleLogin()" id="btnLogin">Verify & Login</button>
+            <div class="login-error" id="loginError">Invalid Credentials.</div>
+        </div>
+    </div>
+
+    <!-- RESET PASSWORD MODAL -->
+    <div class="modal-overlay" id="forgotPassModal" style="display: none;">
+        <div class="login-box">
+            <i class="fa-solid fa-xmark close-modal" onclick="closeForgotModal()"></i>
+            <h2>Reset Password</h2>
+            <div class="input-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" id="resetEmail" placeholder="Email Address" required>
+            </div>
+            <button onclick="sendResetLink()" style="background: #e34f26;">Send Reset Link</button>
+            <p id="resetMessage" style="color: #1b8a4f; font-size: 13px; text-align: center; margin-top: 10px; display: none;">Reset link sent successfully to your email!</p>
+            <a class="forgot-link" style="margin-top: 15px; text-align: center;" onclick="openLoginModal()">Back to Login</a>
+        </div>
+    </div>
+
+    <!-- CORE SCRIPT -->
+    <script>
         const SUPABASE_URL = "https://yuyndtoqcwawlhrjespt.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1eW5kdG9xY3dhd2xocmplc3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MDkzOTIsImV4cCI6MjEwNjA4NTM5Mn0.TJ1DuBlYANnTNogfbt5WB64UsxNjVUyNkLR2gpHqNR0";
 
-        // Global safe initialization (Avoids SyntaxError)
-        var sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+        // Global Supabase Client
+        var sb = (window.supabase && window.supabase.createClient) 
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
+            : null;
 
-        function selectPresetTheme(themeName) {
-            document.documentElement.setAttribute('data-theme', themeName);
-            document.documentElement.style.removeProperty('--primary-color');
-            document.documentElement.style.removeProperty('--primary-hover');
-            document.documentElement.style.removeProperty('--accent-color');
-            document.documentElement.style.removeProperty('--glow-color');
-            syncAdminThemePickers(themeName, null);
-        }
+        let captchaCorrect = 0;
+        let editProdId = null;
+        let editJobId = null;
+        let editUserId = null;
 
-        function applyCustomColor(hexColor) {
-            const hoverColor = adjustBrightness(hexColor, -20);
-            document.documentElement.style.setProperty('--primary-color', hexColor);
-            document.documentElement.style.setProperty('--primary-hover', hoverColor);
-            document.documentElement.style.setProperty('--accent-color', hexColor);
-            document.documentElement.style.setProperty('--glow-color', hexColor);
-            syncAdminThemePickers(null, hexColor);
-        }
-
+        // ==========================================
+        // 1. THEME & COLOR PICKER LOGIC
+        // ==========================================
         function adjustBrightness(hex, percent) {
             let num = parseInt(hex.replace("#",""), 16),
                 amt = Math.round(2.55 * percent),
@@ -32,25 +496,62 @@
             return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (B<255?B<1?0:B:255)*0x100 + (G<255?G<1?0:G:255)).toString(16).slice(1);
         }
 
-        function syncAdminThemePickers(preset, customHex) {
+        function syncThemePickers(preset, customHex) {
             const selectors = ['themeSelectAdmin', 'themeSelectModal'];
             const pickers = ['customColorPickerAdmin', 'customColorPickerModal'];
             if (preset) selectors.forEach(id => { const el = document.getElementById(id); if (el) el.value = preset; });
             if (customHex) pickers.forEach(id => { const el = document.getElementById(id); if (el) el.value = customHex; });
         }
 
-        let captchaCorrect = 12;
+        function applyCustomColor(hexColor) {
+            const hoverColor = adjustBrightness(hexColor, -20);
+            const root = document.documentElement;
+            root.style.setProperty('--primary-color', hexColor);
+            root.style.setProperty('--primary-hover', hoverColor);
+            root.style.setProperty('--accent-color', hexColor);
+            root.style.setProperty('--glow-color', hexColor + '33');
+            syncThemePickers(null, hexColor);
+        }
+
+        function selectPresetTheme(themeName) {
+            const root = document.documentElement;
+            if (themeName === 'emerald') {
+                root.style.setProperty('--primary-color', '#1b8a4f');
+                root.style.setProperty('--primary-hover', '#0d5c34');
+                root.style.setProperty('--accent-color', '#056664');
+            } else if (themeName === 'royal-blue') {
+                root.style.setProperty('--primary-color', '#1e40af');
+                root.style.setProperty('--primary-hover', '#1e3a8a');
+                root.style.setProperty('--accent-color', '#1e3a8a');
+            } else if (themeName === 'cyber-purple') {
+                root.style.setProperty('--primary-color', '#7c3aed');
+                root.style.setProperty('--primary-hover', '#6d28d9');
+                root.style.setProperty('--accent-color', '#4c1d95');
+            } else if (themeName === 'sunset-orange') {
+                root.style.setProperty('--primary-color', '#ea580c');
+                root.style.setProperty('--primary-hover', '#c2410c');
+                root.style.setProperty('--accent-color', '#9a3412');
+            }
+            syncThemePickers(themeName, null);
+        }
+
+        // ==========================================
+        // 2. CAPTCHA AUTO-CHANGE & REFRESH LOGIC
+        // ==========================================
         function generateCaptcha() {
             let n1 = Math.floor(Math.random() * 9) + 1;
             let n2 = Math.floor(Math.random() * 9) + 1;
             captchaCorrect = n1 + n2;
-            let el = document.getElementById('captchaQuestion');
-            if (el) el.innerText = `${n1} + ${n2} = ?`;
-            let a = document.getElementById('captchaAnswer');
+            const q = document.getElementById('captchaQuestion');
+            if (q) q.innerText = `${n1} + ${n2} = ?`;
+            const a = document.getElementById('captchaAnswer');
             if (a) a.value = '';
         }
 
+        // Modal triggers
         function openLoginModal() { 
+            const fModal = document.getElementById('forgotPassModal');
+            if (fModal) fModal.style.display = 'none';
             const modal = document.getElementById('loginModal');
             if (modal) { modal.style.display = 'flex'; generateCaptcha(); }
         }
@@ -74,381 +575,279 @@
             openLoginModal();
         }
 
-        if (sb) {
-            sb.auth.onAuthStateChange(async (event, session) => {
-                let adminPortal = document.getElementById('adminPortal');
-                const user = session ? session.user : null;
+        // ==========================================
+        // 3. AUTHENTICATION & SESSION HANDLING
+        // ==========================================
+        function showDashboard(user) {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('adminPortal').style.display = 'block';
 
-                if (user) {
-                    if (adminPortal) adminPortal.style.display = 'block';
-                    closeLoginModal();
+            const emailPrefix = user.email.split('@')[0];
+            const defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
 
-                    let emailPrefix = user.email.split('@')[0];
-                    let defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
+            document.getElementById('adminNameDisplay').innerText = 
+                (user.email === 'pspujari88@gmail.com' || user.email === 'admin@dhamigroup.com') 
+                ? "Prakash Dhami (Admin)" 
+                : defaultName;
 
-                    document.getElementById('adminNameDisplay').innerText = defaultName;
-                    document.getElementById('adminRoleDisplay').innerText = "Loading Role...";
+            document.getElementById('adminRoleDisplay').innerText = "System Administrator";
 
-                    try {
-                        const { data } = await sb
-                            .from('users')
-                            .select('*')
-                            .eq('email', user.email)
-                            .maybeSingle();
-
-                        let uRole = "Standard User"; 
-                        let uName = defaultName;
-
-                        if (data) {
-                            uName = data.name || defaultName; 
-                            uRole = data.role || "Standard User";
-                        } else if (user.email === 'pspujari88@gmail.com' || user.email === 'admin@dhamigroup.com') {
-                            uRole = "System Administrator"; 
-                            uName = "Prakash Dhami (Admin)";
-                        }
-
-                        document.getElementById('adminNameDisplay').innerText = uName;
-                        document.getElementById('adminRoleDisplay').innerText = uRole;
-                        applyPermissions(uRole);
-                    } catch (e) {
-                        document.getElementById('adminNameDisplay').innerText = defaultName;
-                        document.getElementById('adminRoleDisplay').innerText = "System Administrator";
-                        applyPermissions("System Administrator");
-                    }
-
-                    fetchProducts(); 
-                    fetchJobs(); 
-                    fetchUsers();
-                } else {
-                    if (adminPortal) adminPortal.style.display = 'none';
-                    openLoginModal();
-                }
-            });
+            fetchProducts();
+            fetchJobs();
+            fetchUsers();
         }
 
-        function applyPermissions(role) {
-            let navProd = document.getElementById('nav-manage-prod');
-            let navCar = document.getElementById('nav-manage-car');
-            let navUser = document.getElementById('nav-manage-user');
-
-            if (!navProd || !navCar || !navUser) return;
-            navProd.style.display = 'none'; 
-            navCar.style.display = 'none'; 
-            navUser.style.display = 'none';
-
-            if (role === "System Administrator" || role === "Manager - Both") {
-                navProd.style.display = 'block'; 
-                navCar.style.display = 'block'; 
-                if (role === "System Administrator") navUser.style.display = 'block';
-                switchAdminTab('manage-prod');
-            } else if (role === "Only Manage Product") {
-                navProd.style.display = 'block'; 
-                switchAdminTab('manage-prod');
-            } else if (role === "Only Manage Career") {
-                navCar.style.display = 'block'; 
-                switchAdminTab('manage-car');
-            } else {
-                alert("You don't have access to the Dashboard!"); 
-                logoutUser();
-            }
-        }
-
-        function switchAdminTab(id) { 
-            document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none'); 
-            let activeSec = document.getElementById('admin-' + id);
-            if (activeSec) activeSec.style.display = 'block'; 
-            document.querySelectorAll('.admin-menu a').forEach(a => a.classList.remove('active')); 
-            let navElem = document.getElementById('nav-' + id);
-            if (navElem) navElem.classList.add('active'); 
-        }
-
-        async function handleLogin() {
-            let email = document.getElementById('loginId').value.trim(); 
-            let pass = document.getElementById('loginPass').value; 
-            let ans = parseInt(document.getElementById('captchaAnswer').value, 10);
-            let errBox = document.getElementById('loginError');
-
-            if (!email || !pass) { 
-                errBox.style.display = 'block'; 
-                errBox.innerText = "Enter email and password."; 
-                return; 
-            }
-            if (ans !== captchaCorrect) { 
-                errBox.style.display = 'block'; 
-                errBox.innerText = "Incorrect Captcha!"; 
-                generateCaptcha(); 
-                return; 
-            }
+        async function initAuth() {
+            selectPresetTheme('emerald');
+            generateCaptcha();
 
             if (!sb) {
-                alert("Database SDK not loaded. Please refresh.");
+                console.error("Supabase CDN not ready.");
                 return;
             }
 
-            const { data, error } = await sb.auth.signInWithPassword({
-                email: email,
-                password: pass
-            });
-
-            if (error) {
-                errBox.style.display = 'block'; 
-                errBox.innerText = error.message; 
-                generateCaptcha(); 
+            try {
+                const { data: { session } } = await sb.auth.getSession();
+                if (session && session.user) {
+                    showDashboard(session.user);
+                } else {
+                    document.getElementById('loginModal').style.display = 'flex';
+                    document.getElementById('adminPortal').style.display = 'none';
+                }
+            } catch (err) {
+                document.getElementById('loginModal').style.display = 'flex';
             }
         }
 
-        async function logoutUser() { 
+        async function handleLogin() {
+            const email = document.getElementById('loginId').value.trim();
+            const pass = document.getElementById('loginPass').value;
+            const ans = parseInt(document.getElementById('captchaAnswer').value, 10);
+            const errBox = document.getElementById('loginError');
+
+            errBox.style.display = 'none';
+
+            if (!email || !pass) {
+                errBox.innerText = "Please enter both Email and Password.";
+                errBox.style.display = 'block';
+                return;
+            }
+
+            if (ans !== captchaCorrect) {
+                errBox.innerText = "Incorrect Captcha answer.";
+                errBox.style.display = 'block';
+                generateCaptcha(); // Auto-refresh captcha on failure
+                return;
+            }
+
+            const btn = document.getElementById('btnLogin');
+            btn.innerText = "Verifying...";
+
+            const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+
+            btn.innerText = "Verify & Login";
+
+            if (error) {
+                errBox.innerText = error.message;
+                errBox.style.display = 'block';
+                generateCaptcha(); // Auto-refresh captcha on failed auth
+            } else if (data && data.user) {
+                showDashboard(data.user);
+            }
+        }
+
+        async function logoutUser() {
             if (sb) await sb.auth.signOut();
             window.location.reload();
         }
 
         async function sendResetLink() {
-            let email = document.getElementById('resetEmail').value.trim();
-            let msg = document.getElementById('resetMessage');
-            if (email && sb) { 
+            const email = document.getElementById('resetEmail').value.trim();
+            const msg = document.getElementById('resetMessage');
+            if (email && sb) {
                 const { error } = await sb.auth.resetPasswordForEmail(email, {
                     redirectTo: window.location.href
                 });
 
                 if (error) {
-                    msg.style.display = 'block'; 
-                    msg.style.color = '#e34f26'; 
-                    msg.innerText = error.message; 
+                    msg.style.display = 'block';
+                    msg.style.color = '#e34f26';
+                    msg.innerText = error.message;
                 } else {
-                    msg.style.display = 'block'; 
+                    msg.style.display = 'block';
                     msg.style.color = '#1b8a4f';
-                    msg.innerText = "Reset link sent successfully to your email!"; 
+                    msg.innerText = "Reset link sent successfully to your email!";
                 }
             }
         }
 
-        // PRODUCTS CRUD
-        let editProdId = null;
-        function editProduct(id, name, cat, color, qty, desc, spec, imgUrl, catUrl, isHidden) {
-            editProdId = id; 
-            document.getElementById('addProdName').value = name; 
-            document.getElementById('addProdCat').value = cat; 
-            document.getElementById('addProdColor').value = color;
-            document.getElementById('addProdQty').value = qty; 
-            document.getElementById('addProdDesc').value = desc;
-            document.getElementById('addProdSpec').value = spec;
-            document.getElementById('addProdImage').value = (imgUrl && imgUrl !== 'undefined') ? imgUrl : "";
-            document.getElementById('addProdCatalog').value = (catUrl && catUrl !== 'undefined') ? catUrl : "";
-            document.getElementById('addProdHidden').checked = isHidden; 
+        function switchAdminTab(id) {
+            document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
+            const targetSec = document.getElementById('admin-' + id);
+            if (targetSec) targetSec.style.display = 'block';
 
-            document.getElementById('btnSaveProd').innerHTML = "<i class='fa-solid fa-save'></i> Update Product"; 
-            document.getElementById('btnCancelProd').style.display = "inline-block";
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.querySelectorAll('.admin-menu a').forEach(a => a.classList.remove('active'));
+            const targetNav = document.getElementById('nav-' + id);
+            if (targetNav) targetNav.classList.add('active');
+        }
+
+        // ==========================================
+        // 4. CRUD FOR PRODUCTS
+        // ==========================================
+        async function fetchProducts() {
+            if (!sb) return;
+            const { data, error } = await sb.from('products').select('*').order('created_at', { ascending: false });
+            const tbody = document.getElementById('prodTbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (data) {
+                data.forEach(p => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${p.name}</strong></td>
+                            <td>${p.category || '-'}</td>
+                            <td>${p.qty || 0}</td>
+                            <td><span class="status-badge ${p.status === 'Public' ? 'status-active' : 'status-inactive'}">${p.status || 'Public'}</span></td>
+                            <td>
+                                <button onclick="deleteDoc('products', '${p.id}')" style="background:#e34f26; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
         }
 
         async function saveProduct() {
-            let name = document.getElementById('addProdName').value.trim(); 
-            let cat = document.getElementById('addProdCat').value; 
-            let color = document.getElementById('addProdColor').value.trim();
-            let qty = document.getElementById('addProdQty').value; 
-            let desc = document.getElementById('addProdDesc').value.trim(); 
-            let spec = document.getElementById('addProdSpec').value.trim();
-            let imgUrl = document.getElementById('addProdImage').value.trim();
-            let catUrl = document.getElementById('addProdCatalog').value.trim();
-            let isHidden = document.getElementById('addProdHidden').checked;
+            const name = document.getElementById('addProdName').value.trim();
+            const category = document.getElementById('addProdCat').value;
+            const color = document.getElementById('addProdColor').value.trim();
+            const qty = document.getElementById('addProdQty').value;
+            const image_url = document.getElementById('addProdImage').value.trim();
+            const catalog_url = document.getElementById('addProdCatalog').value.trim();
+            const specifications = document.getElementById('addProdSpec').value.trim();
+            const description = document.getElementById('addProdDesc').value.trim();
 
-            if (!name) return alert("Product Name is required!"); 
-            if (!imgUrl) return alert("Product Image URL is required!"); 
-            if (!spec) return alert("Product Specification is required!"); 
+            if (!name || !image_url || !specifications) {
+                alert("Please fill Name, Image URL, and Specifications.");
+                return;
+            }
 
-            let payload = { 
-                name: name, category: cat, color: color, qty: qty || null, 
-                description: desc, specifications: spec, 
-                image_url: imgUrl, catalog_url: catUrl,
-                status: isHidden ? "Hidden" : "Public" 
-            };
+            const payload = { name, category, color, qty: qty || null, image_url, catalog_url, specifications, description, status: 'Public' };
+            const { error } = await sb.from('products').insert([payload]);
 
-            if (editProdId) { 
-                const { error } = await sb.from('products').update(payload).eq('id', editProdId);
-                if (error) alert(error.message);
-                else { alert("Product Updated!"); cancelEdit('prod'); fetchProducts(); }
-            } else { 
-                const { error } = await sb.from('products').insert([payload]);
-                if (error) alert(error.message);
-                else { alert("Product Added!"); cancelEdit('prod'); fetchProducts(); }
+            if (error) alert(error.message);
+            else {
+                alert("Product saved successfully!");
+                document.getElementById('addProdName').value = '';
+                document.getElementById('addProdColor').value = '';
+                document.getElementById('addProdQty').value = '';
+                document.getElementById('addProdImage').value = '';
+                document.getElementById('addProdCatalog').value = '';
+                document.getElementById('addProdSpec').value = '';
+                document.getElementById('addProdDesc').value = '';
+                fetchProducts();
             }
         }
 
-        async function fetchProducts() {
+        // ==========================================
+        // 5. CRUD FOR JOBS
+        // ==========================================
+        async function fetchJobs() {
             if (!sb) return;
-            const { data: products, error } = await sb.from('products').select('*').order('created_at', { ascending: false });
-            let t = document.getElementById('prodTbody'); 
-            if (!t) return; 
-            t.innerHTML = '';
-            if (error) return console.error(error.message);
-
-            products.forEach(p => { 
-                let safeName = p.name ? p.name.replace(/'/g, "\\'") : ""; 
-                let safeColor = p.color ? p.color.replace(/'/g, "\\'") : ""; 
-                let safeDesc = p.description ? p.description.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : ""; 
-                let safeSpec = p.specifications ? p.specifications.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : ""; 
-
-                t.innerHTML += `<tr>
-                    <td>${p.name}</td><td>${p.category || '-'}</td><td>${p.qty || 'N/A'}</td>
-                    <td><span class="status-badge ${p.status==='Public'?'status-active':'status-inactive'}">${p.status}</span></td>
-                    <td>
-                        <button class="btn-small btn-edit" onclick="editProduct('${p.id}', '${safeName}', '${p.category}', '${safeColor}', '${p.qty}', '${safeDesc}', '${safeSpec}', '${p.image_url}', '${p.catalog_url}', ${p.status==='Hidden'})"><i class="fa-solid fa-pen"></i></button> 
-                        <button class="btn-small btn-delete" onclick="deleteDoc('products', '${p.id}')"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>`; 
-            });
+            const { data } = await sb.from('jobs').select('*').order('created_at', { ascending: false });
+            const tbody = document.getElementById('jobTbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (data) {
+                data.forEach(j => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${j.title}</strong></td>
+                            <td>${j.openings || 1}</td>
+                            <td>${j.exp || '-'}</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td>
+                                <button onclick="deleteDoc('jobs', '${j.id}')" style="background:#e34f26; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
         }
 
-        // JOBS CRUD
-        let editJobId = null;
-        function editJob(id, title, req, exp, loc, desc) { 
-            editJobId = id; 
-            document.getElementById('addJobTitle').value = title; 
-            document.getElementById('addJobReq').value = req; 
-            document.getElementById('addJobExp').value = exp; 
-            document.getElementById('addJobLoc').value = loc; 
-            document.getElementById('addJobDesc').value = desc; 
-            document.getElementById('btnSaveJob').innerHTML = "<i class='fa-solid fa-save'></i> Update Job"; 
-            document.getElementById('btnCancelJob').style.display = "inline-block"; 
-            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+        async function saveJob() {
+            const title = document.getElementById('addJobTitle').value.trim();
+            const openings = document.getElementById('addJobReq').value;
+            const exp = document.getElementById('addJobExp').value.trim();
+            const location = document.getElementById('addJobLoc').value.trim();
+            const description = document.getElementById('addJobDesc').value.trim();
+
+            if (!title || !description) return alert("Please fill Title and Description.");
+
+            const { error } = await sb.from('jobs').insert([{ title, openings: openings || 1, exp, location, description, status: 'Active' }]);
+            if (error) alert(error.message);
+            else {
+                alert("Job posted!");
+                document.getElementById('addJobTitle').value = '';
+                document.getElementById('addJobReq').value = '';
+                document.getElementById('addJobExp').value = '';
+                document.getElementById('addJobLoc').value = '';
+                document.getElementById('addJobDesc').value = '';
+                fetchJobs();
+            }
         }
 
-        async function saveJob() { 
-            let title = document.getElementById('addJobTitle').value.trim(); 
-            let req = document.getElementById('addJobReq').value; 
-            let exp = document.getElementById('addJobExp').value.trim(); 
-            let loc = document.getElementById('addJobLoc').value.trim(); 
-            let desc = document.getElementById('addJobDesc').value.trim(); 
-
-            if (!title || !req) return alert("Title and Req positions required!"); 
-            let payload = { title: title, openings: req, exp: exp, location: loc, description: desc, status: "Active" }; 
-
-            if (editJobId) { 
-                const { error } = await sb.from('jobs').update(payload).eq('id', editJobId);
-                if (error) alert(error.message);
-                else { alert("Job Updated!"); cancelEdit('job'); fetchJobs(); }
-            } else { 
-                const { error } = await sb.from('jobs').insert([payload]);
-                if (error) alert(error.message);
-                else { alert("Job Posted!"); cancelEdit('job'); fetchJobs(); }
-            } 
-        }
-
-        async function fetchJobs() { 
+        // ==========================================
+        // 6. CRUD FOR USERS
+        // ==========================================
+        async function fetchUsers() {
             if (!sb) return;
-            const { data: jobs, error } = await sb.from('jobs').select('*').order('created_at', { ascending: false });
-            let t = document.getElementById('jobTbody'); 
-            if (!t) return; 
-            t.innerHTML = ''; 
-            if (error) return console.error(error.message);
-
-            jobs.forEach(j => { 
-                let safeTitle = j.title ? j.title.replace(/'/g, "\\'") : ""; 
-                let safeDesc = j.description ? j.description.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : ""; 
-                t.innerHTML += `<tr><td>${j.title}</td><td>${j.openings}</td><td>${j.exp}</td><td><span class="status-badge status-active">${j.status}</span></td><td><button class="btn-small btn-edit" onclick="editJob('${j.id}', '${safeTitle}', '${j.openings}', '${j.exp}', '${j.location}', '${safeDesc}')"><i class="fa-solid fa-pen"></i></button> <button class="btn-small btn-delete" onclick="deleteDoc('jobs', '${j.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; 
-            }); 
-        }
-
-        // USERS CRUD
-        let editUserId = null;
-        function editUser(id, name, email, role) { 
-            editUserId = id; 
-            document.getElementById('addUserName').value = name; 
-            document.getElementById('addUserEmail').value = email; 
-            document.getElementById('addUserEmail').disabled = true; 
-            document.getElementById('addUserPass').disabled = true; 
-            document.getElementById('addUserPass').placeholder = "Disabled during edit"; 
-            document.getElementById('addUserRole').value = role; 
-            document.getElementById('btnSaveUser').innerHTML = "<i class='fa-solid fa-save'></i> Update User Role"; 
-            document.getElementById('btnCancelUser').style.display = "inline-block"; 
-            window.scrollTo({ top: 0, behavior: 'smooth' }); 
-        }
-
-        async function saveUser() { 
-            let name = document.getElementById('addUserName').value.trim(); 
-            let email = document.getElementById('addUserEmail').value.trim(); 
-            let pass = document.getElementById('addUserPass').value; 
-            let role = document.getElementById('addUserRole').value; 
-
-            if (!name || (!editUserId && (!email || !pass))) return alert("All fields are required!"); 
-
-            if (editUserId) { 
-                const { error } = await sb.from('users').update({ name: name, role: role }).eq('id', editUserId);
-                if (error) alert(error.message);
-                else { alert("User access updated!"); cancelEdit('user'); fetchUsers(); }
-            } else { 
-                if (pass.length < 6) return alert("Password min 6 chars."); 
-
-                const { data: authData, error: authError } = await sb.auth.signUp({ email, password: pass });
-                if (authError) return alert(authError.message);
-
-                const userId = authData.user ? authData.user.id : crypto.randomUUID();
-                const { error: dbError } = await sb.from('users').insert([{
-                    id: userId, name: name, email: email, role: role, status: "Active"
-                }]);
-
-                if (dbError) alert("Table error: " + dbError.message);
-                else alert("User Created Successfully!");
-
-                cancelEdit('user'); 
-                fetchUsers();
-            } 
-        }
-
-        async function fetchUsers() { 
-            if (!sb) return;
-            const { data: users, error } = await sb.from('users').select('*').order('created_at', { ascending: false });
-            let t = document.getElementById('userTbody'); 
-            if (!t) return; 
-            t.innerHTML = ''; 
-            if (error) return console.error(error.message);
-
-            users.forEach(u => { 
-                let safeName = u.name ? u.name.replace(/'/g, "\\'") : ""; 
-                t.innerHTML += `<tr><td>${u.name}</td><td>${u.email}</td><td><span style="color:#007bb5; font-weight:600;">${u.role}</span></td><td><span class="status-badge status-active">${u.status}</span></td><td><button class="btn-small btn-edit" onclick="editUser('${u.id}', '${safeName}', '${u.email}', '${u.role}')"><i class="fa-solid fa-pen"></i></button> <button class="btn-small btn-delete" onclick="deleteDoc('users', '${u.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; 
-            }); 
-        }
-
-        function cancelEdit(type) {
-            if (type === 'prod') { 
-                editProdId = null; 
-                document.getElementById('addProdName').value = ''; 
-                document.getElementById('addProdColor').value = ''; 
-                document.getElementById('addProdQty').value = ''; 
-                document.getElementById('addProdDesc').value = ''; 
-                document.getElementById('addProdSpec').value = ''; 
-                document.getElementById('addProdImage').value = ''; 
-                document.getElementById('addProdCatalog').value = ''; 
-                document.getElementById('addProdHidden').checked = false; 
-                document.getElementById('btnSaveProd').innerHTML = '<i class="fa-solid fa-save"></i> Save Product'; 
-                document.getElementById('btnCancelProd').style.display = 'none'; 
-            }
-            if (type === 'job') { 
-                editJobId = null; 
-                document.getElementById('addJobTitle').value = ''; 
-                document.getElementById('addJobReq').value = ''; 
-                document.getElementById('addJobExp').value = ''; 
-                document.getElementById('addJobLoc').value = ''; 
-                document.getElementById('addJobDesc').value = ''; 
-                document.getElementById('btnSaveJob').innerHTML = '<i class="fa-solid fa-upload"></i> Post Job'; 
-                document.getElementById('btnCancelJob').style.display = 'none'; 
-            }
-            if (type === 'user') { 
-                editUserId = null; 
-                document.getElementById('addUserName').value = ''; 
-                document.getElementById('addUserEmail').value = ''; 
-                document.getElementById('addUserPass').value = ''; 
-                document.getElementById('addUserEmail').disabled = false; 
-                document.getElementById('addUserPass').disabled = false; 
-                document.getElementById('addUserPass').placeholder = "Password (Min 6 chars)"; 
-                document.getElementById('btnSaveUser').innerHTML = '<i class="fa-solid fa-plus"></i> Create & Sync User'; 
-                document.getElementById('btnCancelUser').style.display = 'none'; 
+            const { data } = await sb.from('users').select('*').order('created_at', { ascending: false });
+            const tbody = document.getElementById('userTbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (data) {
+                data.forEach(u => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${u.name}</strong></td>
+                            <td>${u.email}</td>
+                            <td>${u.role}</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td>
+                                <button onclick="deleteDoc('users', '${u.id}')" style="background:#e34f26; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
             }
         }
 
-        async function deleteDoc(col, id) { 
-            let msg = col === 'users' ? "Remove user access?" : "Permanently delete?"; 
-            if (confirm(msg)) {
+        async function saveUser() {
+            const name = document.getElementById('addUserName').value.trim();
+            const email = document.getElementById('addUserEmail').value.trim();
+            const pass = document.getElementById('addUserPass').value;
+            const role = document.getElementById('addUserRole').value;
+
+            if (!name || !email || !pass) return alert("All fields are required.");
+            if (pass.length < 6) return alert("Password min 6 characters.");
+
+            const { data: authData, error: authError } = await sb.auth.signUp({ email, password: pass });
+            if (authError) return alert(authError.message);
+
+            const userId = authData.user ? authData.user.id : crypto.randomUUID();
+            await sb.from('users').insert([{ id: userId, name, email, role, status: 'Active' }]);
+
+            alert("User created successfully!");
+            document.getElementById('addUserName').value = '';
+            document.getElementById('addUserEmail').value = '';
+            document.getElementById('addUserPass').value = '';
+            fetchUsers();
+        }
+
+        // Delete Helper
+        async function deleteDoc(col, id) {
+            if (confirm("Are you sure you want to delete this record?")) {
                 const { error } = await sb.from(col).delete().eq('id', id);
                 if (error) alert(error.message);
                 else {
@@ -459,7 +858,14 @@
             }
         }
 
-        // Init
-        selectPresetTheme('emerald');
-        generateCaptcha();
+        function cancelEdit(type) {
+            if (type === 'prod') {
+                document.getElementById('btnCancelProd').style.display = 'none';
+            }
+        }
+
+        // Start Auth check
+        initAuth();
     </script>
+</body>
+</html>
