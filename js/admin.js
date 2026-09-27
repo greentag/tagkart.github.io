@@ -1,25 +1,13 @@
-const firebaseConfig = {
-    apiKey: "AIzaSyD0sQgLV32_ZoB26eYzBY_Elv8JKa4v5wQ",
-    authDomain: "dhami-group.firebaseapp.com",
-    projectId: "dhami-group",
-    storageBucket: "dhami-group.firebasestorage.app",
-    messagingSenderId: "230272575666",
-    appId: "1:230272575666:web:f88a092b9d2a1beb2941ab"
-};
+// ====================================================
+// 1. SUPABASE CLIENT INITIALIZATION
+// ====================================================
+const SUPABASE_URL = "https://yuyndtoqcwawlhrjespt.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1eW5kdG9xY3dhd2xocmplc3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MDkzOTIsImV4cCI6MjEwNjA4NTM5Mn0.TJ1DuBlYANnTNogfbt5WB64UsxNjVUyNkLR2gpHqNR0";
 
-if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-let secondaryApp;
-if (firebase.apps.length < 2) { 
-    secondaryApp = firebase.initializeApp(firebaseConfig, "Secondary"); 
-} else { 
-    secondaryApp = firebase.app("Secondary"); 
-}
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ====================================================
-// THEME MANAGEMENT & SYNC LOGIC (FOR ADMIN PORTAL)
+// 2. THEME MANAGEMENT & SYNC LOGIC
 // ====================================================
 function selectPresetTheme(themeName) {
     document.documentElement.setAttribute('data-theme', themeName);
@@ -70,12 +58,13 @@ function syncAdminThemePickers(preset, customHex) {
     }
 }
 
-// Har baar fresh open par Emerald Green theme load karega
 function loadDefaultAdminTheme() {
     selectPresetTheme('emerald');
 }
 
-// Captcha Logic
+// ====================================================
+// 3. CAPTCHA & MODAL LOGIC
+// ====================================================
 let captchaCorrect = 0;
 function generateCaptcha() {
     let n1 = Math.floor(Math.random() * 10) + 1;
@@ -97,7 +86,7 @@ function openLoginModal() {
 
 function closeLoginModal() { 
     const modal = document.getElementById('loginModal');
-    if(modal) modal.style.display = 'none';
+    if(modal) modal.style.display = 'none'; 
     const err = document.getElementById('loginError');
     if(err) err.style.display = 'none';
 }
@@ -110,13 +99,16 @@ function openForgotModal() {
 
 function closeForgotModal() { 
     const fModal = document.getElementById('forgotPassModal');
-    if(fModal) fModal.style.display = 'none';
+    if(fModal) fModal.style.display = 'none'; 
     openLoginModal();
 }
 
-// Auth State Check (Same as Original Code)
-auth.onAuthStateChanged(user => {
+// ====================================================
+// 4. SUPABASE AUTH STATE & PERMISSIONS
+// ====================================================
+supabase.auth.onAuthStateChange(async (event, session) => {
     let adminPortal = document.getElementById('adminPortal');
+    const user = session ? session.user : null;
 
     if (user) {
         if(adminPortal) adminPortal.style.display = 'block';
@@ -128,25 +120,32 @@ auth.onAuthStateChanged(user => {
         document.getElementById('adminNameDisplay').innerText = defaultName;
         document.getElementById('adminRoleDisplay').innerText = "Loading Role...";
 
-        db.collection("users").where("email", "==", user.email).get().then((snap) => {
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', user.email)
+                .maybeSingle();
+
             let uRole = "Standard User"; 
             let uName = defaultName;
-            if (!snap.empty) {
-                let data = snap.docs[0].data(); 
-                uName = data.name; 
-                uRole = data.role;
+
+            if (data) {
+                uName = data.name || defaultName; 
+                uRole = data.role || "Standard User";
             } else if (user.email === 'pspujari88@gmail.com' || user.email === 'admin@dhamigroup.com') {
                 uRole = "System Administrator"; 
                 uName = "Prakash Dhami (Admin)";
             }
+
             document.getElementById('adminNameDisplay').innerText = uName;
             document.getElementById('adminRoleDisplay').innerText = uRole;
             applyPermissions(uRole);
-        }).catch(() => {
+        } catch (e) {
             document.getElementById('adminNameDisplay').innerText = defaultName;
             document.getElementById('adminRoleDisplay').innerText = "System Administrator";
             applyPermissions("System Administrator");
-        });
+        }
 
         fetchProducts(); 
         fetchJobs(); 
@@ -184,7 +183,7 @@ function applyPermissions(role) {
         switchAdminTab('manage-car');
     } else {
         alert("You don't have access to the Dashboard!"); 
-        auth.signOut();
+        logoutUser();
     }
 }
 
@@ -197,10 +196,10 @@ function switchAdminTab(id) {
     if(navElem) navElem.classList.add('active'); 
 }
 
-function handleLogin() {
-    let email = document.getElementById('loginId').value; 
+async function handleLogin() {
+    let email = document.getElementById('loginId').value.trim(); 
     let pass = document.getElementById('loginPass').value; 
-    let ans = parseInt(document.getElementById('captchaAnswer').value);
+    let ans = parseInt(document.getElementById('captchaAnswer').value, 10);
     let errBox = document.getElementById('loginError');
 
     if(!email || !pass) { 
@@ -215,38 +214,46 @@ function handleLogin() {
         return; 
     }
 
-    auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then(() => {
-        return auth.signInWithEmailAndPassword(email, pass);
-    }).catch((err) => { 
-        errBox.style.display = 'block'; 
-        errBox.innerText = err.message; 
-        generateCaptcha(); 
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: pass
     });
-}
 
-function logoutUser() { 
-    auth.signOut().then(() => { 
-        window.close();
-        window.location.href = "index.html"; 
-    }); 
-}
-
-function sendResetLink() {
-    let email = document.getElementById('resetEmail').value;
-    let msg = document.getElementById('resetMessage');
-    if(email) { 
-        auth.sendPasswordResetEmail(email).then(() => { 
-            msg.style.display = 'block'; 
-            msg.innerText = "Reset link sent successfully to your email!"; 
-        }).catch((error) => { 
-            msg.style.display = 'block'; 
-            msg.style.color = '#e34f26'; 
-            msg.innerText = error.message; 
-        }); 
+    if (error) {
+        errBox.style.display = 'block'; 
+        errBox.innerText = error.message; 
+        generateCaptcha(); 
     }
 }
 
-// Products CRUD
+async function logoutUser() { 
+    await supabase.auth.signOut();
+    window.location.reload();
+}
+
+async function sendResetLink() {
+    let email = document.getElementById('resetEmail').value.trim();
+    let msg = document.getElementById('resetMessage');
+    if(email) { 
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.href
+        });
+
+        if (error) {
+            msg.style.display = 'block'; 
+            msg.style.color = '#e34f26'; 
+            msg.innerText = error.message; 
+        } else {
+            msg.style.display = 'block'; 
+            msg.style.color = '#1b8a4f';
+            msg.innerText = "Reset link sent successfully to your email!"; 
+        }
+    }
+}
+
+// ====================================================
+// 5. PRODUCTS CRUD (SUPABASE TABLE: products)
+// ====================================================
 let editProdId = null;
 function editProduct(id, name, cat, color, qty, desc, spec, imgUrl, catUrl, isHidden) {
     editProdId = id; 
@@ -265,67 +272,87 @@ function editProduct(id, name, cat, color, qty, desc, spec, imgUrl, catUrl, isHi
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function saveProduct() {
-    let name = document.getElementById('addProdName').value; 
+async function saveProduct() {
+    let name = document.getElementById('addProdName').value.trim(); 
     let cat = document.getElementById('addProdCat').value; 
-    let color = document.getElementById('addProdColor').value;
+    let color = document.getElementById('addProdColor').value.trim();
     let qty = document.getElementById('addProdQty').value; 
-    let desc = document.getElementById('addProdDesc').value; 
-    let spec = document.getElementById('addProdSpec').value;
-    let imgUrl = document.getElementById('addProdImage').value;
-    let catUrl = document.getElementById('addProdCatalog').value;
+    let desc = document.getElementById('addProdDesc').value.trim(); 
+    let spec = document.getElementById('addProdSpec').value.trim();
+    let imgUrl = document.getElementById('addProdImage').value.trim();
+    let catUrl = document.getElementById('addProdCatalog').value.trim();
     let isHidden = document.getElementById('addProdHidden').checked;
 
     if(!name) return alert("Product Name is required!"); 
     if(!imgUrl) return alert("Product Image URL is required!"); 
     if(!spec) return alert("Product Specification is required!"); 
 
-    let data = { 
-        name: name, category: cat, color: color, qty: qty, 
-        description: desc, specifications: spec, 
-        imageUrl: imgUrl, catalogUrl: catUrl,
+    let payload = { 
+        name: name, 
+        category: cat, 
+        color: color, 
+        qty: qty || null, 
+        description: desc, 
+        specifications: spec, 
+        image_url: imgUrl, 
+        catalog_url: catUrl,
         status: isHidden ? "Hidden" : "Public" 
     };
 
     if(editProdId) { 
-        db.collection("products").doc(editProdId).update(data).then(() => {
+        const { error } = await supabase.from('products').update(payload).eq('id', editProdId);
+        if(error) alert(error.message);
+        else {
             alert("Product Updated Successfully!"); 
             cancelEdit('prod');
-        });
+            fetchProducts();
+        }
     } else { 
-        data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); 
-        db.collection("products").add(data).then(() => {
+        const { error } = await supabase.from('products').insert([payload]);
+        if(error) alert(error.message);
+        else {
             alert("Product Added Successfully!"); 
             cancelEdit('prod');
-        });
+            fetchProducts();
+        }
     }
 }
 
-function fetchProducts() {
-    db.collection("products").orderBy("createdAt", "desc").onSnapshot((snap) => {
-        let t = document.getElementById('prodTbody'); 
-        if(!t) return; 
-        t.innerHTML = '';
-        snap.forEach(doc => { 
-            let p = doc.data(); 
-            let safeName = p.name ? p.name.replace(/'/g, "\\'") : ""; 
-            let safeColor = p.color ? p.color.replace(/'/g, "\\'") : "";
-            let safeDesc = p.description ? p.description.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : "";
-            let safeSpec = p.specifications ? p.specifications.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : "";
+async function fetchProducts() {
+    const { data: products, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-            t.innerHTML += `<tr>
-                <td>${p.name}</td><td>${p.category}</td><td>${p.qty || 'N/A'}</td>
-                <td><span class="status-badge ${p.status==='Public'?'status-active':'status-inactive'}">${p.status}</span></td>
-                <td>
-                    <button class="btn-small btn-edit" onclick="editProduct('${doc.id}', '${safeName}', '${p.category}', '${safeColor}', '${p.qty}', '${safeDesc}', '${safeSpec}', '${p.imageUrl}', '${p.catalogUrl}', ${p.status==='Hidden'})"><i class="fa-solid fa-pen"></i></button> 
-                    <button class="btn-small btn-delete" onclick="deleteDoc('products', '${doc.id}')"><i class="fa-solid fa-trash"></i></button>
-                </td>
-            </tr>`; 
-        });
+    let t = document.getElementById('prodTbody'); 
+    if(!t) return; 
+    t.innerHTML = '';
+
+    if(error) {
+        console.error("Products Fetch Error:", error.message);
+        return;
+    }
+
+    products.forEach(p => { 
+        let safeName = p.name ? p.name.replace(/'/g, "\\'") : ""; 
+        let safeColor = p.color ? p.color.replace(/'/g, "\\'") : ""; 
+        let safeDesc = p.description ? p.description.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : ""; 
+        let safeSpec = p.specifications ? p.specifications.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : ""; 
+
+        t.innerHTML += `<tr>
+            <td>${p.name}</td><td>${p.category || '-'}</td><td>${p.qty || 'N/A'}</td>
+            <td><span class="status-badge ${p.status==='Public'?'status-active':'status-inactive'}">${p.status}</span></td>
+            <td>
+                <button class="btn-small btn-edit" onclick="editProduct('${p.id}', '${safeName}', '${p.category}', '${safeColor}', '${p.qty}', '${safeDesc}', '${safeSpec}', '${p.image_url}', '${p.catalog_url}', ${p.status==='Hidden'})"><i class="fa-solid fa-pen"></i></button> 
+                <button class="btn-small btn-delete" onclick="deleteDoc('products', '${p.id}')"><i class="fa-solid fa-trash"></i></button>
+            </td>
+        </tr>`; 
     });
 }
 
-// Jobs & Users CRUD
+// ====================================================
+// 6. CAREERS CRUD (SUPABASE TABLE: jobs)
+// ====================================================
 let editJobId = null;
 function editJob(id, title, req, exp, loc, desc) { 
     editJobId = id; 
@@ -339,38 +366,60 @@ function editJob(id, title, req, exp, loc, desc) {
     window.scrollTo({ top: 0, behavior: 'smooth' }); 
 }
 
-function saveJob() { 
-    let title = document.getElementById('addJobTitle').value; 
+async function saveJob() { 
+    let title = document.getElementById('addJobTitle').value.trim(); 
     let req = document.getElementById('addJobReq').value; 
-    let exp = document.getElementById('addJobExp').value; 
-    let loc = document.getElementById('addJobLoc').value; 
-    let desc = document.getElementById('addJobDesc').value; 
+    let exp = document.getElementById('addJobExp').value.trim(); 
+    let loc = document.getElementById('addJobLoc').value.trim(); 
+    let desc = document.getElementById('addJobDesc').value.trim(); 
 
     if(!title || !req) return alert("Title and Req positions required!"); 
-    let data = { title: title, openings: req, exp: exp, location: loc, description: desc, status: "Active" }; 
+    let payload = { title: title, openings: req, exp: exp, location: loc, description: desc, status: "Active" }; 
 
     if(editJobId) { 
-        db.collection("jobs").doc(editJobId).update(data).then(() => { alert("Job Updated!"); cancelEdit('job'); }); 
+        const { error } = await supabase.from('jobs').update(payload).eq('id', editJobId);
+        if(error) alert(error.message);
+        else {
+            alert("Job Updated!"); 
+            cancelEdit('job');
+            fetchJobs();
+        }
     } else { 
-        data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); 
-        db.collection("jobs").add(data).then(() => { alert("Job Posted!"); cancelEdit('job'); }); 
+        const { error } = await supabase.from('jobs').insert([payload]);
+        if(error) alert(error.message);
+        else {
+            alert("Job Posted!"); 
+            cancelEdit('job');
+            fetchJobs();
+        }
     } 
 }
 
-function fetchJobs() { 
-    db.collection("jobs").orderBy("createdAt", "desc").onSnapshot((snap) => { 
-        let t = document.getElementById('jobTbody'); 
-        if(!t) return; 
-        t.innerHTML = ''; 
-        snap.forEach(doc => { 
-            let j = doc.data(); 
-            let safeTitle = j.title ? j.title.replace(/'/g, "\\'") : ""; 
-            let safeDesc = j.description ? j.description.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : ""; 
-            t.innerHTML += `<tr><td>${j.title}</td><td>${j.openings}</td><td>${j.exp}</td><td><span class="status-badge status-active">${j.status}</span></td><td><button class="btn-small btn-edit" onclick="editJob('${doc.id}', '${safeTitle}', '${j.openings}', '${j.exp}', '${j.location}', '${safeDesc}')"><i class="fa-solid fa-pen"></i></button> <button class="btn-small btn-delete" onclick="deleteDoc('jobs', '${doc.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; 
-        }); 
+async function fetchJobs() { 
+    const { data: jobs, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    let t = document.getElementById('jobTbody'); 
+    if(!t) return; 
+    t.innerHTML = ''; 
+
+    if(error) {
+        console.error("Jobs Fetch Error:", error.message);
+        return;
+    }
+
+    jobs.forEach(j => { 
+        let safeTitle = j.title ? j.title.replace(/'/g, "\\'") : ""; 
+        let safeDesc = j.description ? j.description.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : ""; 
+        t.innerHTML += `<tr><td>${j.title}</td><td>${j.openings}</td><td>${j.exp}</td><td><span class="status-badge status-active">${j.status}</span></td><td><button class="btn-small btn-edit" onclick="editJob('${j.id}', '${safeTitle}', '${j.openings}', '${j.exp}', '${j.location}', '${safeDesc}')"><i class="fa-solid fa-pen"></i></button> <button class="btn-small btn-delete" onclick="deleteDoc('jobs', '${j.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; 
     }); 
 }
 
+// ====================================================
+// 7. USER MANAGEMENT CRUD (SUPABASE TABLE: users)
+// ====================================================
 let editUserId = null;
 function editUser(id, name, email, role) { 
     editUserId = id; 
@@ -385,46 +434,77 @@ function editUser(id, name, email, role) {
     window.scrollTo({ top: 0, behavior: 'smooth' }); 
 }
 
-function saveUser() { 
-    let name = document.getElementById('addUserName').value; 
-    let email = document.getElementById('addUserEmail').value; 
+async function saveUser() { 
+    let name = document.getElementById('addUserName').value.trim(); 
+    let email = document.getElementById('addUserEmail').value.trim(); 
     let pass = document.getElementById('addUserPass').value; 
     let role = document.getElementById('addUserRole').value; 
 
     if(!name || (!editUserId && (!email || !pass))) return alert("All fields are required!"); 
+
     if(editUserId) { 
-        db.collection("users").doc(editUserId).update({ name: name, role: role }).then(() => { 
+        const { error } = await supabase.from('users').update({ name: name, role: role }).eq('id', editUserId);
+        if(error) alert(error.message);
+        else {
             alert("User access updated!"); 
             cancelEdit('user'); 
-        }); 
+            fetchUsers();
+        }
     } else { 
         if(pass.length < 6) return alert("Password min 6 chars."); 
-        secondaryApp.auth().createUserWithEmailAndPassword(email, pass).then((cred) => { 
-            secondaryApp.auth().signOut(); 
-            db.collection("users").doc(cred.user.uid).set({ 
-                name: name, email: email, role: role, status: "Active", 
-                createdAt: firebase.firestore.FieldValue.serverTimestamp() 
-            }).then(() => { 
-                alert("User Created!"); 
-                cancelEdit('user'); 
-            }); 
-        }).catch(err => alert(err.message)); 
+
+        // 1. Create User in Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: email,
+            password: pass
+        });
+
+        if(authError) {
+            return alert(authError.message);
+        }
+
+        // 2. Insert Record in public 'users' table
+        const userId = authData.user ? authData.user.id : crypto.randomUUID();
+        const { error: dbError } = await supabase.from('users').insert([{
+            id: userId,
+            name: name,
+            email: email,
+            role: role,
+            status: "Active"
+        }]);
+
+        if(dbError) alert("Auth created, but table insert note: " + dbError.message);
+        else alert("User Created Successfully!");
+
+        cancelEdit('user'); 
+        fetchUsers();
     } 
 }
 
-function fetchUsers() { 
-    db.collection("users").orderBy("createdAt", "desc").onSnapshot((snap) => { 
-        let t = document.getElementById('userTbody'); 
-        if(!t) return; 
-        t.innerHTML = ''; 
-        snap.forEach(doc => { 
-            let u = doc.data(); 
-            let safeName = u.name ? u.name.replace(/'/g, "\\'") : ""; 
-            t.innerHTML += `<tr><td>${u.name}</td><td>${u.email}</td><td><span style="color:#007bb5; font-weight:600;">${u.role}</span></td><td><span class="status-badge status-active">${u.status}</span></td><td><button class="btn-small btn-edit" onclick="editUser('${doc.id}', '${safeName}', '${u.email}', '${u.role}')"><i class="fa-solid fa-pen"></i></button> <button class="btn-small btn-delete" onclick="deleteDoc('users', '${doc.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; 
-        }); 
+async function fetchUsers() { 
+    const { data: users, error } = await supabase
+        .from('users')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    let t = document.getElementById('userTbody'); 
+    if(!t) return; 
+    t.innerHTML = ''; 
+
+    if(error) {
+        console.error("Users Fetch Error:", error.message);
+        return;
+    }
+
+    users.forEach(u => { 
+        let safeName = u.name ? u.name.replace(/'/g, "\\'") : ""; 
+        t.innerHTML += `<tr><td>${u.name}</td><td>${u.email}</td><td><span style="color:#007bb5; font-weight:600;">${u.role}</span></td><td><span class="status-badge status-active">${u.status}</span></td><td><button class="btn-small btn-edit" onclick="editUser('${u.id}', '${safeName}', '${u.email}', '${u.role}')"><i class="fa-solid fa-pen"></i></button> <button class="btn-small btn-delete" onclick="deleteDoc('users', '${u.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; 
     }); 
 }
 
+// ====================================================
+// 8. HELPERS & GENERAL CLEANUP
+// ====================================================
 function cancelEdit(type) {
     if(type==='prod') { 
         editProdId = null; 
@@ -462,12 +542,20 @@ function cancelEdit(type) {
     }
 }
 
-function deleteDoc(col, id) { 
+async function deleteDoc(col, id) { 
     let msg = col === 'users' ? "Remove user's Role and Access from Dashboard?" : "Permanently delete?"; 
-    if(confirm(msg)) db.collection(col).doc(id).delete(); 
+    if(confirm(msg)) {
+        const { error } = await supabase.from(col).delete().eq('id', id);
+        if(error) alert(error.message);
+        else {
+            if(col === 'products') fetchProducts();
+            if(col === 'jobs') fetchJobs();
+            if(col === 'users') fetchUsers();
+        }
+    }
 }
 
-// Auto-load Standard Default Theme on Init
+// Auto-load Standard Default Theme and Captcha on Load
 window.addEventListener('DOMContentLoaded', () => {
     loadDefaultAdminTheme();
     generateCaptcha();
