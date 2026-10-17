@@ -367,12 +367,12 @@
                             <div class="file-upload-box">
                                 <label><i class="fa-solid fa-image"></i> Attach Product Image *</label>
                                 <input type="file" id="addProdImageFile" accept="image/*">
-                                <span id="currentImgLabel" style="font-size: 11px; color: #666;"></span>
+                                <span id="currentImgLabel" style="font-size: 11px; color: #1b8a4f; font-weight: 600;"></span>
                             </div>
                             <div class="file-upload-box">
                                 <label><i class="fa-solid fa-file-pdf"></i> Attach Catalogue PDF (Optional)</label>
                                 <input type="file" id="addProdCatalogFile" accept=".pdf,.doc,.docx">
-                                <span id="currentCatLabel" style="font-size: 11px; color: #666;"></span>
+                                <span id="currentCatLabel" style="font-size: 11px; color: #1b8a4f; font-weight: 600;"></span>
                             </div>
                         </div>
 
@@ -753,18 +753,23 @@
         }
 
         // ==========================================
-        // FILE UPLOAD HELPER FOR SUPABASE STORAGE
+        // SAFE DIRECT FILE UPLOADER
         // ==========================================
         async function uploadFileToStorage(file, folder) {
             const fileExt = file.name.split('.').pop();
-            const fileName = `${folder}/${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+            const cleanName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+            const filePath = `${folder}/${cleanName}`;
 
-            const { data, error } = await sb.storage.from('products').upload(fileName, file);
+            const { data, error } = await sb.storage.from('products').upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: true
+            });
+
             if (error) {
                 throw new Error("File Upload Failed: " + error.message);
             }
 
-            const { data: publicData } = sb.storage.from('products').getPublicUrl(fileName);
+            const { data: publicData } = sb.storage.from('products').getPublicUrl(filePath);
             return publicData.publicUrl;
         }
 
@@ -787,9 +792,9 @@
 
             cacheProducts.forEach(p => {
                 const tr = document.createElement('tr');
-                const imgThumb = p.image_url 
-                    ? `<img src="${p.image_url}" style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px;">` 
-                    : `<i class="fa-solid fa-box" style="font-size: 24px; color: #888;"></i>`;
+                const imgThumb = (p.image_url && p.image_url.trim() !== '')
+                    ? `<img src="${p.image_url}" style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;" onerror="this.onerror=null; this.src='https://placehold.co/45x45?text=No+Img';">` 
+                    : `<i class="fa-solid fa-image" style="font-size: 24px; color: #bbb;"></i>`;
 
                 tr.innerHTML = `
                     <td>${imgThumb}</td>
