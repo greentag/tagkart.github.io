@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dhami Group Cloud Portal & Dashboard</title>
+    <title>Dhami Group Cloud Portal & Website</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/admin.css">
 
     <style>
         :root {
@@ -28,7 +28,7 @@
         }
 
         .modal-overlay {
-            display: flex;
+            display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
@@ -313,6 +313,315 @@
 </head>
 <body>
 
+    <!-- 1. PUBLIC WEBSITE VIEW -->
+    <div id="websiteView">
+        <div class="leaf-container">
+            <i class="fa-solid fa-leaf leaf"></i>
+            <i class="fa-solid fa-leaf leaf"></i>
+            <i class="fa-solid fa-leaf leaf"></i>
+            <i class="fa-solid fa-leaf leaf"></i>
+            <i class="fa-solid fa-leaf leaf"></i>
+        </div>
+
+        <header>
+            <div class="logo" onclick="showHome()">
+                <i class="fa-solid fa-earth-americas earth-icon"></i>
+                <div class="logo-text-container">
+                    <span class="logo-title">DHAMI GROUP</span>
+                    <span class="logo-subtitle">Dhami Digital Solution</span>
+                </div>
+            </div>
+
+            <nav>
+                <ul>
+                    <li><a onclick="showHome()" data-i18n="nav_home">Home</a></li>
+                    <li><a onclick="selectTab('about')" data-i18n="nav_about">About Us</a></li>
+                    <li><a onclick="selectTab('product')" data-i18n="nav_product">Product</a></li>
+                    <li><a onclick="selectTab('partners')" data-i18n="nav_partners">Our Partners</a></li>
+                    <li class="dropdown">
+                        <a data-i18n="nav_services">Our Services <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i></a>
+                        <div class="dropdown-content">
+                            <a onclick="selectTab('erp')" data-i18n="nav_serv_erp">ERP Services</a>
+                            <a onclick="selectTab('crm')" data-i18n="nav_serv_crm">CRM Services</a>
+                            <a onclick="selectTab('web')" data-i18n="nav_serv_web">Web Services</a>
+                            <a onclick="selectTab('env')" data-i18n="nav_serv_env">Environmental Services</a>
+                        </div>
+                    </li>
+                    <li><a onclick="selectTab('contact')" data-i18n="nav_contact">Contact</a></li>
+                    <li><a onclick="selectTab('enquire')" data-i18n="nav_enquire">Enquire</a></li>
+                    <li><a onclick="selectTab('support')" data-i18n="nav_support">Support</a></li>
+                    <li><a onclick="selectTab('career')" data-i18n="nav_career">Career</a></li>
+                    <li class="login-btn"><a onclick="openLoginModal()" data-i18n="nav_login"><i class="fa-solid fa-lock"></i> Portal Login</a></li>
+                    <li>
+                        <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
+                            <option value="en">English</option>
+                            <option value="hi">हिन्दी</option>
+                            <option value="es">Español</option>
+                            <option value="fr">Français</option>
+                            <option value="de">Deutsch</option>
+                            <option value="zh">中文</option>
+                        </select>
+                    </li>
+                    <li style="display: flex; align-items: center; gap: 4px;">
+                        <select id="themeSelect" onchange="selectPresetTheme(this.value)" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #ccc; font-weight: 600;">
+                            <option value="emerald">🟢 Emerald</option>
+                            <option value="royal-blue">🔵 Blue</option>
+                            <option value="cyber-purple">🟣 Purple</option>
+                            <option value="sunset-orange">🟠 Sunset</option>
+                        </select>
+                        <input type="color" id="customColorPicker" onchange="applyCustomColor(this.value)" title="Choose Custom Color" style="width: 20px; height: 20px; border: none; cursor: pointer; border-radius: 50%; background: none;">
+                    </li>
+                    <li>
+                        <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                            <i id="bulbIcon" class="fa-regular fa-lightbulb bulb-icon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- HOME PAGE VIEW -->
+        <main id="homePage">
+            <section class="hero">
+                <div class="advanced-bg">
+                    <i class="fa-solid fa-earth-americas huge-earth"></i>
+                    <i class="fa-solid fa-gear gear-1"></i>
+                    <i class="fa-solid fa-gear gear-2"></i>
+                    <div class="binary-stream b1">101011001</div>
+                    <div class="binary-stream b2">010110100</div>
+                    <div class="binary-stream b3">110010101</div>
+                    <i class="fa-solid fa-network-wired net-1"></i>
+                    <i class="fa-solid fa-seedling plant-1"></i>
+                </div>
+
+                <div class="hero-content-box">
+                    <h1 data-i18n="hero_h1">Our Expertise</h1>
+                    <div class="animated-services-container">
+                        <div class="service-slide active" id="h-slide-1">
+                            <i class="fa-brands fa-salesforce color-sf"></i>
+                            <h2 data-i18n="h_slide_sf_title">Salesforce Integration</h2>
+                            <p data-i18n="h_slide_sf_desc">Advanced CRM & Automation Solutions</p>
+                        </div>
+                        <div class="service-slide" id="h-slide-2">
+                            <i class="fa-solid fa-cubes color-sap"></i>
+                            <h2 data-i18n="h_slide_sap_title">SAP B1 & ERP Systems</h2>
+                            <p data-i18n="h_slide_sap_desc">Accounting & Production Flow Optimization</p>
+                        </div>
+                        <div class="service-slide" id="h-slide-3">
+                            <i class="fa-solid fa-code color-web"></i>
+                            <h2 data-i18n="h_slide_web_title">Web Design & IT Support</h2>
+                            <p data-i18n="h_slide_web_desc">Modern Digital Experiences & Security</p>
+                        </div>
+                        <div class="service-slide" id="h-slide-4">
+                            <i class="fa-solid fa-leaf color-env"></i>
+                            <h2 data-i18n="h_slide_env_title">Environmental Projects</h2>
+                            <p data-i18n="h_slide_env_desc">Green Tech & Sustainability Initiatives</p>
+                        </div>
+                        <div class="service-slide" id="h-slide-5">
+                            <i class="fa-solid fa-chart-line color-erp"></i>
+                            <h2 data-i18n="h_slide_dig_title">Business Process Automation</h2>
+                            <p data-i18n="h_slide_dig_desc">Smart, Reliable & Scalable IT Solutions</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3D CAROUSEL SECTION -->
+            <section class="core-offerings-section">
+                <div class="water-waves-container">
+                    <div class="ocean-wave w1"></div>
+                    <div class="ocean-wave w2"></div>
+                    <div class="ocean-wave w3"></div>
+                    <i class="fa-solid fa-sailboat boat-icon"></i>
+                </div>
+
+                <div class="water-bubbles">
+                    <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+                    <div class="bubble"></div><div class="bubble"></div>
+                </div>
+
+                <h2 data-i18n="core_offerings">Core Offerings</h2>
+
+                <div class="carousel-scene" id="carouselScene">
+                    <div class="carousel-spinner" id="carouselSpinner">
+                        <div class="slide-card" style="--i:0;" onclick="handleCardClick('crm')">
+                            <i class="fa-brands fa-salesforce" style="color: #00a1e0;"></i>
+                            <h3 data-i18n="card_sf_h3">Salesforce Services</h3>
+                            <p data-i18n="card_sf_p">Implementation, Support, Automation</p>
+                        </div>
+                        <div class="slide-card" style="--i:1;" onclick="handleCardClick('erp')">
+                            <i class="fa-solid fa-cubes" style="color: #008fd3;"></i>
+                            <h3 data-i18n="card_sap_h3">SAP Business One</h3>
+                            <p data-i18n="card_sap_p">Setup, Optimization, Technical Support</p>
+                        </div>
+                        <div class="slide-card" style="--i:2;" onclick="handleCardClick('web')">
+                            <i class="fa-solid fa-laptop-code" style="color: #e34f26;"></i>
+                            <h3 data-i18n="card_web_h3">Website Support</h3>
+                            <p data-i18n="card_web_p">Security, Maintenance, Performance</p>
+                        </div>
+                        <div class="slide-card" style="--i:3;" onclick="handleCardClick('env')">
+                            <i class="fa-solid fa-seedling" style="color: #1b8a4f;"></i>
+                            <h3 data-i18n="card_env_h3">Environmental Work</h3>
+                            <p data-i18n="card_env_p">Sustainability Initiatives & Awareness</p>
+                        </div>
+                        <div class="slide-card" style="--i:4;" onclick="handleCardClick('about')">
+                            <i class="fa-solid fa-book-open" style="color: #741b47;"></i>
+                            <h3 data-i18n="card_av_h3">Avernus</h3>
+                            <p data-i18n="card_av_p">Books, Poetry & Thoughtful Writing</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-drag-hint" data-i18n="drag_hint">Drag or Swipe to Rotate</div>
+            </section>
+        </main>
+
+        <!-- DYNAMIC TABS VIEW -->
+        <div class="dynamic-tab-section" id="tabContainer" style="display: none;">
+            <div id="aboutFullscreenBg" class="about-fullscreen-bg">
+                <div class="bouncing-net"></div>
+                <i class="fa-solid fa-child kid kid-1"></i>
+                <i class="fa-solid fa-child-reaching kid kid-2"></i>
+                <i class="fa-solid fa-plane interactive-plane"></i>
+            </div>
+
+            <!-- About Us Panel -->
+            <div class="tab-panel" id="panel-about">
+                <div class="about-content-wrapper">
+                    <h3 data-i18n="tab_about_h3">About Dhami Group</h3>
+                    <p data-i18n="tab_about_p1"><strong>Dhami Group</strong> provides sustainable and eco-friendly engineering & digital solutions aligned with modern industrial standards.</p>
+                    <p data-i18n="tab_about_p2" style="margin-top: 10px;">We focus on quality, safety, compliance, and long-term value delivery across industrial, ERP, cloud, and automation projects.</p>
+                </div>
+            </div>
+
+            <!-- Products Panel -->
+            <div class="tab-panel" id="panel-product">
+                <h3 data-i18n="tab_prod_h3">Our Products</h3>
+                <p data-i18n="tab_prod_p" style="margin-bottom: 25px;">Explore our next-gen digital commerce products, ERP toolkits, and sustainability automation modules designed for high performance.</p>
+                <div id="publicProductsContainer" style="display: flex; flex-wrap: wrap; gap: 25px; justify-content: center; margin-top: 20px;"></div>
+            </div>
+
+            <!-- Partners Panel -->
+            <div class="tab-panel" id="panel-partners">
+                <h3 data-i18n="tab_part_h3">Our Partners</h3>
+                <p data-i18n="tab_part_p">We work closely with global tech giants including Salesforce, SAP, AWS, and modern green technology alliances to deliver reliable enterprise solutions.</p>
+            </div>
+
+            <!-- ERP Services Panel -->
+            <div class="tab-panel" id="panel-erp">
+                <h3 data-i18n="serv_erp_h3">ERP Services (SAP B1)</h3>
+                <p data-i18n="serv_erp_desc">We specialize in providing comprehensive SAP Business One services tailored to optimize your internal business processes.</p>
+                <ul class="service-list-ul">
+                    <li data-i18n="serv_erp_li1"><strong>System Implementation & Setup:</strong> End-to-end installation and configuration.</li>
+                    <li data-i18n="serv_erp_li2"><strong>Financial Optimization:</strong> General Ledger mapping and multi-currency journals.</li>
+                    <li data-i18n="serv_erp_li3"><strong>Production & Inventory:</strong> Production order streamline and cost analysis.</li>
+                    <li data-i18n="serv_erp_li4"><strong>Tech Support:</strong> Ongoing functional and technical support.</li>
+                </ul>
+            </div>
+
+            <!-- CRM Services Panel -->
+            <div class="tab-panel" id="panel-crm">
+                <h3 data-i18n="serv_crm_h3">CRM Services (Salesforce)</h3>
+                <p data-i18n="serv_crm_desc">Maximize your customer relationships and internal efficiency with our dedicated Salesforce solutions.</p>
+                <ul class="service-list-ul">
+                    <li data-i18n="serv_crm_li1"><strong>Org Setup:</strong> Profiles, roles, permission sets and security.</li>
+                    <li data-i18n="serv_crm_li2"><strong>Custom Dev:</strong> Lightning Web Components (LWC) and custom objects.</li>
+                    <li data-i18n="serv_crm_li3"><strong>Automation:</strong> Flow Builder workflows and approval triggers.</li>
+                    <li data-i18n="serv_crm_li4"><strong>Maintenance:</strong> API sync, data governance and user training.</li>
+                </ul>
+            </div>
+
+            <!-- Web Services Panel -->
+            <div class="tab-panel" id="panel-web">
+                <h3 data-i18n="serv_web_h3">Web Services</h3>
+                <p data-i18n="serv_web_desc">We create dynamic, secure, and highly interactive digital experiences for modern businesses.</p>
+                <ul class="service-list-ul">
+                    <li data-i18n="serv_web_li1"><strong>Web Development:</strong> Clean frontend and cloud backend architecture.</li>
+                    <li data-i18n="serv_web_li2"><strong>UI/UX Design:</strong> Responsive layouts and glassmorphic graphics.</li>
+                    <li data-i18n="serv_web_li3"><strong>Security:</strong> SSL deployment and continuous optimization.</li>
+                </ul>
+            </div>
+
+            <!-- Environmental Services Panel -->
+            <div class="tab-panel" id="panel-env">
+                <h3 data-i18n="serv_env_h3">Environmental Services</h3>
+                <p data-i18n="serv_env_desc">Aligning technological growth with ecological responsibility for a sustainable future.</p>
+                <ul class="service-list-ul">
+                    <li data-i18n="serv_env_li1"><strong>Green Tech Consulting:</strong> Paperless digital workplace adoption.</li>
+                    <li data-i18n="serv_env_li2"><strong>Sustainability Audits:</strong> Emission tracking and reporting.</li>
+                </ul>
+            </div>
+
+            <!-- Contact Panel -->
+            <div class="tab-panel" id="panel-contact">
+                <h3 data-i18n="tab_cont_h3">Contact Us</h3>
+                <div class="contact-wrapper">
+                    <div class="contact-left">
+                        <div class="globe-container">
+                            <div class="animated-globe"></div>
+                            <div class="location-pin"><i class="fa-solid fa-location-dot"></i><span data-i18n="cont_pin">Delhi</span></div>
+                        </div>
+                        <div class="contact-details">
+                            <p><i class="fa-solid fa-envelope"></i> <span data-i18n="cont_email">pspujari88@gmail.com</span></p>
+                            <p><i class="fa-solid fa-phone"></i> <span data-i18n="cont_phone">9716938334 / 8586888178</span></p>
+                            <p><i class="fa-solid fa-location-dot"></i> <span data-i18n="cont_add">Laxmi Nagar, Delhi-110092</span></p>
+                        </div>
+                    </div>
+                    <div class="contact-right">
+                        <form class="contact-form" onsubmit="event.preventDefault(); alert('Message sent successfully!'); this.reset();">
+                            <input type="text" placeholder="Your Name" required>
+                            <input type="email" placeholder="Your Email" required>
+                            <input type="tel" placeholder="Mobile Number" required>
+                            <textarea rows="4" placeholder="Your Message" required></textarea>
+                            <button type="submit" data-i18n="form_btn">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enquiry Panel -->
+            <div class="tab-panel" id="panel-enquire">
+                <h3 data-i18n="tab_enq_h3">Enquiry Form</h3>
+                <p data-i18n="tab_enq_p">Submit your requirements for custom enterprise solutions, cloud integrations, or sustainability audits.</p>
+                <form class="contact-form" style="max-width: 600px; margin-top: 20px;" onsubmit="event.preventDefault(); alert('Enquiry received!'); this.reset();">
+                    <input type="text" placeholder="Full Name" required>
+                    <input type="email" placeholder="Business Email" required>
+                    <input type="text" placeholder="Company Name">
+                    <textarea rows="4" placeholder="Brief about your requirement..." required></textarea>
+                    <button type="submit">Submit Enquiry</button>
+                </form>
+            </div>
+
+            <!-- Support Panel -->
+            <div class="tab-panel" id="panel-support">
+                <h3 data-i18n="tab_sup_h3">24/7 Technical Support</h3>
+                <p data-i18n="tab_sup_p">Our dedicated support team is available round-the-clock to handle system maintenance, patch updates, and site uptime.</p>
+                <p style="margin-top: 15px;">Email us directly at <strong>support@dhamigroup.com</strong>.</p>
+            </div>
+
+            <!-- Careers Panel -->
+            <div class="tab-panel" id="panel-career">
+                <h3 data-i18n="tab_car_h3">Careers at Dhami Group</h3>
+                <p data-i18n="tab_car_p">Join our dynamic green tech team! Send your updated CV to <strong>careers@dhamigroup.com</strong>.</p>
+                <div id="publicJobsContainer"></div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="social-links">
+                <a href="#" class="li-icon"><i class="fa-brands fa-linkedin-in"></i></a>
+                <a href="#" class="yt-icon"><i class="fa-brands fa-youtube"></i></a>
+                <a href="#" class="ig-icon"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="fb-icon"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="tw-icon"><i class="fa-brands fa-twitter"></i></a>
+            </div>
+            <p data-i18n="footer_text">&copy; 2026 Dhami Digital Solutions. All Rights Reserved.</p>
+        </footer>
+
+        <button id="scrollTopBtn" onclick="scrollToTop()"><i class="fa-solid fa-arrow-up"></i></button>
+        <a href="https://wa.me/919716938334" target="_blank" class="chat-btn"><i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> <span data-i18n="chat">Chat</span></a>
+    </div>
+
+    <!-- 2. SECURE DASHBOARD VIEW -->
     <div id="adminPortal" style="display: none; min-height: 100vh;">
         <div class="admin-topbar">
             <h2 style="margin:0; font-size:20px;"><i class="fa-solid fa-earth-americas"></i> Dhami Group Cloud Portal</h2>
@@ -328,6 +637,7 @@
                     <input type="color" id="customColorPickerAdmin" onchange="applyCustomColor(this.value)" title="Choose Custom Color" style="width: 28px; height: 28px; border: none; cursor: pointer; border-radius: 50%; background: none;">
                 </div>
 
+                <button onclick="backToPublicWebsite()" style="background: #056664; color: white; border: 1px solid #fff; padding: 7px 15px; border-radius: 20px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-globe"></i> View Website</button>
                 <button onclick="logoutUser()" style="background: #e34f26; color: white; border: none; padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>
             </div>
         </div>
@@ -440,8 +750,8 @@
         </div>
     </div>
 
-    <!-- LOGIN MODAL -->
-    <div class="modal-overlay" id="loginModal" style="display: flex;">
+    <!-- 3. LOGIN MODAL -->
+    <div class="modal-overlay" id="loginModal">
         <div class="login-box">
             <div style="position: absolute; top: 15px; left: 20px; display: flex; align-items: center; gap: 6px;">
                 <select id="themeSelectModal" onchange="selectPresetTheme(this.value)" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #ccc; font-weight: 600;">
@@ -476,8 +786,8 @@
         </div>
     </div>
 
-    <!-- RESET PASSWORD MODAL -->
-    <div class="modal-overlay" id="forgotPassModal" style="display: none;">
+    <!-- 4. RESET PASSWORD MODAL -->
+    <div class="modal-overlay" id="forgotPassModal">
         <div class="login-box">
             <i class="fa-solid fa-xmark close-modal" onclick="closeForgotModal()"></i>
             <h2>Reset Password</h2>
@@ -491,6 +801,7 @@
         </div>
     </div>
 
+    <!-- CORE SCRIPT -->
     <script>
         const SUPABASE_URL = "https://yuyndtoqcwawlhrjespt.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1eW5kdG9xY3dhd2xocmplc3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MDkzOTIsImV4cCI6MjEwNjA4NTM5Mn0.TJ1DuBlYANnTNogfbt5WB64UsxNjVUyNkLR2gpHqNR0";
@@ -521,8 +832,8 @@
         }
 
         function syncThemePickers(preset, customHex) {
-            const selectors = ['themeSelectAdmin', 'themeSelectModal'];
-            const pickers = ['customColorPickerAdmin', 'customColorPickerModal'];
+            const selectors = ['themeSelectAdmin', 'themeSelectModal', 'themeSelect'];
+            const pickers = ['customColorPickerAdmin', 'customColorPickerModal', 'customColorPicker'];
             if (preset) selectors.forEach(id => { const el = document.getElementById(id); if (el) el.value = preset; });
             if (customHex) pickers.forEach(id => { const el = document.getElementById(id); if (el) el.value = customHex; });
         }
@@ -595,8 +906,15 @@
             openLoginModal();
         }
 
+        function backToPublicWebsite() {
+            document.getElementById('adminPortal').style.display = 'none';
+            document.getElementById('websiteView').style.display = 'block';
+            showHome();
+        }
+
         async function showDashboard(user) {
             document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('websiteView').style.display = 'none';
             document.getElementById('adminPortal').style.display = 'block';
 
             const emailPrefix = user.email.split('@')[0];
@@ -672,12 +990,14 @@
                 if (session && session.user) {
                     showDashboard(session.user);
                 } else {
-                    document.getElementById('loginModal').style.display = 'flex';
+                    document.getElementById('websiteView').style.display = 'block';
                     document.getElementById('adminPortal').style.display = 'none';
                 }
             } catch (err) {
-                document.getElementById('loginModal').style.display = 'flex';
+                document.getElementById('websiteView').style.display = 'block';
             }
+
+            fetchPublicData();
         }
 
         async function handleLogin() {
@@ -752,9 +1072,6 @@
             if (targetNav) targetNav.classList.add('active');
         }
 
-        // ==========================================
-        // SAFE DIRECT FILE UPLOADER
-        // ==========================================
         async function uploadFileToStorage(file, folder) {
             const fileExt = file.name.split('.').pop();
             const cleanName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
@@ -773,9 +1090,6 @@
             return publicData.publicUrl;
         }
 
-        // ==========================================
-        // 4. CRUD FOR PRODUCTS
-        // ==========================================
         async function fetchProducts() {
             if (!sb) return;
             const { data, error } = await sb.from('products').select('*').order('created_at', { ascending: false });
@@ -901,6 +1215,7 @@
 
                 cancelEdit('prod');
                 fetchProducts();
+                fetchPublicData();
             } catch (err) {
                 alert("Error: " + err.message);
             } finally {
@@ -909,9 +1224,6 @@
             }
         }
 
-        // ==========================================
-        // 5. CRUD FOR JOBS
-        // ==========================================
         async function fetchJobs() {
             if (!sb) return;
             const { data } = await sb.from('jobs').select('*').order('created_at', { ascending: false });
@@ -981,6 +1293,7 @@
                     alert("Job updated successfully!");
                     cancelEdit('job');
                     fetchJobs();
+                    fetchPublicData();
                 }
             } else {
                 const { error } = await sb.from('jobs').insert([payload]);
@@ -989,13 +1302,11 @@
                     alert("Job posted!");
                     cancelEdit('job');
                     fetchJobs();
+                    fetchPublicData();
                 }
             }
         }
 
-        // ==========================================
-        // 6. CRUD FOR USERS
-        // ==========================================
         async function fetchUsers() {
             if (!sb) return;
             const { data } = await sb.from('users').select('*').order('created_at', { ascending: false });
@@ -1081,8 +1392,8 @@
                 const { error } = await sb.from(col).delete().eq('id', id);
                 if (error) alert(error.message);
                 else {
-                    if (col === 'products') fetchProducts();
-                    if (col === 'jobs') fetchJobs();
+                    if (col === 'products') { fetchProducts(); fetchPublicData(); }
+                    if (col === 'jobs') { fetchJobs(); fetchPublicData(); }
                     if (col === 'users') fetchUsers();
                 }
             }
@@ -1131,5 +1442,8 @@
 
         initAuth();
     </script>
+
+    <script src="js/translations.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
