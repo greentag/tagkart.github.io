@@ -1,21 +1,10 @@
-// ====================================================
-// 1. FIREBASE CLOUD CONFIG
-// ====================================================
-const firebaseConfig = {
-    apiKey: "AIzaSyD0sQgLV32_ZoB26eYzBY_Elv8JKa4v5wQ",
-    authDomain: "dhami-group.firebaseapp.com",
-    projectId: "dhami-group",
-    storageBucket: "dhami-group.firebasestorage.app",
-    messagingSenderId: "230272575666",
-    appId: "1:230272575666:web:f88a092b9d2a1beb2941ab"
-};
+const SUPABASE_URL = "https://yuyndtoqcwawlhrjespt.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1eW5kdG9xY3dhd2xocmplc3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MDkzOTIsImV4cCI6MjEwNjA4NTM5Mn0.TJ1DuBlYANnTNogfbt5WB64UsxNjVUyNkLR2gpHqNR0";
 
-if (!firebase.apps.length) { 
-    firebase.initializeApp(firebaseConfig); 
-}
-const db = firebase.firestore();
+const sb = (typeof window.supabase !== 'undefined' && window.supabase.createClient) 
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
+    : null;
 
-// Helper to fix Google Drive preview URLs to direct images
 function formatImageUrl(url) {
     if (!url) return "";
     let cleanUrl = url.trim();
@@ -26,51 +15,73 @@ function formatImageUrl(url) {
     return cleanUrl;
 }
 
-// ====================================================
-// 2. PUBLIC FETCH DATA (Products & Jobs Live Sync)
-// ====================================================
-function fetchPublicData() {
-    db.collection("products").where("status", "==", "Public").onSnapshot(snapshot => {
-        let container = document.getElementById('publicProductsContainer'); 
-        if(!container) return; 
-        container.innerHTML = '';
-        snapshot.forEach(doc => { 
-            let p = doc.data(); 
-            let directImg = formatImageUrl(p.imageUrl);
-            let imgTag = directImg 
-                ? `<img src="${directImg}" style="width:100%; height:150px; object-fit:cover; border-radius:8px; margin-bottom:10px;" onerror="this.onerror=null; this.src='https://placehold.co/280x150?text=No+Image';">` 
-                : `<i class="fa-solid fa-box" style="font-size: 40px; color: var(--primary-color, #1b8a4f); margin-bottom:10px;"></i>`;
+async function fetchPublicData() {
+    if (!sb) {
+        console.warn("Supabase SDK not initialized on public site.");
+        return;
+    }
 
-            let catBtn = p.catalogUrl ? `<a href="${p.catalogUrl}" target="_blank" style="display:inline-block; margin-top:10px; background:var(--primary-color, #1b8a4f); color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:12px; font-weight:600;"><i class="fa-solid fa-download"></i> Download Catalogue</a>` : ``;
+    const { data: products, error: prodErr } = await sb
+        .from('products')
+        .select('*')
+        .eq('status', 'Public')
+        .order('created_at', { ascending: false });
 
-            container.innerHTML += `
-                <div style="border: 1px solid var(--border-color, #dbe8e0); padding: 20px; border-radius: 10px; width: 280px; text-align: center; background:var(--card-bg, #fff); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                    ${imgTag}
-                    <h4 style="margin: 10px 0; color:var(--primary-hover, #0d5c34);">${p.name}</h4>
-                    <p style="font-size:13px; color:var(--text-muted, #666);"><strong>Cat:</strong> ${p.category}</p>
-                    <div style="font-size:12px; color:var(--text-main, #555); margin-top:10px; text-align:left; height:70px; overflow-y:auto; padding:5px; background:#f8fbf9; border-radius:4px;">
-                        <strong>Specs:</strong><br>${p.specifications ? p.specifications.replace(/\n/g, '<br>') : 'Not specified'}
+    let prodContainer = document.getElementById('publicProductsContainer'); 
+    if (prodContainer) {
+        prodContainer.innerHTML = '';
+        if (products && products.length > 0) {
+            products.forEach(p => { 
+                let directImg = formatImageUrl(p.image_url);
+                let imgTag = directImg 
+                    ? `<img src="${directImg}" style="width:100%; height:150px; object-fit:cover; border-radius:8px; margin-bottom:10px;" onerror="this.onerror=null; this.src='https://placehold.co/280x150?text=No+Image';">` 
+                    : `<i class="fa-solid fa-box" style="font-size: 40px; color: var(--primary-color, #1b8a4f); margin-bottom:10px;"></i>`;
+
+                let catBtn = p.catalog_url ? `<a href="${p.catalog_url}" target="_blank" style="display:inline-block; margin-top:10px; background:var(--primary-color, #1b8a4f); color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:12px; font-weight:600;"><i class="fa-solid fa-download"></i> Download Catalogue</a>` : ``;
+
+                prodContainer.innerHTML += `
+                    <div style="border: 1px solid var(--border-color, #dbe8e0); padding: 20px; border-radius: 10px; width: 280px; text-align: center; background:var(--card-bg, #fff); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                        ${imgTag}
+                        <h4 style="margin: 10px 0; color:var(--primary-hover, #0d5c34);">${p.name}</h4>
+                        <p style="font-size:13px; color:var(--text-muted, #666);"><strong>Cat:</strong> ${p.category || '-'}</p>
+                        <div style="font-size:12px; color:var(--text-main, #555); margin-top:10px; text-align:left; height:70px; overflow-y:auto; padding:5px; background:#f8fbf9; border-radius:4px;">
+                            <strong>Specs:</strong><br>${p.specifications ? p.specifications.replace(/\n/g, '<br>') : 'Not specified'}
+                        </div>
+                        ${catBtn}
                     </div>
-                    ${catBtn}
-                </div>
-            `; 
-        });
-    });
+                `; 
+            });
+        } else {
+            prodContainer.innerHTML = '<p style="color: #666;">No products available right now.</p>';
+        }
+    }
 
-    db.collection("jobs").where("status", "==", "Active").onSnapshot(snapshot => {
-        let container = document.getElementById('publicJobsContainer'); 
-        if(!container) return; 
-        container.innerHTML = '';
-        snapshot.forEach(doc => { 
-            let j = doc.data(); 
-            container.innerHTML += `<div style="border-left: 4px solid var(--primary-color, #1b8a4f); background: #f0f7f3; padding: 20px; margin-top: 20px; border-radius: 5px;"><h4 style="color: var(--primary-hover, #0d5c34);">${j.title}</h4><p style="font-size: 14px; margin-bottom: 10px;"><strong>Openings:</strong> ${j.openings} | <strong>Experience:</strong> ${j.exp}</p><button style="background: var(--primary-color, #1b8a4f); color: #fff; padding: 8px 15px; border: none; border-radius: 4px; margin-top: 10px; cursor: pointer;">Apply Now</button></div>`; 
-        });
-    });
+    const { data: jobs, error: jobErr } = await sb
+        .from('jobs')
+        .select('*')
+        .eq('status', 'Active')
+        .order('created_at', { ascending: false });
+
+    let jobContainer = document.getElementById('publicJobsContainer'); 
+    if (jobContainer) {
+        jobContainer.innerHTML = '';
+        if (jobs && jobs.length > 0) {
+            jobs.forEach(j => { 
+                jobContainer.innerHTML += `
+                    <div style="border-left: 4px solid var(--primary-color, #1b8a4f); background: #f0f7f3; padding: 20px; margin-top: 20px; border-radius: 5px;">
+                        <h4 style="color: var(--primary-hover, #0d5c34);">${j.title}</h4>
+                        <p style="font-size: 14px; margin-bottom: 6px;"><strong>Openings:</strong> ${j.openings || 1} | <strong>Experience:</strong> ${j.exp || 'Not specified'}</p>
+                        <p style="font-size: 13px; color: #555; margin-bottom: 10px;">${j.description || ''}</p>
+                        <button style="background: var(--primary-color, #1b8a4f); color: #fff; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;">Apply Now</button>
+                    </div>
+                `; 
+            });
+        } else {
+            jobContainer.innerHTML = '<p style="color: #666;">No active job openings at the moment.</p>';
+        }
+    }
 }
 
-// ====================================================
-// 3. NAVIGATION & TABS
-// ====================================================
 function showHome() { 
     document.getElementById('homePage').style.display = 'block'; 
     document.getElementById('tabContainer').style.display = 'none'; 
@@ -104,9 +115,6 @@ function selectTab(tabName) {
     } 
 }
 
-// ====================================================
-// 4. 3D CAROUSEL
-// ====================================================
 let carouselSpinner = document.getElementById('carouselSpinner'); 
 let carouselScene = document.getElementById('carouselScene'); 
 let currentAngle = 0; 
@@ -171,9 +179,6 @@ function handleCardClick(tabName) {
     } 
 }
 
-// ====================================================
-// 5. SCROLL TO TOP & HERO ANIMATION
-// ====================================================
 let topBtn = document.getElementById("scrollTopBtn"); 
 window.onscroll = function() { 
     if (!topBtn) topBtn = document.getElementById("scrollTopBtn"); 
@@ -198,9 +203,6 @@ setInterval(() => {
     if(el) el.classList.add('active'); 
 }, 3000);
 
-// ====================================================
-// 6. DARK / LIGHT THEME TOGGLE
-// ====================================================
 function toggleTheme() {
     const isDark = document.body.classList.toggle('dark-mode');
     const bulb = document.getElementById('bulbIcon');
@@ -218,13 +220,9 @@ function toggleTheme() {
     }
 }
 
-// ====================================================
-// 7. MULTI-THEME PRESETS & CUSTOM COLOR PICKER
-// ====================================================
 function selectPresetTheme(themeName) {
     document.documentElement.setAttribute('data-theme', themeName);
 
-    // Clear inline style overrides so preset works cleanly across all elements
     document.documentElement.style.removeProperty('--primary-color');
     document.documentElement.style.removeProperty('--primary-hover');
     document.documentElement.style.removeProperty('--accent-color');
@@ -254,14 +252,10 @@ function adjustBrightness(hex, percent) {
     return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (B<255?B<1?0:B:255)*0x100 + (G<255?G<1?0:G:255)).toString(16).slice(1);
 }
 
-// By default har reload/open par Standard Emerald Green theme force karega
 function loadDefaultTheme() {
     selectPresetTheme('emerald');
 }
 
-// ====================================================
-// 8. INIT ON DOM LOAD
-// ====================================================
 window.addEventListener('DOMContentLoaded', () => { 
     loadDefaultTheme();
     if(typeof changeLanguage === 'function') {
