@@ -1,608 +1,306 @@
-const SUPABASE_URL = "https://yuyndtoqcwawlhrjespt.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1eW5kdG9xY3dhd2xocmplc3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MDkzOTIsImV4cCI6MjEwNjA4NTM5Mn0.TJ1DuBlYANnTNogfbt5WB64UsxNjVUyNkLR2gpHqNR0";
-
-const supabase = (typeof window.supabase !== 'undefined' && window.supabase.createClient) 
-    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
-    : null;
-
-function selectPresetTheme(themeName) {
-    document.documentElement.setAttribute('data-theme', themeName);
-    document.documentElement.style.removeProperty('--primary-color');
-    document.documentElement.style.removeProperty('--primary-hover');
-    document.documentElement.style.removeProperty('--accent-color');
-    document.documentElement.style.removeProperty('--glow-color');
-    syncAdminThemePickers(themeName, null);
+/* ====================================================
+   DASHBOARD & PORTAL BASE STYLES
+   ==================================================== */
+#adminPortal { 
+    background: #f8fbf9; 
+    padding: 0; 
+    border: none; 
+    overflow: hidden; 
+    min-height: 100vh;
 }
 
-function applyCustomColor(hexColor) {
-    const hoverColor = adjustBrightness(hexColor, -20);
-    document.documentElement.style.setProperty('--primary-color', hexColor);
-    document.documentElement.style.setProperty('--primary-hover', hoverColor);
-    document.documentElement.style.setProperty('--accent-color', hexColor);
-    document.documentElement.style.setProperty('--glow-color', hexColor);
-    syncAdminThemePickers(null, hexColor);
+.admin-topbar {
+    background: #056664;
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-function adjustBrightness(hex, percent) {
-    let num = parseInt(hex.replace("#",""), 16),
-        amt = Math.round(2.55 * percent),
-        R = (num >> 16) + amt,
-        B = ((num >> 8) & 0x00FF) + amt,
-        G = (num & 0x0000FF) + amt;
-    return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (B<255?B<1?0:B:255)*0x100 + (G<255?G<1?0:G:255)).toString(16).slice(1);
+.admin-layout { 
+    display: flex; 
+    min-height: calc(100vh - 60px); 
 }
 
-function syncAdminThemePickers(preset, customHex) {
-    const selectors = ['themeSelectAdmin', 'themeSelectModal', 'themeSelect'];
-    const pickers = ['customColorPickerAdmin', 'customColorPickerModal', 'customColorPicker'];
-
-    if (preset) {
-        selectors.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.value = preset;
-        });
-    }
-    if (customHex) {
-        pickers.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.value = customHex;
-        });
-    }
+.admin-sidebar {
+    width: 260px; 
+    background: #0d1e15; 
+    color: #fff; 
+    padding: 30px 0; 
+    display: flex; 
+    flex-direction: column;
 }
 
-function loadDefaultAdminTheme() {
-    selectPresetTheme('emerald');
+.admin-profile { 
+    text-align: center; 
+    padding-bottom: 20px; 
+    border-bottom: 1px solid rgba(255,255,255,0.1); 
+    margin-bottom: 20px; 
 }
 
-let captchaCorrect = 0;
-
-function generateCaptcha() {
-    let n1 = Math.floor(Math.random() * 9) + 1;
-    let n2 = Math.floor(Math.random() * 9) + 1;
-    captchaCorrect = n1 + n2;
-    let el = document.getElementById('captchaQuestion');
-    if (el) el.innerText = `${n1} +${n2} = ?`;
-    let a = document.getElementById('captchaAnswer');
-    if (a) a.value = '';
+.admin-profile i { 
+    font-size: 50px; 
+    color: #a3f3c4; 
+    margin-bottom: 10px; 
 }
 
-function openLoginModal() { 
-    const modal = document.getElementById('loginModal');
-    if (modal) { 
-        modal.style.display = 'flex'; 
-        generateCaptcha(); 
-    }
+#adminNameDisplay {
+    word-wrap: break-word;
+    padding: 0 15px;
+    font-size: 16px;
+    line-height: 1.3;
 }
 
-function closeLoginModal() { 
-    const modal = document.getElementById('loginModal');
-    if (modal) modal.style.display = 'none'; 
-    const err = document.getElementById('loginError');
-    if (err) err.style.display = 'none';
+.admin-menu a {
+    display: block; 
+    padding: 15px 25px; 
+    color: #ccc; 
+    text-decoration: none; 
+    font-size: 15px; 
+    transition: 0.3s; 
+    cursor: pointer;
 }
 
-function openForgotModal() { 
-    closeLoginModal();
-    const fModal = document.getElementById('forgotPassModal');
-    if (fModal) fModal.style.display = 'flex';
+.admin-menu a i { width: 25px; }
+.admin-menu a:hover, .admin-menu a.active { 
+    background: #1b8a4f; 
+    color: #fff; 
+    border-left: 4px solid #a3f3c4; 
 }
 
-function closeForgotModal() { 
-    const fModal = document.getElementById('forgotPassModal');
-    if (fModal) fModal.style.display = 'none'; 
-    openLoginModal();
+.admin-content { 
+    flex: 1; 
+    padding: 40px; 
+    background: #ffffff; 
+    overflow-y: auto; 
+    height: calc(100vh - 60px); 
 }
 
-if (supabase) {
-    supabase.auth.onAuthStateChange(async (event, session) => {
-        let adminPortal = document.getElementById('adminPortal');
-        const user = session ? session.user : null;
+.admin-section { display: none; animation: fadeIn 0.4s; }
+.admin-section.active { display: block; }
 
-        if (user) {
-            if (adminPortal) adminPortal.style.display = 'block';
-            closeLoginModal();
-
-            let emailPrefix = user.email.split('@')[0];
-            let defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
-
-            document.getElementById('adminNameDisplay').innerText = defaultName;
-            document.getElementById('adminRoleDisplay').innerText = "Loading Role...";
-
-            try {
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('email', user.email)
-                    .maybeSingle();
-
-                let uRole = "Standard User"; 
-                let uName = defaultName;
-
-                if (data) {
-                    uName = data.name || defaultName; 
-                    uRole = data.role || "Standard User";
-                } else if (user.email === 'pspujari88@gmail.com' || user.email === 'admin@dhamigroup.com') {
-                    uRole = "System Administrator"; 
-                    uName = "Prakash Dhami (Admin)";
-                }
-
-                document.getElementById('adminNameDisplay').innerText = uName;
-                document.getElementById('adminRoleDisplay').innerText = uRole;
-                applyPermissions(uRole);
-            } catch (e) {
-                document.getElementById('adminNameDisplay').innerText = defaultName;
-                document.getElementById('adminRoleDisplay').innerText = "System Administrator";
-                applyPermissions("System Administrator");
-            }
-
-            fetchProducts(); 
-            fetchJobs(); 
-            fetchUsers();
-        } else {
-            if (adminPortal) adminPortal.style.display = 'none';
-            openLoginModal();
-        }
-    });
+.admin-card { 
+    background: #f0f7f3; 
+    border: 1px solid #dbe8e0; 
+    border-radius: 10px; 
+    padding: 25px; 
+    margin-bottom: 20px; 
 }
 
-function applyPermissions(role) {
-    let navProd = document.getElementById('nav-manage-prod');
-    let navCar = document.getElementById('nav-manage-car');
-    let navUser = document.getElementById('nav-manage-user');
-
-    if (!navProd || !navCar || !navUser) return;
-    navProd.style.display = 'none'; 
-    navCar.style.display = 'none'; 
-    navUser.style.display = 'none';
-
-    if (role === "System Administrator") {
-        navProd.style.display = 'block'; 
-        navCar.style.display = 'block'; 
-        navUser.style.display = 'block';
-        switchAdminTab('manage-prod');
-    } else if (role === "Manager - Both") {
-        navProd.style.display = 'block'; 
-        navCar.style.display = 'block'; 
-        switchAdminTab('manage-prod');
-    } else if (role === "Only Manage Product") {
-        navProd.style.display = 'block'; 
-        switchAdminTab('manage-prod');
-    } else if (role === "Only Manage Career") {
-        navCar.style.display = 'block'; 
-        switchAdminTab('manage-car');
-    } else {
-        alert("You don't have access to the Dashboard!"); 
-        logoutUser();
-    }
+.admin-card h4 { 
+    color: #0d5c34; 
+    margin-bottom: 15px; 
+    border-bottom: 2px dashed #ccc; 
+    padding-bottom: 10px; 
 }
 
-function switchAdminTab(id) { 
-    document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none'); 
-    let activeSec = document.getElementById('admin-' + id);
-    if (activeSec) activeSec.style.display = 'block'; 
-    document.querySelectorAll('.admin-menu a').forEach(a => a.classList.remove('active')); 
-    let navElem = document.getElementById('nav-' + id);
-    if (navElem) navElem.classList.add('active'); 
+.form-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 15px; 
+    margin-bottom: 15px; 
 }
 
-async function handleLogin() {
-    let email = document.getElementById('loginId').value.trim(); 
-    let pass = document.getElementById('loginPass').value; 
-    let ans = parseInt(document.getElementById('captchaAnswer').value, 10);
-    let errBox = document.getElementById('loginError');
-
-    if (!email || !pass) { 
-        errBox.style.display = 'block'; 
-        errBox.innerText = "Enter email and password."; 
-        return; 
-    }
-    if (ans !== captchaCorrect) { 
-        errBox.style.display = 'block'; 
-        errBox.innerText = "Incorrect Captcha!"; 
-        generateCaptcha(); 
-        return; 
-    }
-
-    if (!supabase) {
-        alert("Supabase SDK not loaded. Check connection.");
-        return;
-    }
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: pass
-    });
-
-    if (error) {
-        errBox.style.display = 'block'; 
-        errBox.innerText = error.message; 
-        generateCaptcha(); 
-    }
+.form-grid input, .form-grid select { 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    width: 100%; 
 }
 
-async function logoutUser() { 
-    if (supabase) await supabase.auth.signOut();
-    window.location.reload();
+.action-btn { 
+    background: #1b8a4f; 
+    color: white; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    font-weight: 600; 
 }
 
-async function sendResetLink() {
-    let email = document.getElementById('resetEmail').value.trim();
-    let msg = document.getElementById('resetMessage');
-    if (email && supabase) { 
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: window.location.href
-        });
-
-        if (error) {
-            msg.style.display = 'block'; 
-            msg.style.color = '#e34f26'; 
-            msg.innerText = error.message; 
-        } else {
-            msg.style.display = 'block'; 
-            msg.style.color = '#1b8a4f';
-            msg.innerText = "Reset link sent successfully to your email!"; 
-        }
-    }
+.admin-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 15px; 
+    background: #fff; 
 }
 
-let editProdId = null;
-let currentProducts = [];
-
-function populateEditProduct(id) {
-    const p = currentProducts.find(item => item.id === id);
-    if (!p) return;
-
-    editProdId = p.id; 
-    document.getElementById('addProdName').value = p.name || ''; 
-    document.getElementById('addProdCat').value = p.category || 'ERP Software'; 
-    document.getElementById('addProdColor').value = p.color || '';
-    document.getElementById('addProdQty').value = p.qty || ''; 
-    document.getElementById('addProdDesc').value = p.description || '';
-    document.getElementById('addProdSpec').value = p.specifications || '';
-    document.getElementById('addProdImage').value = p.image_url || '';
-    document.getElementById('addProdCatalog').value = p.catalog_url || '';
-    
-    const hiddenEl = document.getElementById('addProdHidden');
-    if (hiddenEl) hiddenEl.checked = (p.status === 'Hidden'); 
-
-    document.getElementById('btnSaveProd').innerHTML = "<i class='fa-solid fa-save'></i> Update Product"; 
-    document.getElementById('btnCancelProd').style.display = "inline-block";
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+.admin-table th, .admin-table td { 
+    border: 1px solid #dbe8e0; 
+    padding: 12px; 
+    text-align: left; 
+    font-size: 14px; 
 }
 
-async function saveProduct() {
-    let name = document.getElementById('addProdName').value.trim(); 
-    let cat = document.getElementById('addProdCat').value; 
-    let color = document.getElementById('addProdColor').value.trim();
-    let qty = document.getElementById('addProdQty').value; 
-    let desc = document.getElementById('addProdDesc').value.trim(); 
-    let spec = document.getElementById('addProdSpec').value.trim();
-    let imgUrl = document.getElementById('addProdImage').value.trim();
-    let catUrl = document.getElementById('addProdCatalog').value.trim();
-    
-    const hiddenEl = document.getElementById('addProdHidden');
-    let isHidden = hiddenEl ? hiddenEl.checked : false;
-
-    if (!name) return alert("Product Name is required!"); 
-    if (!imgUrl) return alert("Product Image URL is required!"); 
-    if (!spec) return alert("Product Specification is required!"); 
-
-    let payload = { 
-        name: name, 
-        category: cat, 
-        color: color, 
-        qty: qty ? parseInt(qty, 10) : null, 
-        description: desc, 
-        specifications: spec, 
-        image_url: imgUrl, 
-        catalog_url: catUrl,
-        status: isHidden ? "Hidden" : "Public" 
-    };
-
-    if (editProdId) { 
-        const { error } = await supabase.from('products').update(payload).eq('id', editProdId);
-        if (error) alert(error.message);
-        else {
-            alert("Product Updated Successfully!"); 
-            cancelEdit('prod');
-            fetchProducts();
-        }
-    } else { 
-        const { error } = await supabase.from('products').insert([payload]);
-        if (error) alert(error.message);
-        else {
-            alert("Product Added Successfully!"); 
-            cancelEdit('prod');
-            fetchProducts();
-        }
-    }
+.admin-table th { 
+    background-color: #e4f5eb; 
+    color: #0d5c34; 
+    font-weight: 600; 
 }
 
-async function fetchProducts() {
-    if (!supabase) return;
-    const { data: products, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    let t = document.getElementById('prodTbody'); 
-    if (!t) return; 
-    t.innerHTML = '';
-
-    if (error) {
-        console.error("Products Fetch Error:", error.message);
-        return;
-    }
-
-    currentProducts = products || [];
-
-    currentProducts.forEach(p => { 
-        let row = document.createElement('tr');
-        row.innerHTML = `
-            <td><strong>${p.name}</strong></td>
-            <td>${p.category || '-'}</td>
-            <td>${p.qty || 'N/A'}</td>
-            <td><span class="status-badge ${p.status === 'Public' ? 'status-active' : 'status-inactive'}">${p.status || 'Public'}</span></td>
-            <td>
-                <button class="btn-small btn-edit" data-id="${p.id}"><i class="fa-solid fa-pen"></i></button>
-                <button class="btn-small btn-delete" data-del-id="${p.id}"><i class="fa-solid fa-trash"></i></button>
-            </td>
-        `;
-
-        row.querySelector('.btn-edit').addEventListener('click', () => populateEditProduct(p.id));
-        row.querySelector('.btn-delete').addEventListener('click', () => deleteDoc('products', p.id));
-        t.appendChild(row);
-    });
+.status-badge { 
+    padding: 4px 10px; 
+    border-radius: 20px; 
+    font-size: 12px; 
+    font-weight: 600; 
+    display: inline-block; 
+    text-align: center; 
 }
 
-let editJobId = null;
-let currentJobs = [];
+.status-active { background: #d4edda; color: #155724; }
+.status-inactive { background: #f8d7da; color: #721c24; }
 
-function populateEditJob(id) {
-    const j = currentJobs.find(item => item.id === id);
-    if (!j) return;
-
-    editJobId = j.id; 
-    document.getElementById('addJobTitle').value = j.title || ''; 
-    document.getElementById('addJobReq').value = j.openings || ''; 
-    document.getElementById('addJobExp').value = j.exp || ''; 
-    document.getElementById('addJobLoc').value = j.location || ''; 
-    document.getElementById('addJobDesc').value = j.description || ''; 
-    document.getElementById('btnSaveJob').innerHTML = "<i class='fa-solid fa-save'></i> Update Job"; 
-    document.getElementById('btnCancelJob').style.display = "inline-block"; 
-    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+.btn-small { 
+    padding: 6px 12px; 
+    font-size: 12px; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    border: none; 
+    font-weight: 600; 
+    color: white; 
+    transition: 0.3s; 
+    margin-right: 5px; 
 }
 
-async function saveJob() { 
-    let title = document.getElementById('addJobTitle').value.trim(); 
-    let req = document.getElementById('addJobReq').value; 
-    let exp = document.getElementById('addJobExp').value.trim(); 
-    let loc = document.getElementById('addJobLoc').value.trim(); 
-    let desc = document.getElementById('addJobDesc').value.trim(); 
+.btn-edit { background: #007bb5; }
+.btn-edit:hover { background: #005a87; }
+.btn-delete { background: #e34f26; }
+.btn-delete:hover { background: #b83b1a; }
 
-    if (!title || !desc) return alert("Title and Description are required!"); 
-    let payload = { 
-        title: title, 
-        openings: req ? parseInt(req, 10) : 1, 
-        exp: exp, 
-        location: loc, 
-        description: desc, 
-        status: "Active" 
-    }; 
-
-    if (editJobId) { 
-        const { error } = await supabase.from('jobs').update(payload).eq('id', editJobId);
-        if (error) alert(error.message);
-        else {
-            alert("Job Updated!"); 
-            cancelEdit('job');
-            fetchJobs();
-        }
-    } else { 
-        const { error } = await supabase.from('jobs').insert([payload]);
-        if (error) alert(error.message);
-        else {
-            alert("Job Posted!"); 
-            cancelEdit('job');
-            fetchJobs();
-        }
-    } 
+/* Modal Styles */
+.modal-overlay {
+    display: none; 
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); 
+    backdrop-filter: blur(5px); 
+    z-index: 2000;
+    justify-content: center; 
+    align-items: center;
 }
 
-async function fetchJobs() { 
-    if (!supabase) return;
-    const { data: jobs, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    let t = document.getElementById('jobTbody'); 
-    if (!t) return; 
-    t.innerHTML = ''; 
-
-    if (error) {
-        console.error("Jobs Fetch Error:", error.message);
-        return;
-    }
-
-    currentJobs = jobs || [];
-
-    currentJobs.forEach(j => { 
-        let row = document.createElement('tr');
-        row.innerHTML = `
-            <td><strong>${j.title}</strong></td>
-            <td>${j.openings || 1}</td>
-            <td>${j.exp || '-'}</td>
-            <td><span class="status-badge status-active">${j.status || 'Active'}</span></td>
-            <td>
-                <button class="btn-small btn-edit" data-id="${j.id}"><i class="fa-solid fa-pen"></i></button>
-                <button class="btn-small btn-delete" data-del-id="${j.id}"><i class="fa-solid fa-trash"></i></button>
-            </td>
-        `;
-
-        row.querySelector('.btn-edit').addEventListener('click', () => populateEditJob(j.id));
-        row.querySelector('.btn-delete').addEventListener('click', () => deleteDoc('jobs', j.id));
-        t.appendChild(row);
-    }); 
+.login-box {
+    background: #fff; 
+    padding: 40px; 
+    border-radius: 15px; 
+    width: 100%; 
+    max-width: 400px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2); 
+    position: relative;
+    animation: fadeUp 0.4s ease-out;
 }
 
-let editUserId = null;
-let currentUsers = [];
+.close-modal {
+    position: absolute; 
+    top: 15px; 
+    right: 20px; 
+    font-size: 24px; 
+    color: #888;
+    cursor: pointer; 
+    transition: 0.3s;
+}
+.close-modal:hover { color: #e34f26; }
 
-function populateEditUser(id) { 
-    const u = currentUsers.find(item => item.id === id);
-    if (!u) return;
-
-    editUserId = u.id; 
-    document.getElementById('addUserName').value = u.name || ''; 
-    document.getElementById('addUserEmail').value = u.email || ''; 
-    document.getElementById('addUserEmail').disabled = true; 
-    document.getElementById('addUserPass').disabled = true; 
-    document.getElementById('addUserPass').placeholder = "Disabled during edit"; 
-    document.getElementById('addUserRole').value = u.role || 'Only Manage Product'; 
-    document.getElementById('btnSaveUser').innerHTML = "<i class='fa-solid fa-save'></i> Update User Role"; 
-    document.getElementById('btnCancelUser').style.display = "inline-block"; 
-    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+.login-box h2 { 
+    color: #0d5c34; 
+    text-align: center; 
+    margin-bottom: 20px; 
+    font-size: 24px;
+    font-weight: 700;
 }
 
-async function saveUser() { 
-    let name = document.getElementById('addUserName').value.trim(); 
-    let email = document.getElementById('addUserEmail').value.trim(); 
-    let pass = document.getElementById('addUserPass').value; 
-    let role = document.getElementById('addUserRole').value; 
-
-    if (!name || (!editUserId && (!email || !pass))) return alert("All fields are required!"); 
-
-    if (editUserId) { 
-        const { error } = await supabase.from('users').update({ name: name, role: role }).eq('id', editUserId);
-        if (error) alert(error.message);
-        else {
-            alert("User access updated!"); 
-            cancelEdit('user'); 
-            fetchUsers();
-        }
-    } else { 
-        if (pass.length < 6) return alert("Password min 6 chars."); 
-
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-            email: email,
-            password: pass
-        });
-
-        if (authError) return alert(authError.message);
-
-        const userId = authData.user ? authData.user.id : crypto.randomUUID();
-        const { error: dbError } = await supabase.from('users').insert([{
-            id: userId,
-            name: name,
-            email: email,
-            role: role,
-            status: "Active"
-        }]);
-
-        if (dbError) alert("User note: " + dbError.message);
-        else alert("User Created Successfully!");
-
-        cancelEdit('user'); 
-        fetchUsers();
-    } 
+.input-group { 
+    margin-bottom: 20px; 
+    position: relative; 
 }
 
-async function fetchUsers() { 
-    if (!supabase) return;
-    const { data: users, error } = await supabase
-        .from('users')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    let t = document.getElementById('userTbody'); 
-    if (!t) return; 
-    t.innerHTML = ''; 
-
-    if (error) {
-        console.error("Users Fetch Error:", error.message);
-        return;
-    }
-
-    currentUsers = users || [];
-
-    currentUsers.forEach(u => { 
-        let row = document.createElement('tr');
-        row.innerHTML = `
-            <td><strong>${u.name}</strong></td>
-            <td>${u.email}</td>
-            <td><span style="color:#007bb5; font-weight:600;">${u.role}</span></td>
-            <td><span class="status-badge status-active">${u.status || 'Active'}</span></td>
-            <td>
-                <button class="btn-small btn-edit" data-id="${u.id}"><i class="fa-solid fa-pen"></i></button>
-                <button class="btn-small btn-delete" data-del-id="${u.id}"><i class="fa-solid fa-trash"></i></button>
-            </td>
-        `;
-
-        row.querySelector('.btn-edit').addEventListener('click', () => populateEditUser(u.id));
-        row.querySelector('.btn-delete').addEventListener('click', () => deleteDoc('users', u.id));
-        t.appendChild(row);
-    }); 
+.input-group i { 
+    position: absolute; 
+    left: 15px; 
+    top: 14px; 
+    color: #888; 
 }
 
-function cancelEdit(type) {
-    if (type === 'prod') { 
-        editProdId = null; 
-        document.getElementById('addProdName').value = ''; 
-        document.getElementById('addProdColor').value = ''; 
-        document.getElementById('addProdQty').value = ''; 
-        document.getElementById('addProdDesc').value = ''; 
-        document.getElementById('addProdSpec').value = ''; 
-        document.getElementById('addProdImage').value = ''; 
-        document.getElementById('addProdCatalog').value = ''; 
-        const hiddenEl = document.getElementById('addProdHidden');
-        if (hiddenEl) hiddenEl.checked = false; 
-        document.getElementById('btnSaveProd').innerHTML = '<i class="fa-solid fa-save"></i> Save Product'; 
-        document.getElementById('btnCancelProd').style.display = 'none'; 
-    }
-    if (type === 'job') { 
-        editJobId = null; 
-        document.getElementById('addJobTitle').value = ''; 
-        document.getElementById('addJobReq').value = ''; 
-        document.getElementById('addJobExp').value = ''; 
-        document.getElementById('addJobLoc').value = ''; 
-        document.getElementById('addJobDesc').value = ''; 
-        document.getElementById('btnSaveJob').innerHTML = '<i class="fa-solid fa-upload"></i> Post Job'; 
-        document.getElementById('btnCancelJob').style.display = 'none'; 
-    }
-    if (type === 'user') { 
-        editUserId = null; 
-        document.getElementById('addUserName').value = ''; 
-        document.getElementById('addUserEmail').value = ''; 
-        document.getElementById('addUserPass').value = ''; 
-        document.getElementById('addUserEmail').disabled = false; 
-        document.getElementById('addUserPass').disabled = false; 
-        document.getElementById('addUserPass').placeholder = "Password (Min 6 chars)"; 
-        document.getElementById('btnSaveUser').innerHTML = '<i class="fa-solid fa-plus"></i> Create User'; 
-        document.getElementById('btnCancelUser').style.display = 'none'; 
-    }
+.input-group input { 
+    width: 100%; 
+    padding: 12px 12px 12px 40px; 
+    border: 1px solid #ccc; 
+    border-radius: 6px; 
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    box-sizing: border-box;
 }
 
-async function deleteDoc(col, id) { 
-    let msg = col === 'users' ? "Remove user access from Dashboard?" : "Permanently delete this record?"; 
-    if (confirm(msg)) {
-        const { error } = await supabase.from(col).delete().eq('id', id);
-        if (error) alert(error.message);
-        else {
-            if (col === 'products') fetchProducts();
-            if (col === 'jobs') fetchJobs();
-            if (col === 'users') fetchUsers();
-        }
-    }
+.captcha-box {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    background: #f0f7f3; 
+    padding: 10px 15px; 
+    border-radius: 6px; 
+    border: 1px dashed #1b8a4f; 
+    margin-bottom: 20px;
 }
 
-function initPortal() {
-    loadDefaultAdminTheme();
-    generateCaptcha();
+.captcha-box span {
+    font-weight: 700; 
+    color: #0d5c34; 
+    font-size: 16px; 
+    letter-spacing: 2px;
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initPortal);
-} else {
-    initPortal();
+.captcha-box input {
+    width: 100px; 
+    padding: 8px; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    text-align: center; 
+    font-weight: 600;
+}
+
+.login-box button {
+    width: 100%; 
+    background: #1b8a4f; 
+    color: white; 
+    padding: 12px; 
+    border: none;
+    border-radius: 6px; 
+    font-weight: 600; 
+    font-size: 16px; 
+    cursor: pointer; 
+    transition: 0.3s;
+}
+
+.login-box button:hover { background: #0d5c34; }
+
+.login-error { 
+    color: #e34f26; 
+    font-size: 13px; 
+    text-align: center; 
+    margin-top: 10px; 
+    display: none; 
+}
+
+.forgot-link {
+    display: block; 
+    text-align: right; 
+    font-size: 13px; 
+    color: #1b8a4f; 
+    margin-top: -10px; 
+    margin-bottom: 20px; 
+    cursor: pointer; 
+    text-decoration: underline;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(-8px); } 
+    to { opacity: 1; transform: translateY(0); } 
 }
