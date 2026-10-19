@@ -1464,16 +1464,11 @@
             document.getElementById('addUserPass').placeholder = "Password (Min 6 chars)";
             document.getElementById('btnSaveUser').innerHTML = '<i class="fa-solid fa-plus"></i> Create User';
             document.getElementById('btnCancelUser').style.display = 'none';
-        }
-    }
-
-    // DOM fully load hone ke baad hi portal aur captcha initialize ho
-    document.addEventListener('DOMContentLoaded', () => {
+            
+    selectPresetTheme('emerald');
+    generateCaptcha();
     if (typeof initAuth === 'function') {
         initAuth();
-    } else {
-        selectPresetTheme('emerald');
-        generateCaptcha();
     }
 });
 
