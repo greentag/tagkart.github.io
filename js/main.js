@@ -8,6 +8,8 @@ const sb = (typeof window.supabase !== 'undefined' && window.supabase.createClie
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
     : null;
 
+let allProductsCache = []; // Global cache for filtering
+
 function formatImageUrl(url) {
     if (!url) return "";
     let cleanUrl = url.trim();
@@ -19,7 +21,7 @@ function formatImageUrl(url) {
 }
 
 // ====================================================
-// 2. LIVE SYNC: PRODUCTS & JOBS FETCH
+// 2. LIVE SYNC: PRODUCTS & JOBS FETCH WITH FILTERS
 // ====================================================
 async function fetchPublicData() {
     if (!sb) {
@@ -27,70 +29,16 @@ async function fetchPublicData() {
         return;
     }
 
-    // A. Fetch Public Products (Shop / List Layout View)
+    // A. Fetch Public Products with Shop / List Layout & Filters
     try {
         const { data: products, error: prodErr } = await sb
             .from('products')
             .select('*')
             .order('created_at', { ascending: false });
 
-        let prodContainer = document.getElementById('publicProductsContainer'); 
-        if (prodContainer) {
-            // Dribbble Shop Style Vertical List Layout Styling
-            prodContainer.style.display = "flex";
-            prodContainer.style.flexDirection = "column";
-            prodContainer.style.gap = "16px";
-            prodContainer.style.width = "100%";
-            prodContainer.style.maxWidth = "850px";
-            prodContainer.style.margin = "20px auto 0 auto";
-
-            prodContainer.innerHTML = '';
-            if (products && products.length > 0) {
-                let visibleProducts = products.filter(p => p.status !== 'Hidden');
-
-                if (visibleProducts.length > 0) {
-                    visibleProducts.forEach(p => { 
-                        let directImg = formatImageUrl(p.image_url);
-                        let imgTag = directImg 
-                            ? `<img src="${directImg}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #eaeaea;" onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=No+Image';">` 
-                            : `<div style="width: 100px; height: 100px; display:flex; align-items:center; justify-content:center; background:#f0f7f3; border-radius:8px;"><i class="fa-solid fa-boxes-stacked" style="font-size: 30px; color: #1b8a4f;"></i></div>`;
-
-                        let catBtn = p.catalog_url 
-                            ? `<a href="${p.catalog_url}" target="_blank" style="background:#e34f26; color:#fff; padding:8px 18px; border-radius:6px; text-decoration:none; font-size:13px; font-weight:600; display:inline-block;"><i class="fa-solid fa-download"></i> Catalogue</a>` 
-                            : `<button style="background:#1b8a4f; color:#fff; border:none; padding:8px 18px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Shop Now</button>`;
-
-                        prodContainer.innerHTML += `
-                            <div style="display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid #dbe8e0; border-radius: 12px; padding: 18px 22px; box-shadow: 0 3px 10px rgba(0,0,0,0.04); gap: 20px; text-align: left;">
-                                <div style="display: flex; align-items: center; gap: 20px; flex: 1;">
-                                    <div style="position: relative;">
-                                        <span style="position: absolute; top: -6px; left: -6px; background: #e34f26; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">NEW</span>
-                                        ${imgTag}
-                                    </div>
-                                    <div>
-                                        <h4 style="margin: 0 0 6px 0; color: #0d5c34; font-size: 16px; font-weight: 600;">${p.name}</h4>
-                                        <div style="color: #f59e0b; font-size: 12px; margin-bottom: 6px;">
-                                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i> <span style="color:#777; font-size:11px;">(5.0)</span>
-                                        </div>
-                                        <p style="font-size: 12.5px; color: #555; margin: 0 0 8px 0; line-height: 1.4;">${p.specifications || 'Standard quality product with reliable performance.'}</p>
-                                        <div style="display: flex; gap: 8px;">
-                                            <span style="background: #f0f7f3; color: #1b8a4f; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight:600;">${p.category || 'General'}</span>
-                                            <span style="background: #f0f7f3; color: #555; font-size: 11px; padding: 2px 8px; border-radius: 4px;">Qty: ${p.qty || 0}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style="text-align: right; min-width: 120px;">
-                                    <div style="font-size: 16px; font-weight: 700; color: #1b8a4f; margin-bottom: 10px;">In Stock</div>
-                                    ${catBtn}
-                                </div>
-                            </div>
-                        `; 
-                    });
-                } else {
-                    prodContainer.innerHTML = '<p style="color: #666; font-size: 14px; text-align: center; width: 100%;">No products available at the moment.</p>';
-                }
-            } else {
-                prodContainer.innerHTML = '<p style="color: #666; font-size: 14px; text-align: center; width: 100%;">No products available in database.</p>';
-            }
+        if (products) {
+            allProductsCache = products.filter(p => p.status !== 'Hidden');
+            renderShopLayout(allProductsCache);
         }
     } catch (e) {
         console.error("Products render error:", e);
@@ -128,6 +76,132 @@ async function fetchPublicData() {
     } catch (e) {
         console.error("Jobs render error:", e);
     }
+}
+
+// RENDER SHOP LAYOUT WITH SIDEBAR FILTERS
+function renderShopLayout(productsToRender) {
+    let prodContainer = document.getElementById('publicProductsContainer'); 
+    if (!prodContainer) return;
+
+    prodContainer.innerHTML = `
+        <div style="display: flex; gap: 30px; width: 100%; max-width: 1100px; margin: 20px auto 0 auto; align-items: flex-start; text-align: left;">
+            
+            <!-- SIDEBAR FILTERS -->
+            <div style="width: 260px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #eaeaea; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+                <h3 style="font-size: 18px; color: #0d5c34; margin-bottom: 15px; border-bottom: 2px solid #1b8a4f; padding-bottom: 8px;">Filters</h3>
+                
+                <!-- Category Filter -->
+                <div style="margin-bottom: 20px;">
+                    <h4 style="font-size: 14px; color: #333; margin-bottom: 10px;">Categories</h4>
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px; cursor: pointer;"><input type="checkbox" class="filter-cat" value="all" checked onchange="applyFilters()"> All Categories</label>
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px; cursor: pointer;"><input type="checkbox" class="filter-cat" value="ERP Software" onchange="applyFilters()"> ERP Software</label>
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px; cursor: pointer;"><input type="checkbox" class="filter-cat" value="Hardware" onchange="applyFilters()"> Hardware</label>
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px; cursor: pointer;"><input type="checkbox" class="filter-cat" value="Service" onchange="applyFilters()"> Service</label>
+                </div>
+
+                <!-- Stock Status Filter -->
+                <div style="margin-bottom: 20px;">
+                    <h4 style="font-size: 14px; color: #333; margin-bottom: 10px;">Product Status</h4>
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px; cursor: pointer;"><input type="checkbox" class="filter-stock" value="all" checked onchange="applyFilters()"> All Status</label>
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px; cursor: pointer;"><input type="checkbox" class="filter-stock" value="in-stock" onchange="applyFilters()"> In Stock</label>
+                    <label style="display: block; font-size: 13px; margin-bottom: 6px; cursor: pointer;"><input type="checkbox" class="filter-stock" value="out-stock" onchange="applyFilters()"> Out of Stock</label>
+                </div>
+
+                <!-- Rating Filter -->
+                <div>
+                    <h4 style="font-size: 14px; color: #333; margin-bottom: 10px;">Minimum Rating</h4>
+                    <select id="filterRating" onchange="applyFilters()" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px;">
+                        <option value="0">All Ratings</option>
+                        <option value="4">4 Stars & Above</option>
+                        <option value="5">5 Stars Only</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- PRODUCTS LIST AREA -->
+            <div id="productsListArea" style="flex: 1; display: flex; flex-direction: column; gap: 16px;">
+            </div>
+        </div>
+    `;
+
+    renderProductCards(productsToRender);
+}
+
+function renderProductCards(products) {
+    let listArea = document.getElementById('productsListArea');
+    if (!listArea) return;
+    listArea.innerHTML = '';
+
+    if (products && products.length > 0) {
+        products.forEach(p => {
+            let directImg = formatImageUrl(p.image_url);
+            let imgTag = directImg 
+                ? `<img src="${directImg}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #eaeaea;" onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=No+Image';">` 
+                : `<div style="width: 100px; height: 100px; display:flex; align-items:center; justify-content:center; background:#f0f7f3; border-radius:8px;"><i class="fa-solid fa-boxes-stacked" style="font-size: 30px; color: #1b8a4f;"></i></div>`;
+
+            // Backend Stock Logic: qty blank or <= 0 means Out of Stock
+            let isOutOfStock = (!p.qty || parseInt(p.qty, 10) <= 0);
+            let stockBadge = isOutOfStock 
+                ? `<span style="font-size: 13px; font-weight: 700; color: #e34f26;">Out of Stock</span>` 
+                : `<span style="font-size: 13px; font-weight: 700; color: #1b8a4f;">In Stock</span>`;
+
+            let ratingVal = p.rating ? parseFloat(p.rating) : 5.0;
+            let catBtn = p.catalog_url 
+                ? `<a href="${p.catalog_url}" target="_blank" style="background:#e34f26; color:#fff; padding:8px 18px; border-radius:6px; text-decoration:none; font-size:13px; font-weight:600; display:inline-block;"><i class="fa-solid fa-download"></i> Catalogue</a>` 
+                : `<button style="background:${isOutOfStock ? '#ccc' : '#e34f26'}; color:#fff; border:none; padding:8px 18px; border-radius:6px; font-size:13px; font-weight:600; cursor:${isOutOfStock ? 'not-allowed' : 'pointer'};" ${isOutOfStock ? 'disabled' : ''}>Shop Now</button>`;
+
+            listArea.innerHTML += `
+                <div style="display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid #dbe8e0; border-radius: 12px; padding: 18px 22px; box-shadow: 0 3px 10px rgba(0,0,0,0.04); gap: 20px;">
+                    <div style="display: flex; align-items: center; gap: 20px; flex: 1;">
+                        <div style="position: relative;">
+                            <span style="position: absolute; top: -6px; left: -6px; background: #1b8a4f; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">NEW</span>
+                            ${imgTag}
+                        </div>
+                        <div>
+                            <h4 style="margin: 0 0 6px 0; color: #0d5c34; font-size: 16px; font-weight: 600;">${p.name}</h4>
+                            <div style="color: #f59e0b; font-size: 12px; margin-bottom: 6px;">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i> <span style="color:#777; font-size:11px;">(${ratingVal})</span>
+                            </div>
+                            <p style="font-size: 12.5px; color: #555; margin: 0 0 8px 0; line-height: 1.4;">${p.specifications || 'Standard quality product with reliable performance.'}</p>
+                            <div style="display: flex; gap: 8px;">
+                                <span style="background: #f0f7f3; color: #1b8a4f; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight:600;">${p.category || 'General'}</span>
+                                <span style="background: #f0f7f3; color: #555; font-size: 11px; padding: 2px 8px; border-radius: 4px;">Qty: ${p.qty || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: right; min-width: 130px;">
+                        <div style="margin-bottom: 10px;">${stockBadge}</div>
+                        ${catBtn}
+                    </div>
+                </div>
+            `;
+        });
+    } else {
+        listArea.innerHTML = '<div style="background:#fff; padding:30px; border-radius:12px; text-align:center; color:#666; font-size:14px; border:1px solid #eaeaea;">No products match your filter criteria.</div>';
+    }
+}
+
+// FILTER LOGIC FUNCTION
+function applyFilters() {
+    let selectedCats = Array.from(document.querySelectorAll('.filter-cat:checked')).map(el => el.value);
+    let selectedStocks = Array.from(document.querySelectorAll('.filter-stock:checked')).map(el => el.value);
+    let minRating = parseFloat(document.getElementById('filterRating').value) || 0;
+
+    let filtered = allProductsCache.filter(p => {
+        let matchCat = selectedCats.includes('all') || selectedCats.includes(p.category);
+
+        let isOutOfStock = (!p.qty || parseInt(p.qty, 10) <= 0);
+        let matchStock = selectedStocks.includes('all') || 
+                         (selectedStocks.includes('in-stock') && !isOutOfStock) || 
+                         (selectedStocks.includes('out-stock') && isOutOfStock);
+
+        let pRating = p.rating ? parseFloat(p.rating) : 5.0;
+        let matchRating = pRating >= minRating;
+
+        return matchCat && matchStock && matchRating;
+    });
+
+    renderProductCards(filtered);
 }
 
 // ====================================================
