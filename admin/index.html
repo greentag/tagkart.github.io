@@ -474,15 +474,47 @@
         const SUPABASE_URL = "https://yuyndtoqcwawlhrjespt.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1eW5kdG9xY3dhd2xocmplc3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MDkzOTIsImV4cCI6MjEwNjA4NTM5Mn0.TJ1DuBlYANnTNogfbt5WB64UsxNjVUyNkLR2gpHqNR0";
 
-        // Global Supabase Client
+        // Global Supabase Client with sessionStorage (tab close logout, page refresh persistence)
         var sb = (window.supabase && window.supabase.createClient) 
-            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                auth: {
+                    persistSession: true,
+                    storage: window.sessionStorage,
+                    autoRefreshToken: true
+                }
+              }) 
             : null;
 
         let captchaCorrect = 0;
         let editProdId = null;
         let editJobId = null;
         let editUserId = null;
+
+        // Inactivity Timer (30 minutes)
+        let inactivityTimer = null;
+        const INACTIVITY_LIMIT = 30 * 60 * 1000;
+
+        function resetInactivityTimer() {
+            if (inactivityTimer) clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                alert("30 minute tak koi activity na hone ki wajah se session expire ho gaya hai.");
+                logoutUser();
+            }, INACTIVITY_LIMIT);
+        }
+
+        function startInactivityTracker() {
+            ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+                window.addEventListener(event, resetInactivityTimer);
+            });
+            resetInactivityTimer();
+        }
+
+        function stopInactivityTracker() {
+            if (inactivityTimer) clearTimeout(inactivityTimer);
+            ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+                window.removeEventListener(event, resetInactivityTimer);
+            });
+        }
 
         // ==========================================
         // 1. THEME & COLOR PICKER LOGIC
@@ -595,6 +627,8 @@
             fetchProducts();
             fetchJobs();
             fetchUsers();
+            
+            startInactivityTracker();
         }
 
         async function initAuth() {
@@ -667,6 +701,7 @@
         }
 
         async function logoutUser() {
+            stopInactivityTracker();
             if (sb) await sb.auth.signOut();
             window.location.reload();
         }
