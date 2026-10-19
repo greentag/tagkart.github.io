@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dhami Group Cloud Portal & Website</title>   
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cl   oudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="../css/styles.css">
@@ -28,7 +28,7 @@
         }
 
         .modal-overlay {
-            display: flex;
+            display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
@@ -351,7 +351,7 @@
                     <li><a onclick="selectTab('enquire')" data-i18n="nav_enquire">Enquire</a></li>
                     <li><a onclick="selectTab('support')" data-i18n="nav_support">Support</a></li>
                     <li><a onclick="selectTab('career')" data-i18n="nav_career">Career</a></li>
-                    <li class="login-btn"><a onclick="openLoginModal()" data-i18n="nav_login"><i class="fa-solid fa-lock"></i> Portal Login</a></li>
+                    <li class="login-btn"><a href="javascript:void(0);" onclick="openLoginModal()" data-i18n="nav_login"><i class="fa-solid fa-lock"></i> Portal Login</a></li>
                     <li>
                         <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
                             <option value="en">English</option>
@@ -918,7 +918,10 @@
             const fModal = document.getElementById('forgotPassModal');
             if (fModal) fModal.style.display = 'none';
             const modal = document.getElementById('loginModal');
-            if (modal) { modal.style.display = 'flex'; generateCaptcha(); }
+            if (modal) { 
+                modal.style.display = 'flex'; 
+                generateCaptcha(); 
+            }
         }
 
         function closeLoginModal() { 
@@ -941,8 +944,13 @@
         }
 
         async function showDashboard(user) {
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('adminPortal').style.display = 'block';
+            const websiteView = document.getElementById('websiteView');
+            const loginModal = document.getElementById('loginModal');
+            const adminPortal = document.getElementById('adminPortal');
+
+            if (websiteView) websiteView.style.display = 'none';
+            if (loginModal) loginModal.style.display = 'none';
+            if (adminPortal) adminPortal.style.display = 'block';
 
             const emailPrefix = user.email.split('@')[0];
             const defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
@@ -963,8 +971,10 @@
                 uName = defaultName;
             }
 
-            document.getElementById('adminNameDisplay').innerText = uName;
-            document.getElementById('adminRoleDisplay').innerText = uRole;
+            const nameDisplay = document.getElementById('adminNameDisplay');
+            const roleDisplay = document.getElementById('adminRoleDisplay');
+            if (nameDisplay) nameDisplay.innerText = uName;
+            if (roleDisplay) roleDisplay.innerText = uRole;
 
             applyPermissions(uRole);
             fetchProducts();
@@ -1018,44 +1028,57 @@
                 if (session && session.user) {
                     showDashboard(session.user);
                 } else {
-                    document.getElementById('loginModal').style.display = 'flex';
-                    document.getElementById('adminPortal').style.display = 'none';
+                    const websiteView = document.getElementById('websiteView');
+                    const adminPortal = document.getElementById('adminPortal');
+                    if (websiteView) websiteView.style.display = 'block';
+                    if (adminPortal) adminPortal.style.display = 'none';
                 }
             } catch (err) {
-                document.getElementById('loginModal').style.display = 'flex';
+                const websiteView = document.getElementById('websiteView');
+                if (websiteView) websiteView.style.display = 'block';
             }
         }
 
         async function handleLogin() {
+            if (typeof event !== 'undefined') {
+                event.preventDefault();
+            }
+
             const email = document.getElementById('loginId').value.trim();
             const pass = document.getElementById('loginPass').value;
             const ans = parseInt(document.getElementById('captchaAnswer').value, 10);
             const errBox = document.getElementById('loginError');
 
-            errBox.style.display = 'none';
+            if (errBox) errBox.style.display = 'none';
 
             if (!email || !pass) {
-                errBox.innerText = "Email aur password dono daalein.";
-                errBox.style.display = 'block';
+                if (errBox) {
+                    errBox.innerText = "Email aur password dono daalein.";
+                    errBox.style.display = 'block';
+                }
                 return;
             }
 
             if (isNaN(ans) || ans !== captchaCorrectValue) {
-                errBox.innerText = "Captcha galat hai.";
-                errBox.style.display = 'block';
+                if (errBox) {
+                    errBox.innerText = "Captcha galat hai.";
+                    errBox.style.display = 'block';
+                }
                 generateCaptcha();
                 return;
             }
 
             const btn = document.getElementById('btnLogin');
-            btn.innerText = "Verifying...";
+            if (btn) btn.innerText = "Verifying...";
 
             const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-            btn.innerText = "Verify & Login";
+            if (btn) btn.innerText = "Verify & Login";
 
             if (error) {
-                errBox.innerText = error.message;
-                errBox.style.display = 'block';
+                if (errBox) {
+                    errBox.innerText = error.message;
+                    errBox.style.display = 'block';
+                }
                 generateCaptcha();
             } else if (data && data.user) {
                 showDashboard(data.user);
@@ -1067,7 +1090,7 @@
             if (sb) {
                 await sb.auth.signOut();
             }
-            window.location.href = "index.html";
+            window.location.reload();
         }
 
         async function sendResetLink() {
@@ -1379,7 +1402,7 @@
 
         async function saveUser() {
             const name = document.getElementById('addUserName').value.trim();
-            const email = document.getElementById('addUserEmail').value.trim();
+            const email = document.getEleme ntById('addUserEmail').value.trim();
             const pass = document.getElementById('addUserPass').value;
             const role = document.getElementById('addUserRole').value;
 
@@ -1465,7 +1488,6 @@
             }
         }
 
-        // Page Load hone par initAuth chalane ke liye
         window.addEventListener('DOMContentLoaded', () => {
             initAuth();
         });
