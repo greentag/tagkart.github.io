@@ -620,37 +620,47 @@
         }
 
         async function handleLogin() {
+            if (typeof event !== 'undefined') {
+                event.preventDefault();
+            }
+
             const email = document.getElementById('loginId').value.trim();
             const pass = document.getElementById('loginPass').value;
             const ans = parseInt(document.getElementById('captchaAnswer').value, 10);
             const errBox = document.getElementById('loginError');
 
-            errBox.style.display = 'none';
+            if (errBox) errBox.style.display = 'none';
 
             if (!email || !pass) {
-                errBox.innerText = "Please enter both Email and Password.";
-                errBox.style.display = 'block';
+                if (errBox) {
+                    errBox.innerText = "Please enter both Email and Password.";
+                    errBox.style.display = 'block';
+                }
                 return;
             }
 
-            if (ans !== captchaCorrect) {
-                errBox.innerText = "Incorrect Captcha answer.";
-                errBox.style.display = 'block';
-                generateCaptcha(); // Auto-refresh captcha on failure
+            if (isNaN(ans) || ans !== captchaCorrect) {
+                if (errBox) {
+                    errBox.innerText = "Incorrect Captcha answer.";
+                    errBox.style.display = 'block';
+                }
+                generateCaptcha();
                 return;
             }
 
             const btn = document.getElementById('btnLogin');
-            btn.innerText = "Verifying...";
+            if (btn) btn.innerText = "Verifying...";
 
             const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
 
-            btn.innerText = "Verify & Login";
+            if (btn) btn.innerText = "Verify & Login";
 
             if (error) {
-                errBox.innerText = error.message;
-                errBox.style.display = 'block';
-                generateCaptcha(); // Auto-refresh captcha on failed auth
+                if (errBox) {
+                    errBox.innerText = error.message;
+                    errBox.style.display = 'block';
+                }
+                generateCaptcha();
             } else if (data && data.user) {
                 showDashboard(data.user);
             }
@@ -864,8 +874,10 @@
             }
         }
 
-        // Start Auth check
-        initAuth();
+        // Start Auth check on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initAuth();
+        });
     </script>
 </body>
 </html>
