@@ -896,21 +896,24 @@
     }
 
     function generateCaptcha() {
-    let n1 = Math.floor(Math.random() * 9) + 1;
-    let n2 = Math.floor(Math.random() * 9) + 1;
-    captchaCorrect = n1 + n2;
-    
-    const q = document.getElementById('captchaQuestion');
-    if (q) {
-        q.innerText = `${n1} + ${n2} = ?`;
-    }
-    
-    const a = document.getElementById('captchaAnswer');
-    if (a) {
-        a.value = '';
+    try {
+        let n1 = Math.floor(Math.random() * 9) + 1;
+        let n2 = Math.floor(Math.random() * 9) + 1;
+        window.captchaCorrectValue = n1 + n2; // Global variable taaki match karne mein error na aaye
+        
+        const q = document.getElementById('captchaQuestion');
+        if (q) {
+            q.innerText = `${n1} + ${n2} = ?`;
+        }
+        
+        const a = document.getElementById('captchaAnswer');
+        if (a) {
+            a.value = '';
+        }
+    } catch (e) {
+        console.error("Captcha error: ", e);
     }
 }
-    }
 
     function openLoginModal() { 
         const fModal = document.getElementById('forgotPassModal');
