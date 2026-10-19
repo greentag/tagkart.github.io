@@ -1465,7 +1465,7 @@
     }
 
     // DOM fully load hone ke baad hi portal aur captcha initialize ho
-        document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
     if (typeof initAuth === 'function') {
         initAuth();
     } else {
@@ -1473,7 +1473,6 @@
         generateCaptcha();
     }
 });
-</script>
 
     <script src="../js/translations.js"></script>
     <script src="../js/main.js"></script>
