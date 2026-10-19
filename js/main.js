@@ -27,46 +27,52 @@ async function fetchPublicData() {
         return;
     }
 
-    // A. Fetch Public Products
+    // A. Fetch Public Products (Status filter hata diya hai taaki saare products bina rrok ke show ho sakein)
     try {
         const { data: products, error: prodErr } = await sb
             .from('products')
             .select('*')
-            .eq('status', 'Public')
             .order('created_at', { ascending: false });
 
         let prodContainer = document.getElementById('publicProductsContainer'); 
         if (prodContainer) {
             prodContainer.innerHTML = '';
             if (products && products.length > 0) {
-                products.forEach(p => { 
-                    let directImg = formatImageUrl(p.image_url);
-                    let imgTag = directImg 
-                        ? `<img src="${directImg}" style="width:100%; height:160px; object-fit:cover; border-radius:8px; margin-bottom:12px; border:1px solid var(--border-color, #eee);" onerror="this.onerror=null; this.src='https://placehold.co/280x160?text=No+Image';">` 
-                        : `<div style="height:140px; display:flex; align-items:center; justify-content:center; background:var(--bg-main, #f0f7f3); border-radius:8px; margin-bottom:12px;"><i class="fa-solid fa-boxes-stacked" style="font-size: 45px; color: var(--primary-color, #1b8a4f);"></i></div>`;
+                // Agar hidden products hain toh unhe filter kar sakte hain, warna sabhi dikhayenge
+                let visibleProducts = products.filter(p => p.status !== 'Hidden');
 
-                    let catBtn = p.catalog_url 
-                        ? `<a href="${p.catalog_url}" target="_blank" style="display:inline-block; margin-top:10px; background:var(--primary-color, #1b8a4f); color:#fff; padding:7px 14px; border-radius:5px; text-decoration:none; font-size:12px; font-weight:600;"><i class="fa-solid fa-download"></i> Download Catalogue</a>` 
-                        : ``;
+                if (visibleProducts.length > 0) {
+                    visibleProducts.forEach(p => { 
+                        let directImg = formatImageUrl(p.image_url);
+                        let imgTag = directImg 
+                            ? `<img src="${directImg}" style="width:100%; height:160px; object-fit:cover; border-radius:8px; margin-bottom:12px; border:1px solid var(--border-color, #eee);" onerror="this.onerror=null; this.src='https://placehold.co/280x160?text=No+Image';">` 
+                            : `<div style="height:140px; display:flex; align-items:center; justify-content:center; background:var(--bg-main, #f0f7f3); border-radius:8px; margin-bottom:12px;"><i class="fa-solid fa-boxes-stacked" style="font-size: 45px; color: var(--primary-color, #1b8a4f);"></i></div>`;
 
-                    prodContainer.innerHTML += `
-                        <div style="border: 1px solid var(--border-color, #dbe8e0); padding: 20px; border-radius: 12px; width: 280px; text-align: center; background:var(--card-bg, #fff); box-shadow: 0 4px 12px rgba(0,0,0,0.06); display: flex; flex-direction: column; justify-content: space-between;">
-                            <div>
-                                ${imgTag}
-                                <h4 style="margin: 8px 0 4px 0; color:var(--primary-hover, #0d5c34); font-size: 16px;">${p.name}</h4>
-                                <p style="font-size:12.5px; color:var(--text-muted, #666); margin-bottom: 8px;"><strong>Category:</strong> ${p.category || 'General'}</p>
-                                <div style="font-size:12px; color:var(--text-main, #444); text-align:left; max-height:80px; overflow-y:auto; padding:8px; background:var(--bg-main, #f8fbf9); border-radius:6px; line-height: 1.5;">
-                                    <strong>Specs:</strong><br>${p.specifications ? p.specifications.replace(/\n/g, '<br>') : 'Standard specifications apply.'}
+                        let catBtn = p.catalog_url 
+                            ? `<a href="${p.catalog_url}" target="_blank" style="display:inline-block; margin-top:10px; background:var(--primary-color, #1b8a4f); color:#fff; padding:7px 14px; border-radius:5px; text-decoration:none; font-size:12px; font-weight:600;"><i class="fa-solid fa-download"></i> Download Catalogue</a>` 
+                            : ``;
+
+                        prodContainer.innerHTML += `
+                            <div style="border: 1px solid var(--border-color, #dbe8e0); padding: 20px; border-radius: 12px; width: 280px; text-align: center; background:var(--card-bg, #fff); box-shadow: 0 4px 12px rgba(0,0,0,0.06); display: flex; flex-direction: column; justify-content: space-between;">
+                                <div>
+                                    ${imgTag}
+                                    <h4 style="margin: 8px 0 4px 0; color:var(--primary-hover, #0d5c34); font-size: 16px;">${p.name}</h4>
+                                    <p style="font-size:12.5px; color:var(--text-muted, #666); margin-bottom: 8px;"><strong>Category:</strong> ${p.category || 'General'}</p>
+                                    <div style="font-size:12px; color:var(--text-main, #444); text-align:left; max-height:80px; overflow-y:auto; padding:8px; background:var(--bg-main, #f8fbf9); border-radius:6px; line-height: 1.5;">
+                                        <strong>Specs:</strong><br>${p.specifications ? p.specifications.replace(/\n/g, '<br>') : 'Standard specifications apply.'}
+                                    </div>
+                                </div>
+                                <div>
+                                    ${catBtn}
                                 </div>
                             </div>
-                            <div>
-                                ${catBtn}
-                            </div>
-                        </div>
-                    `; 
-                });
+                        `; 
+                    });
+                } else {
+                    prodContainer.innerHTML = '<p style="color: #666; font-size: 14px; text-align: center; width: 100%;">No products available at the moment.</p>';
+                }
             } else {
-                prodContainer.innerHTML = '<p style="color: #666; font-size: 14px; text-align: center; width: 100%;">No products available at the moment.</p>';
+                prodContainer.innerHTML = '<p style="color: #666; font-size: 14px; text-align: center; width: 100%;">No products available in database.</p>';
             }
         }
     } catch (e) {
@@ -78,7 +84,6 @@ async function fetchPublicData() {
         const { data: jobs, error: jobErr } = await sb
             .from('jobs')
             .select('*')
-            .eq('status', 'Active')
             .order('created_at', { ascending: false });
 
         let jobContainer = document.getElementById('publicJobsContainer'); 
@@ -141,7 +146,7 @@ function selectTab(tabName) {
             if (bgAbout) bgAbout.style.display = 'none'; 
         } 
         
-        if (tabName === 'product' || tabName === 'career') {
+        if (tabName === 'product' || tabName === 'career' || tabName === 'serv-erp' || tabName === 'serv-crm') {
             fetchPublicData();
         }
 
