@@ -265,6 +265,18 @@
             font-family: inherit;
         }
 
+        .file-upload-box {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .file-upload-box label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+        }
+
         .action-btn {
             background: var(--primary-color);
             color: white;
@@ -304,6 +316,18 @@
         }
         .status-active { background: #e6f7ee; color: #1b8a4f; }
         .status-inactive { background: #ffebee; color: #e34f26; }
+
+        .btn-table-action {
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            font-size: 12px;
+            margin-right: 4px;
+        }
+        .btn-edit-act { background: #007bb5; }
+        .btn-delete-act { background: #e34f26; }
     </style>
 
     <!-- Supabase CDN Client -->
@@ -352,21 +376,42 @@
                     <div class="admin-card">
                         <div class="form-grid">
                             <input type="text" id="addProdName" placeholder="Product Name *">
-                            <select id="addProdCat"><option>ERP Software</option><option>Hardware</option><option>Service</option></select>
+                            <select id="addProdCat">
+                                <option>ERP Software</option>
+                                <option>Hardware</option>
+                                <option>Service</option>
+                            </select>
                             <input type="text" id="addProdColor" placeholder="Color / Variant">
                             <input type="number" id="addProdQty" placeholder="Quantity">
                         </div>
+
+                        <!-- File Upload Inputs for Image and PDF Catalogue -->
                         <div class="form-grid">
-                            <input type="url" id="addProdImage" placeholder="Image URL *">
-                            <input type="url" id="addProdCatalog" placeholder="Catalogue PDF URL">
+                            <div class="file-upload-box">
+                                <label><i class="fa-solid fa-image"></i> Attach Product Image *</label>
+                                <input type="file" id="addProdImageFile" accept="image/*">
+                                <span id="currentImgLabel" style="font-size: 11px; color: #1b8a4f; font-weight: 600;"></span>
+                            </div>
+                            <div class="file-upload-box">
+                                <label><i class="fa-solid fa-file-pdf"></i> Attach Catalogue PDF (Optional)</label>
+                                <input type="file" id="addProdCatalogFile" accept=".pdf,.doc,.docx">
+                                <span id="currentCatLabel" style="font-size: 11px; color: #1b8a4f; font-weight: 600;"></span>
+                            </div>
                         </div>
+
                         <textarea id="addProdSpec" rows="2" placeholder="Specifications *" style="margin-bottom: 15px;"></textarea>
                         <textarea id="addProdDesc" rows="2" placeholder="Description" style="margin-bottom: 15px;"></textarea>
+                        
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
+                            <input type="checkbox" id="addProdHidden" style="width: auto; cursor: pointer;">
+                            <label for="addProdHidden" style="font-size: 14px; cursor: pointer;">Hide Product from Public Site</label>
+                        </div>
+
                         <button id="btnSaveProd" onclick="saveProduct()" class="action-btn"><i class="fa-solid fa-save"></i> Save Product</button>
-                        <button id="btnCancelProd" onclick="cancelEdit('prod')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none;">Cancel</button>
+                        <button id="btnCancelProd" onclick="cancelEdit('prod')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none; margin-left: 10px;">Cancel</button>
                     </div>
                     <table class="admin-table">
-                        <thead><tr><th>Name</th><th>Category</th><th>Qty</th><th>Status</th><th>Actions</th></tr></thead>
+                        <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Qty</th><th>Status</th><th>Actions</th></tr></thead>
                         <tbody id="prodTbody"></tbody>
                     </table>
                 </div>
@@ -383,7 +428,7 @@
                         </div>
                         <textarea id="addJobDesc" rows="3" placeholder="Job Description *" style="margin-bottom: 15px;"></textarea>
                         <button id="btnSaveJob" onclick="saveJob()" style="background: #e34f26;" class="action-btn"><i class="fa-solid fa-upload"></i> Post Job</button>
-                        <button id="btnCancelJob" onclick="cancelEdit('job')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none;">Cancel</button>
+                        <button id="btnCancelJob" onclick="cancelEdit('job')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none; margin-left: 10px;">Cancel</button>
                     </div>
                     <table class="admin-table">
                         <thead><tr><th>Title</th><th>Openings</th><th>Exp</th><th>Status</th><th>Actions</th></tr></thead>
@@ -407,7 +452,7 @@
                             </select>
                         </div>
                         <button id="btnSaveUser" onclick="saveUser()" class="action-btn"><i class="fa-solid fa-plus"></i> Create User</button>
-                        <button id="btnCancelUser" onclick="cancelEdit('user')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none;">Cancel</button>
+                        <button id="btnCancelUser" onclick="cancelEdit('user')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none; margin-left: 10px;">Cancel</button>
                     </div>
                     <table class="admin-table">
                         <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
@@ -474,7 +519,6 @@
         const SUPABASE_URL = "https://yuyndtoqcwawlhrjespt.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1eW5kdG9xY3dhd2xocmplc3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MDkzOTIsImV4cCI6MjEwNjA4NTM5Mn0.TJ1DuBlYANnTNogfbt5WB64UsxNjVUyNkLR2gpHqNR0";
 
-        // Global Supabase Client with sessionStorage (tab close logout, page refresh persistence)
         var sb = (window.supabase && window.supabase.createClient) 
             ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
                 auth: {
@@ -489,6 +533,13 @@
         let editProdId = null;
         let editJobId = null;
         let editUserId = null;
+
+        let existingImageUrl = "";
+        let existingCatalogUrl = "";
+
+        let cacheProducts = [];
+        let cacheJobs = [];
+        let cacheUsers = [];
 
         // Inactivity Timer (30 minutes)
         let inactivityTimer = null;
@@ -568,7 +619,7 @@
         }
 
         // ==========================================
-        // 2. CAPTCHA AUTO-CHANGE & REFRESH LOGIC
+        // 2. CAPTCHA LOGIC
         // ==========================================
         function generateCaptcha() {
             let n1 = Math.floor(Math.random() * 9) + 1;
@@ -580,7 +631,6 @@
             if (a) a.value = '';
         }
 
-        // Modal triggers
         function openLoginModal() { 
             const fModal = document.getElementById('forgotPassModal');
             if (fModal) fModal.style.display = 'none';
@@ -608,7 +658,7 @@
         }
 
         // ==========================================
-        // 3. AUTHENTICATION & SESSION HANDLING
+        // 3. AUTHENTICATION & DASHBOARD
         // ==========================================
         function showDashboard(user) {
             document.getElementById('loginModal').style.display = 'none';
@@ -737,7 +787,28 @@
         }
 
         // ==========================================
-        // 4. CRUD FOR PRODUCTS
+        // STORAGE UPLOAD HELPER
+        // ==========================================
+        async function uploadFileToStorage(file, folder) {
+            const fileExt = file.name.split('.').pop();
+            const cleanName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+            const filePath = `${folder}/${cleanName}`;
+
+            const { error } = await sb.storage.from('products').upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: true
+            });
+
+            if (error) {
+                throw new Error("File Upload Failed: " + error.message);
+            }
+
+            const { data: publicData } = sb.storage.from('products').getPublicUrl(filePath);
+            return publicData.publicUrl;
+        }
+
+        // ==========================================
+        // 4. CRUD FOR PRODUCTS (WITH EDIT & DELETE)
         // ==========================================
         async function fetchProducts() {
             if (!sb) return;
@@ -745,21 +816,60 @@
             const tbody = document.getElementById('prodTbody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            if (data) {
-                data.forEach(p => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><strong>${p.name}</strong></td>
-                            <td>${p.category || '-'}</td>
-                            <td>${p.qty || 0}</td>
-                            <td><span class="status-badge ${p.status === 'Public' ? 'status-active' : 'status-inactive'}">${p.status || 'Public'}</span></td>
-                            <td>
-                                <button onclick="deleteDoc('products', '${p.id}')" style="background:#e34f26; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                });
+            
+            if (error) {
+                console.error("Products error:", error.message);
+                return;
             }
+
+            cacheProducts = data || [];
+
+            cacheProducts.forEach(p => {
+                const tr = document.createElement('tr');
+                const imgThumb = (p.image_url && p.image_url.trim() !== '')
+                    ? `<img src="${p.image_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;" onerror="this.onerror=null; this.src='https://placehold.co/40x40?text=No+Img';">` 
+                    : `<i class="fa-solid fa-image" style="font-size: 20px; color: #bbb;"></i>`;
+
+                tr.innerHTML = `
+                    <td>${imgThumb}</td>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.category || '-'}</td>
+                    <td>${p.qty || 0}</td>
+                    <td><span class="status-badge ${p.status === 'Public' ? 'status-active' : 'status-inactive'}">${p.status || 'Public'}</span></td>
+                    <td>
+                        <button class="btn-table-action btn-edit-act" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn-table-action btn-delete-act" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+
+                tr.querySelector('.btn-edit-act').onclick = () => editProduct(p.id);
+                tr.querySelector('.btn-delete-act').onclick = () => deleteDoc('products', p.id);
+                tbody.appendChild(tr);
+            });
+        }
+
+        function editProduct(id) {
+            const p = cacheProducts.find(item => item.id === id);
+            if (!p) return;
+
+            editProdId = p.id;
+            existingImageUrl = p.image_url || "";
+            existingCatalogUrl = p.catalog_url || "";
+
+            document.getElementById('addProdName').value = p.name || '';
+            document.getElementById('addProdCat').value = p.category || 'ERP Software';
+            document.getElementById('addProdColor').value = p.color || '';
+            document.getElementById('addProdQty').value = p.qty || '';
+            document.getElementById('addProdSpec').value = p.specifications || '';
+            document.getElementById('addProdDesc').value = p.description || '';
+            document.getElementById('addProdHidden').checked = (p.status === 'Hidden');
+
+            document.getElementById('currentImgLabel').innerText = existingImageUrl ? "Current Image Attached" : "";
+            document.getElementById('currentCatLabel').innerText = existingCatalogUrl ? "Current PDF Attached" : "";
+
+            document.getElementById('btnSaveProd').innerHTML = '<i class="fa-solid fa-save"></i> Update Product';
+            document.getElementById('btnCancelProd').style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         async function saveProduct() {
@@ -767,35 +877,74 @@
             const category = document.getElementById('addProdCat').value;
             const color = document.getElementById('addProdColor').value.trim();
             const qty = document.getElementById('addProdQty').value;
-            const image_url = document.getElementById('addProdImage').value.trim();
-            const catalog_url = document.getElementById('addProdCatalog').value.trim();
             const specifications = document.getElementById('addProdSpec').value.trim();
             const description = document.getElementById('addProdDesc').value.trim();
+            const isHidden = document.getElementById('addProdHidden').checked;
 
-            if (!name || !image_url || !specifications) {
-                alert("Please fill Name, Image URL, and Specifications.");
+            const imgFileInput = document.getElementById('addProdImageFile');
+            const catFileInput = document.getElementById('addProdCatalogFile');
+
+            if (!name || !specifications) {
+                alert("Please fill Name and Specifications.");
                 return;
             }
 
-            const payload = { name, category, color, qty: qty || null, image_url, catalog_url, specifications, description, status: 'Public' };
-            const { error } = await sb.from('products').insert([payload]);
+            if (!editProdId && imgFileInput.files.length === 0) {
+                alert("Please attach a Product Image.");
+                return;
+            }
 
-            if (error) alert(error.message);
-            else {
-                alert("Product saved successfully!");
-                document.getElementById('addProdName').value = '';
-                document.getElementById('addProdColor').value = '';
-                document.getElementById('addProdQty').value = '';
-                document.getElementById('addProdImage').value = '';
-                document.getElementById('addProdCatalog').value = '';
-                document.getElementById('addProdSpec').value = '';
-                document.getElementById('addProdDesc').value = '';
+            const saveBtn = document.getElementById('btnSaveProd');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Uploading...";
+            saveBtn.disabled = true;
+
+            try {
+                let finalImageUrl = existingImageUrl;
+                let finalCatalogUrl = existingCatalogUrl;
+
+                if (imgFileInput.files.length > 0) {
+                    finalImageUrl = await uploadFileToStorage(imgFileInput.files[0], 'images');
+                }
+
+                if (catFileInput.files.length > 0) {
+                    finalCatalogUrl = await uploadFileToStorage(catFileInput.files[0], 'catalogues');
+                }
+
+                const payload = { 
+                    name, 
+                    category, 
+                    color, 
+                    qty: qty ? parseInt(qty, 10) : null, 
+                    image_url: finalImageUrl, 
+                    catalog_url: finalCatalogUrl, 
+                    specifications, 
+                    description, 
+                    status: isHidden ? 'Hidden' : 'Public' 
+                };
+
+                if (editProdId) {
+                    const { error } = await sb.from('products').update(payload).eq('id', editProdId);
+                    if (error) throw error;
+                    alert("Product updated successfully!");
+                } else {
+                    const { error } = await sb.from('products').insert([payload]);
+                    if (error) throw error;
+                    alert("Product saved successfully!");
+                }
+
+                cancelEdit('prod');
                 fetchProducts();
+            } catch (err) {
+                alert("Error: " + err.message);
+            } finally {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
             }
         }
 
         // ==========================================
-        // 5. CRUD FOR JOBS
+        // 5. CRUD FOR JOBS (WITH EDIT & DELETE)
         // ==========================================
         async function fetchJobs() {
             if (!sb) return;
@@ -803,21 +952,42 @@
             const tbody = document.getElementById('jobTbody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            if (data) {
-                data.forEach(j => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><strong>${j.title}</strong></td>
-                            <td>${j.openings || 1}</td>
-                            <td>${j.exp || '-'}</td>
-                            <td><span class="status-badge status-active">Active</span></td>
-                            <td>
-                                <button onclick="deleteDoc('jobs', '${j.id}')" style="background:#e34f26; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
+            
+            cacheJobs = data || [];
+
+            cacheJobs.forEach(j => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${j.title}</strong></td>
+                    <td>${j.openings || 1}</td>
+                    <td>${j.exp || '-'}</td>
+                    <td><span class="status-badge status-active">${j.status || 'Active'}</span></td>
+                    <td>
+                        <button class="btn-table-action btn-edit-act" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn-table-action btn-delete-act" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+
+                tr.querySelector('.btn-edit-act').onclick = () => editJob(j.id);
+                tr.querySelector('.btn-delete-act').onclick = () => deleteDoc('jobs', j.id);
+                tbody.appendChild(tr);
+            });
+        }
+
+        function editJob(id) {
+            const j = cacheJobs.find(item => item.id === id);
+            if (!j) return;
+
+            editJobId = j.id;
+            document.getElementById('addJobTitle').value = j.title || '';
+            document.getElementById('addJobReq').value = j.openings || '';
+            document.getElementById('addJobExp').value = j.exp || '';
+            document.getElementById('addJobLoc').value = j.location || '';
+            document.getElementById('addJobDesc').value = j.description || '';
+
+            document.getElementById('btnSaveJob').innerHTML = '<i class="fa-solid fa-save"></i> Update Job';
+            document.getElementById('btnCancelJob').style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         async function saveJob() {
@@ -829,21 +999,36 @@
 
             if (!title || !description) return alert("Please fill Title and Description.");
 
-            const { error } = await sb.from('jobs').insert([{ title, openings: openings || 1, exp, location, description, status: 'Active' }]);
-            if (error) alert(error.message);
-            else {
-                alert("Job posted!");
-                document.getElementById('addJobTitle').value = '';
-                document.getElementById('addJobReq').value = '';
-                document.getElementById('addJobExp').value = '';
-                document.getElementById('addJobLoc').value = '';
-                document.getElementById('addJobDesc').value = '';
-                fetchJobs();
+            const payload = { 
+                title, 
+                openings: openings ? parseInt(openings, 10) : 1, 
+                exp, 
+                location, 
+                description, 
+                status: 'Active' 
+            };
+
+            if (editJobId) {
+                const { error } = await sb.from('jobs').update(payload).eq('id', editJobId);
+                if (error) alert(error.message);
+                else {
+                    alert("Job updated successfully!");
+                    cancelEdit('job');
+                    fetchJobs();
+                }
+            } else {
+                const { error } = await sb.from('jobs').insert([payload]);
+                if (error) alert(error.message);
+                else {
+                    alert("Job posted successfully!");
+                    cancelEdit('job');
+                    fetchJobs();
+                }
             }
         }
 
         // ==========================================
-        // 6. CRUD FOR USERS
+        // 6. CRUD FOR USERS (WITH EDIT & DELETE)
         // ==========================================
         async function fetchUsers() {
             if (!sb) return;
@@ -851,21 +1036,43 @@
             const tbody = document.getElementById('userTbody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            if (data) {
-                data.forEach(u => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><strong>${u.name}</strong></td>
-                            <td>${u.email}</td>
-                            <td>${u.role}</td>
-                            <td><span class="status-badge status-active">Active</span></td>
-                            <td>
-                                <button onclick="deleteDoc('users', '${u.id}')" style="background:#e34f26; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
+            
+            cacheUsers = data || [];
+
+            cacheUsers.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${u.name}</strong></td>
+                    <td>${u.email}</td>
+                    <td><span style="color:#007bb5; font-weight:600;">${u.role}</span></td>
+                    <td><span class="status-badge status-active">${u.status || 'Active'}</span></td>
+                    <td>
+                        <button class="btn-table-action btn-edit-act" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn-table-action btn-delete-act" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+
+                tr.querySelector('.btn-edit-act').onclick = () => editUser(u.id);
+                tr.querySelector('.btn-delete-act').onclick = () => deleteDoc('users', u.id);
+                tbody.appendChild(tr);
+            });
+        }
+
+        function editUser(id) {
+            const u = cacheUsers.find(item => item.id === id);
+            if (!u) return;
+
+            editUserId = u.id;
+            document.getElementById('addUserName').value = u.name || '';
+            document.getElementById('addUserEmail').value = u.email || '';
+            document.getElementById('addUserEmail').disabled = true;
+            document.getElementById('addUserPass').disabled = true;
+            document.getElementById('addUserPass').placeholder = "Disabled";
+            document.getElementById('addUserRole').value = u.role || 'Only Manage Product';
+
+            document.getElementById('btnSaveUser').innerHTML = '<i class="fa-solid fa-save"></i> Update Role';
+            document.getElementById('btnCancelUser').style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         async function saveUser() {
@@ -874,20 +1081,32 @@
             const pass = document.getElementById('addUserPass').value;
             const role = document.getElementById('addUserRole').value;
 
-            if (!name || !email || !pass) return alert("All fields are required.");
-            if (pass.length < 6) return alert("Password min 6 characters.");
+            if (!name) return alert("Full Name is required.");
 
-            const { data: authData, error: authError } = await sb.auth.signUp({ email, password: pass });
-            if (authError) return alert(authError.message);
+            if (editUserId) {
+                const { error } = await sb.from('users').update({ name, role }).eq('id', editUserId);
+                if (error) alert(error.message);
+                else {
+                    alert("User updated successfully!");
+                    cancelEdit('user');
+                    fetchUsers();
+                }
+            } else {
+                if (!email || !pass) return alert("Email and Password are required.");
+                if (pass.length < 6) return alert("Password must be at least 6 characters.");
 
-            const userId = authData.user ? authData.user.id : crypto.randomUUID();
-            await sb.from('users').insert([{ id: userId, name, email, role, status: 'Active' }]);
+                const { data: authData, error: authError } = await sb.auth.signUp({ email, password: pass });
+                if (authError) return alert(authError.message);
 
-            alert("User created successfully!");
-            document.getElementById('addUserName').value = '';
-            document.getElementById('addUserEmail').value = '';
-            document.getElementById('addUserPass').value = '';
-            fetchUsers();
+                const userId = authData.user ? authData.user.id : crypto.randomUUID();
+                const { error: dbError } = await sb.from('users').insert([{ id: userId, name, email, role, status: 'Active' }]);
+
+                if (dbError) alert(dbError.message);
+                else alert("User created successfully!");
+
+                cancelEdit('user');
+                fetchUsers();
+            }
         }
 
         // Delete Helper
@@ -905,7 +1124,42 @@
 
         function cancelEdit(type) {
             if (type === 'prod') {
+                editProdId = null;
+                existingImageUrl = "";
+                existingCatalogUrl = "";
+                document.getElementById('addProdName').value = '';
+                document.getElementById('addProdColor').value = '';
+                document.getElementById('addProdQty').value = '';
+                document.getElementById('addProdImageFile').value = '';
+                document.getElementById('addProdCatalogFile').value = '';
+                document.getElementById('currentImgLabel').innerText = '';
+                document.getElementById('currentCatLabel').innerText = '';
+                document.getElementById('addProdSpec').value = '';
+                document.getElementById('addProdDesc').value = '';
+                document.getElementById('addProdHidden').checked = false;
+                document.getElementById('btnSaveProd').innerHTML = '<i class="fa-solid fa-save"></i> Save Product';
                 document.getElementById('btnCancelProd').style.display = 'none';
+            }
+            if (type === 'job') {
+                editJobId = null;
+                document.getElementById('addJobTitle').value = '';
+                document.getElementById('addJobReq').value = '';
+                document.getElementById('addJobExp').value = '';
+                document.getElementById('addJobLoc').value = '';
+                document.getElementById('addJobDesc').value = '';
+                document.getElementById('btnSaveJob').innerHTML = '<i class="fa-solid fa-upload"></i> Post Job';
+                document.getElementById('btnCancelJob').style.display = 'none';
+            }
+            if (type === 'user') {
+                editUserId = null;
+                document.getElementById('addUserName').value = '';
+                document.getElementById('addUserEmail').value = '';
+                document.getElementById('addUserPass').value = '';
+                document.getElementById('addUserEmail').disabled = false;
+                document.getElementById('addUserPass').disabled = false;
+                document.getElementById('addUserPass').placeholder = "Password (Min 6 chars)";
+                document.getElementById('btnSaveUser').innerHTML = '<i class="fa-solid fa-plus"></i> Create User';
+                document.getElementById('btnCancelUser').style.display = 'none';
             }
         }
 
