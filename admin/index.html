@@ -896,13 +896,20 @@
     }
 
     function generateCaptcha() {
-        let n1 = Math.floor(Math.random() * 9) + 1;
-        let n2 = Math.floor(Math.random() * 9) + 1;
-        captchaCorrect = n1 + n2;
-        const q = document.getElementById('captchaQuestion');
-        if (q) q.innerText = `${n1} + ${n2} = ?`;
-        const a = document.getElementById('captchaAnswer');
-        if (a) a.value = '';
+    let n1 = Math.floor(Math.random() * 9) + 1;
+    let n2 = Math.floor(Math.random() * 9) + 1;
+    captchaCorrect = n1 + n2;
+    
+    const q = document.getElementById('captchaQuestion');
+    if (q) {
+        q.innerText = `${n1} + ${n2} = ?`;
+    }
+    
+    const a = document.getElementById('captchaAnswer');
+    if (a) {
+        a.value = '';
+    }
+}
     }
 
     function openLoginModal() { 
@@ -1457,7 +1464,15 @@
         }
     }
 
-    initAuth();
+    // DOM fully load hone ke baad hi portal aur captcha initialize ho
+        document.addEventListener('DOMContentLoaded', () => {
+    if (typeof initAuth === 'function') {
+        initAuth();
+    } else {
+        selectPresetTheme('emerald');
+        generateCaptcha();
+    }
+});
 </script>
 
     <script src="../js/translations.js"></script>
