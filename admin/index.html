@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dhami Group Cloud Portal & Website</title>   
 
-    <link rel="stylesheet" href="https://cdnjs.cl   oudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="../css/styles.css">
@@ -351,7 +351,7 @@
                     <li><a onclick="selectTab('enquire')" data-i18n="nav_enquire">Enquire</a></li>
                     <li><a onclick="selectTab('support')" data-i18n="nav_support">Support</a></li>
                     <li><a onclick="selectTab('career')" data-i18n="nav_career">Career</a></li>
-                    <li class="login-btn"><a href="javascript:void(0);" onclick="openLoginModal()" data-i18n="nav_login"><i class="fa-solid fa-lock"></i> Portal Login</a></li>
+                    <li class="login-btn"><a href="#" onclick="event.preventDefault(); openLoginModal();" data-i18n="nav_login"><i class="fa-solid fa-lock"></i> Portal Login</a></li>
                     <li>
                         <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
                             <option value="en">English</option>
@@ -1402,7 +1402,7 @@
 
         async function saveUser() {
             const name = document.getElementById('addUserName').value.trim();
-            const email = document.getEleme ntById('addUserEmail').value.trim();
+            const email = document.getElementById('addUserEmail').value.trim();
             const pass = document.getElementById('addUserPass').value;
             const role = document.getElementById('addUserRole').value;
 
