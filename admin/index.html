@@ -800,18 +800,13 @@
 
     <!-- CORE SCRIPT -->
     <script>
+   <script>
     const SUPABASE_URL = "https://yuyndtoqcwawlhrjespt.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1eW5kdG9xY3dhd2xocmplc3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MDkzOTIsImV4cCI6MjEwNjA4NTM5Mn0.TJ1DuBlYANnTNogfbt5WB64UsxNjVUyNkLR2gpHqNR0";
 
-    // Session storage use karein taaki tab close hote hi login session khatam ho jaye
+    // Default localStorage use karein taaki refresh karne par logout na ho
     var sb = (window.supabase && window.supabase.createClient) 
-        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-            auth: {
-                storage: window.sessionStorage,
-                persistSession: true,
-                autoRefreshToken: true
-            }
-        }) 
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
         : null;
 
     let captchaCorrect = 0;
@@ -826,16 +821,14 @@
     let cacheJobs = [];
     let cacheUsers = [];
 
-    // ==========================================
-    // 30 MINUTES INACTIVITY AUTO-LOGOUT
-    // ==========================================
+    // 30 Minutes Inactivity Auto-Logout
     let inactivityTimer = null;
-    const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
+    const INACTIVITY_TIMEOUT = 30 * 60 * 1000;
 
     function resetInactivityTimer() {
         if (inactivityTimer) clearTimeout(inactivityTimer);
         inactivityTimer = setTimeout(() => {
-            alert("30 minutes se koi activity nahi hui. Aapka session expire ho gaya hai.");
+            alert("30 minutes tak koi activity nahi hone ki wajah se session expire ho gaya hai.");
             logoutUser();
         }, INACTIVITY_TIMEOUT);
     }
@@ -864,8 +857,8 @@
     }
 
     function syncThemePickers(preset, customHex) {
-        const selectors = ['themeSelectAdmin', 'themeSelectModal', 'themeSelect'];
-        const pickers = ['customColorPickerAdmin', 'customColorPickerModal', 'customColorPicker'];
+        const selectors = ['themeSelectAdmin', 'themeSelectModal'];
+        const pickers = ['customColorPickerAdmin', 'customColorPickerModal'];
         if (preset) selectors.forEach(id => { const el = document.getElementById(id); if (el) el.value = preset; });
         if (customHex) pickers.forEach(id => { const el = document.getElementById(id); if (el) el.value = customHex; });
     }
@@ -916,10 +909,7 @@
         const fModal = document.getElementById('forgotPassModal');
         if (fModal) fModal.style.display = 'none';
         const modal = document.getElementById('loginModal');
-        if (modal) { 
-            modal.style.display = 'flex'; 
-            generateCaptcha(); 
-        }
+        if (modal) { modal.style.display = 'flex'; generateCaptcha(); }
     }
 
     function closeLoginModal() { 
@@ -941,20 +931,9 @@
         openLoginModal();
     }
 
-    function backToPublicWebsite() {
-        const portal = document.getElementById('adminPortal');
-        const web = document.getElementById('websiteView');
-        if (portal) portal.style.display = 'none';
-        if (web) web.style.display = 'block';
-        if (typeof showHome === 'function') showHome();
-    }
-
     async function showDashboard(user) {
-        closeLoginModal();
-        const web = document.getElementById('websiteView');
-        const portal = document.getElementById('adminPortal');
-        if (web) web.style.display = 'none';
-        if (portal) portal.style.display = 'block';
+        document.getElementById('loginModal').style.display = 'none';
+        document.getElementById('adminPortal').style.display = 'block';
 
         const emailPrefix = user.email.split('@')[0];
         const defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
@@ -975,17 +954,13 @@
             uName = defaultName;
         }
 
-        const nameEl = document.getElementById('adminNameDisplay');
-        const roleEl = document.getElementById('adminRoleDisplay');
-        if (nameEl) nameEl.innerText = uName;
-        if (roleEl) roleEl.innerText = uRole;
+        document.getElementById('adminNameDisplay').innerText = uName;
+        document.getElementById('adminRoleDisplay').innerText = uRole;
 
         applyPermissions(uRole);
         fetchProducts();
         fetchJobs();
         fetchUsers();
-
-        // Login hone ke baad inactivity timer chalu karein
         startInactivityTracker();
     }
 
@@ -1015,7 +990,7 @@
             navCar.style.display = 'block'; 
             switchAdminTab('manage-car');
         } else {
-            alert("Aapke paas dashboard ka access nahi hai.");
+            alert("Aapke paas access nahi hai.");
             logoutUser();
         }
     }
@@ -1034,18 +1009,11 @@
             if (session && session.user) {
                 showDashboard(session.user);
             } else {
-                const portal = document.getElementById('adminPortal');
-                const web = document.getElementById('websiteView');
-                if (portal) portal.style.display = 'none';
-                if (web) web.style.display = 'block';
+                document.getElementById('loginModal').style.display = 'flex';
+                document.getElementById('adminPortal').style.display = 'none';
             }
         } catch (err) {
-            const web = document.getElementById('websiteView');
-            if (web) web.style.display = 'block';
-        }
-
-        if (typeof fetchPublicData === 'function') {
-            fetchPublicData();
+            document.getElementById('loginModal').style.display = 'flex';
         }
     }
 
@@ -1090,15 +1058,8 @@
         if (sb) {
             await sb.auth.signOut();
         }
-        window.sessionStorage.clear();
-        
-        // UI ko public view par switch karein aur page reload karein
-        const portal = document.getElementById('adminPortal');
-        const web = document.getElementById('websiteView');
-        if (portal) portal.style.display = 'none';
-        if (web) web.style.display = 'block';
-        
-        window.location.reload();
+        // Logout hote hi public website par redirect karein
+        window.location.href = "../index.html";
     }
 
     async function sendResetLink() {
@@ -1116,7 +1077,7 @@
             } else {
                 msg.style.display = 'block';
                 msg.style.color = '#1b8a4f';
-                msg.innerText = "Reset link email par bhej diya gaya hai!";
+                msg.innerText = "Reset link bhej diya gaya hai!";
             }
         }
     }
@@ -1224,12 +1185,12 @@
         const catFileInput = document.getElementById('addProdCatalogFile');
 
         if (!name || !specifications) {
-            alert("Product Name aur Specifications bharna zaroori hai.");
+            alert("Name aur Specifications bharna zaroori hai.");
             return;
         }
 
         if (!editProdId && imgFileInput.files.length === 0) {
-            alert("Kripya ek product image file attach karein.");
+            alert("Product image attach karein.");
             return;
         }
 
@@ -1274,7 +1235,6 @@
 
             cancelEdit('prod');
             fetchProducts();
-            if (typeof fetchPublicData === 'function') fetchPublicData();
         } catch (err) {
             alert("Error: " + err.message);
         } finally {
@@ -1334,7 +1294,7 @@
         const location = document.getElementById('addJobLoc').value.trim();
         const description = document.getElementById('addJobDesc').value.trim();
 
-        if (!title || !description) return alert("Title aur description zaroori hain.");
+        if (!title || !description) return alert("Title aur Description daalein.");
 
         const payload = { 
             title, 
@@ -1352,7 +1312,6 @@
                 alert("Job update ho gaya!");
                 cancelEdit('job');
                 fetchJobs();
-                if (typeof fetchPublicData === 'function') fetchPublicData();
             }
         } else {
             const { error } = await sb.from('jobs').insert([payload]);
@@ -1361,7 +1320,6 @@
                 alert("Job post ho gaya!");
                 cancelEdit('job');
                 fetchJobs();
-                if (typeof fetchPublicData === 'function') fetchPublicData();
             }
         }
     }
@@ -1403,7 +1361,7 @@
         document.getElementById('addUserEmail').value = u.email || '';
         document.getElementById('addUserEmail').disabled = true;
         document.getElementById('addUserPass').disabled = true;
-        document.getElementById('addUserPass').placeholder = "Edit ke dauran disabled";
+        document.getElementById('addUserPass').placeholder = "Disabled";
         document.getElementById('addUserRole').value = u.role || 'Only Manage Product';
 
         document.getElementById('btnSaveUser').innerHTML = '<i class="fa-solid fa-save"></i> Update Role';
@@ -1428,7 +1386,7 @@
                 fetchUsers();
             }
         } else {
-            if (!email || !pass) return alert("Email aur Password dono bharein.");
+            if (!email || !pass) return alert("Email aur Password daalein.");
             if (pass.length < 6) return alert("Password kam se kam 6 characters ka ho.");
 
             const { data: authData, error: authError } = await sb.auth.signUp({ email, password: pass });
@@ -1451,8 +1409,8 @@
             const { error } = await sb.from(col).delete().eq('id', id);
             if (error) alert(error.message);
             else {
-                if (col === 'products') { fetchProducts(); if (typeof fetchPublicData === 'function') fetchPublicData(); }
-                if (col === 'jobs') { fetchJobs(); if (typeof fetchPublicData === 'function') fetchPublicData(); }
+                if (col === 'products') fetchProducts();
+                if (col === 'jobs') fetchJobs();
                 if (col === 'users') fetchUsers();
             }
         }
