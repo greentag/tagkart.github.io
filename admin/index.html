@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/admin.css">
 
     <style>
         :root {
@@ -497,7 +497,7 @@
             <div class="tab-panel" id="panel-product">
                 <h3 data-i18n="tab_prod_h3">Our Products</h3>
                 <p data-i18n="tab_prod_p" style="margin-bottom: 25px;">Explore our next-gen digital commerce products, ERP toolkits, and sustainability automation modules designed for high performance.</p>
-               <div id="publicProductsContainer" style="display: flex; flex-wrap: wrap; gap: 25px; justify-content: center; margin-top: 20px;"></div>
+                <div id="publicProductsContainer" style="display: flex; flex-wrap: wrap; gap: 25px; justify-content: center; margin-top: 20px;"></div>
             </div>
 
             <!-- Partners Panel -->
@@ -832,8 +832,8 @@
         }
 
         function syncThemePickers(preset, customHex) {
-            const selectors = ['themeSelectAdmin', 'themeSelectModal', 'themeSelect'];
-            const pickers = ['customColorPickerAdmin', 'customColorPickerModal', 'customColorPicker'];
+            const selectors = ['themeSelectAdmin', 'themeSelectModal'];
+            const pickers = ['customColorPickerAdmin', 'customColorPickerModal'];
             if (preset) selectors.forEach(id => { const el = document.getElementById(id); if (el) el.value = preset; });
             if (customHex) pickers.forEach(id => { const el = document.getElementById(id); if (el) el.value = customHex; });
         }
@@ -1429,7 +1429,7 @@
             }
             if (type === 'user') {
                 editUserId = null;
-                document.getElementById('addUserName').value = '';
+                document.getElementById('add    UserName').value = '';
                 document.getElementById('addUserEmail').value = '';
                 document.getElementById('addUserPass').value = '';
                 document.getElementById('addUserEmail').disabled = false;
