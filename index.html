@@ -12,11 +12,8 @@
     <!-- CSS Link -->
     <link rel="stylesheet" href="css/styles.css">
 
-    <!-- FIREBASE CLOUD SDKS -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-storage-compat.js"></script>
+    <!-- SUPABASE CDN CLIENT -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     
@@ -272,7 +269,7 @@
             <div id="panel-product" class="tab-panel">
                 <h3 data-i18n="tab_prod_h3">Our Products</h3>
                 <p data-i18n="tab_prod_p">Explore our next-gen digital commerce products, ERP toolkits, and sustainability automation modules designed for high performance.</p>
-                <div id="publicProductsContainer" style="display: flex; gap: 20px; margin-top: 20px; flex-wrap: wrap;"></div>
+                <div id="publicProductsContainer" style="display: flex; gap: 20px; margin-top: 20px; flex-wrap: wrap; justify-content: center;"></div>
             </div>
 
             <div id="panel-partners" class="tab-panel">
