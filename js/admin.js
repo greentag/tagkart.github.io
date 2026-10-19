@@ -1,7 +1,7 @@
 // ====================================================
 // 1. SUPABASE CLIENT INITIALIZATION
 // ====================================================
-const SUPABASE_URL = "https://yuyndtoqcwawlhrjespt.supabase.co";[cite: 2]
+const SUPABASE_URL = "https://yuyndtoqcwawlhrjespt.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1eW5kdG9xY3dhd2xocmplc3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MDkzOTIsImV4cCI6MjEwNjA4NTM5Mn0.TJ1DuBlYANnTNogfbt5WB64UsxNjVUyNkLR2gpHqNR0";
 
 const supabase = (typeof window.supabase !== 'undefined' && window.supabase.createClient) 
@@ -63,7 +63,7 @@ function loadDefaultAdminTheme() {
 // ====================================================
 // 3. CAPTCHA & MODAL LOGIC
 // ====================================================
-let captchaCorrect = 12; // default fallback matching 7 + 5
+let captchaCorrect = 12;
 
 function generateCaptcha() {
     let n1 = Math.floor(Math.random() * 9) + 1;
@@ -102,23 +102,35 @@ function closeForgotModal() {
     openLoginModal();
 }
 
+function backToPublicWebsite() {
+    const adminPortal = document.getElementById('adminPortal');
+    const websiteView = document.getElementById('websiteView');
+    if (adminPortal) adminPortal.style.display = 'none';
+    if (websiteView) websiteView.style.display = 'block';
+    if (typeof showHome === 'function') showHome();
+}
+
 // ====================================================
 // 4. SUPABASE AUTH STATE & PERMISSIONS
 // ====================================================
 if (supabase) {
     supabase.auth.onAuthStateChange(async (event, session) => {
         let adminPortal = document.getElementById('adminPortal');
+        let websiteView = document.getElementById('websiteView');
         const user = session ? session.user : null;
 
         if (user) {
             if (adminPortal) adminPortal.style.display = 'block';
+            if (websiteView) websiteView.style.display = 'none';
             closeLoginModal();
 
             let emailPrefix = user.email.split('@')[0];
             let defaultName = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
 
-            document.getElementById('adminNameDisplay').innerText = defaultName;
-            document.getElementById('adminRoleDisplay').innerText = "Loading Role...";
+            let adminName = document.getElementById('adminNameDisplay');
+            let adminRole = document.getElementById('adminRoleDisplay');
+            if (adminName) adminName.innerText = defaultName;
+            if (adminRole) adminRole.innerText = "Loading Role...";
 
             try {
                 const { data, error } = await supabase
@@ -138,12 +150,12 @@ if (supabase) {
                     uName = "Prakash Dhami (Admin)";
                 }
 
-                document.getElementById('adminNameDisplay').innerText = uName;
-                document.getElementById('adminRoleDisplay').innerText = uRole;
+                if (adminName) adminName.innerText = uName;
+                if (adminRole) adminRole.innerText = uRole;
                 applyPermissions(uRole);
             } catch (e) {
-                document.getElementById('adminNameDisplay').innerText = defaultName;
-                document.getElementById('adminRoleDisplay').innerText = "System Administrator";
+                if (adminName) adminName.innerText = defaultName;
+                if (adminRole) adminRole.innerText = "System Administrator";
                 applyPermissions("System Administrator");
             }
 
@@ -152,7 +164,7 @@ if (supabase) {
             fetchUsers();
         } else {
             if (adminPortal) adminPortal.style.display = 'none';
-            openLoginModal();
+            if (websiteView) websiteView.style.display = 'block';
         }
     });
 }
@@ -216,7 +228,7 @@ async function handleLogin() {
     }
 
     if (!supabase) {
-        alert("Supabase SDK not loaded. Check internet or adblocker.");
+        alert("Supabase SDK not loaded. Check connection.");
         return;
     }
 
@@ -251,27 +263,63 @@ async function sendResetLink() {
             msg.innerText = error.message; 
         } else {
             msg.style.display = 'block'; 
-            msg.style.color = '#1b8a4f';
+            msg.style.color = '#1b8a4f'; 
             msg.innerText = "Reset link sent successfully to your email!"; 
         }
     }
 }
 
 // ====================================================
+// STORAGE FILE UPLOADER HELPER
+// ====================================================
+async function uploadFileToStorage(file, folder) {
+    const fileExt = file.name.split('.').pop();
+    const cleanName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+    const filePath = `${folder}/${cleanName}`;
+
+    const { data, error } = await supabase.storage.from('products').upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: true
+    });
+
+    if (error) {
+        throw new Error("File Upload Failed: " + error.message);
+    }
+
+    const { data: publicData } = supabase.storage.from('products').getPublicUrl(filePath);
+    return publicData.publicUrl;
+}
+
+// ====================================================
 // 5. PRODUCTS CRUD
 // ====================================================
 let editProdId = null;
-function editProduct(id, name, cat, color, qty, desc, spec, imgUrl, catUrl, isHidden) {
-    editProdId = id; 
-    document.getElementById('addProdName').value = name; 
-    document.getElementById('addProdCat').value = cat; 
-    document.getElementById('addProdColor').value = color;
-    document.getElementById('addProdQty').value = qty; 
-    document.getElementById('addProdDesc').value = desc;
-    document.getElementById('addProdSpec').value = spec;
-    document.getElementById('addProdImage').value = (imgUrl && imgUrl !== 'undefined') ? imgUrl : "";
-    document.getElementById('addProdCatalog').value = (catUrl && catUrl !== 'undefined') ? catUrl : "";
-    document.getElementById('addProdHidden').checked = isHidden; 
+let existingImageUrl = "";
+let existingCatalogUrl = "";
+let currentProducts = [];
+
+function populateEditProduct(id) {
+    const p = currentProducts.find(item => item.id === id);
+    if (!p) return;
+
+    editProdId = p.id; 
+    existingImageUrl = p.image_url || "";
+    existingCatalogUrl = p.catalog_url || "";
+
+    document.getElementById('addProdName').value = p.name || ''; 
+    document.getElementById('addProdCat').value = p.category || 'ERP Software'; 
+    document.getElementById('addProdColor').value = p.color || '';
+    document.getElementById('addProdQty').value = p.qty || ''; 
+    document.getElementById('addProdDesc').value = p.description || '';
+    document.getElementById('addProdSpec').value = p.specifications || '';
+    
+    const imgLabel = document.getElementById('currentImgLabel');
+    if (imgLabel) imgLabel.innerText = existingImageUrl ? "Current Image Attached" : "";
+    const catLabel = document.getElementById('currentCatLabel');
+    if (catLabel) catLabel.innerText = existingCatalogUrl ? "Current PDF Attached" : "";
+
+    const hiddenEl = document.getElementById('addProdHidden');
+    if (hiddenEl) hiddenEl.checked = (p.status === 'Hidden'); 
 
     document.getElementById('btnSaveProd').innerHTML = "<i class='fa-solid fa-save'></i> Update Product"; 
     document.getElementById('btnCancelProd').style.display = "inline-block";
@@ -285,42 +333,66 @@ async function saveProduct() {
     let qty = document.getElementById('addProdQty').value; 
     let desc = document.getElementById('addProdDesc').value.trim(); 
     let spec = document.getElementById('addProdSpec').value.trim();
-    let imgUrl = document.getElementById('addProdImage').value.trim();
-    let catUrl = document.getElementById('addProdCatalog').value.trim();
-    let isHidden = document.getElementById('addProdHidden').checked;
+    
+    const imgFileInput = document.getElementById('addProdImageFile');
+    const catFileInput = document.getElementById('addProdCatalogFile');
+    const hiddenEl = document.getElementById('addProdHidden');
+    let isHidden = hiddenEl ? hiddenEl.checked : false;
 
     if (!name) return alert("Product Name is required!"); 
-    if (!imgUrl) return alert("Product Image URL is required!"); 
     if (!spec) return alert("Product Specification is required!"); 
 
-    let payload = { 
-        name: name, 
-        category: cat, 
-        color: color, 
-        qty: qty || null, 
-        description: desc, 
-        specifications: spec, 
-        image_url: imgUrl, 
-        catalog_url: catUrl,
-        status: isHidden ? "Hidden" : "Public" 
-    };
+    if (!editProdId && imgFileInput && imgFileInput.files.length === 0) {
+        return alert("Please attach a Product Image file.");
+    }
 
-    if (editProdId) { 
-        const { error } = await supabase.from('products').update(payload).eq('id', editProdId);
-        if (error) alert(error.message);
-        else {
+    const saveBtn = document.getElementById('btnSaveProd');
+    const originalBtnText = saveBtn.innerHTML;
+    saveBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Uploading & Saving...";
+    saveBtn.disabled = true;
+
+    try {
+        let finalImageUrl = existingImageUrl;
+        let finalCatalogUrl = existingCatalogUrl;
+
+        if (imgFileInput && imgFileInput.files.length > 0) {
+            finalImageUrl = await uploadFileToStorage(imgFileInput.files[0], 'images');
+        }
+
+        if (catFileInput && catFileInput.files.length > 0) {
+            finalCatalogUrl = await uploadFileToStorage(catFileInput.files[0], 'catalogues');
+        }
+
+        let payload = { 
+            name: name, 
+            category: cat, 
+            color: color, 
+            qty: qty ? parseInt(qty, 10) : null, 
+            description: desc, 
+            specifications: spec, 
+            image_url: finalImageUrl, 
+            catalog_url: finalCatalogUrl,
+            status: isHidden ? "Hidden" : "Public" 
+        };
+
+        if (editProdId) { 
+            const { error } = await supabase.from('products').update(payload).eq('id', editProdId);
+            if (error) throw error;
             alert("Product Updated Successfully!"); 
-            cancelEdit('prod');
-            fetchProducts();
-        }
-    } else { 
-        const { error } = await supabase.from('products').insert([payload]);
-        if (error) alert(error.message);
-        else {
+        } else { 
+            const { error } = await supabase.from('products').insert([payload]);
+            if (error) throw error;
             alert("Product Added Successfully!"); 
-            cancelEdit('prod');
-            fetchProducts();
         }
+
+        cancelEdit('prod');
+        fetchProducts();
+        if (typeof fetchPublicData === 'function') fetchPublicData();
+    } catch (err) {
+        alert("Error: " + err.message);
+    } finally {
+        saveBtn.innerHTML = originalBtnText;
+        saveBtn.disabled = false;
     }
 }
 
@@ -340,20 +412,29 @@ async function fetchProducts() {
         return;
     }
 
-    products.forEach(p => { 
-        let safeName = p.name ? p.name.replace(/'/g, "\\'") : ""; 
-        let safeColor = p.color ? p.color.replace(/'/g, "\\'") : ""; 
-        let safeDesc = p.description ? p.description.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : ""; 
-        let safeSpec = p.specifications ? p.specifications.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : ""; 
+    currentProducts = products || [];
 
-        t.innerHTML += `<tr>
-            <td>${p.name}</td><td>${p.category || '-'}</td><td>${p.qty || 'N/A'}</td>
-            <td><span class="status-badge ${p.status==='Public'?'status-active':'status-inactive'}">${p.status}</span></td>
+    currentProducts.forEach(p => { 
+        let row = document.createElement('tr');
+        const imgThumb = (p.image_url && p.image_url.trim() !== '')
+            ? `<img src="${p.image_url}" style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;" onerror="this.onerror=null; this.src='https://placehold.co/45x45?text=No+Img';">` 
+            : `<i class="fa-solid fa-image" style="font-size: 24px; color: #bbb;"></i>`;
+
+        row.innerHTML = `
+            <td>${imgThumb}</td>
+            <td><strong>${p.name}</strong></td>
+            <td>${p.category || '-'}</td>
+            <td>${p.qty || 'N/A'}</td>
+            <td><span class="status-badge ${p.status === 'Public' ? 'status-active' : 'status-inactive'}">${p.status || 'Public'}</span></td>
             <td>
-                <button class="btn-small btn-edit" onclick="editProduct('${p.id}', '${safeName}', '${p.category}', '${safeColor}', '${p.qty}', '${safeDesc}', '${safeSpec}', '${p.image_url}', '${p.catalog_url}', ${p.status==='Hidden'})"><i class="fa-solid fa-pen"></i></button> 
-                <button class="btn-small btn-delete" onclick="deleteDoc('products', '${p.id}')"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn-small btn-edit" data-id="${p.id}"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn-small btn-delete" data-del-id="${p.id}"><i class="fa-solid fa-trash"></i></button>
             </td>
-        </tr>`; 
+        `;
+
+        row.querySelector('.btn-edit').addEventListener('click', () => populateEditProduct(p.id));
+        row.querySelector('.btn-delete').addEventListener('click', () => deleteDoc('products', p.id));
+        t.appendChild(row);
     });
 }
 
@@ -361,13 +442,18 @@ async function fetchProducts() {
 // 6. CAREERS CRUD
 // ====================================================
 let editJobId = null;
-function editJob(id, title, req, exp, loc, desc) { 
-    editJobId = id; 
-    document.getElementById('addJobTitle').value = title; 
-    document.getElementById('addJobReq').value = req; 
-    document.getElementById('addJobExp').value = exp; 
-    document.getElementById('addJobLoc').value = loc; 
-    document.getElementById('addJobDesc').value = desc; 
+let currentJobs = [];
+
+function populateEditJob(id) {
+    const j = currentJobs.find(item => item.id === id);
+    if (!j) return;
+
+    editJobId = j.id; 
+    document.getElementById('addJobTitle').value = j.title || ''; 
+    document.getElementById('addJobReq').value = j.openings || ''; 
+    document.getElementById('addJobExp').value = j.exp || ''; 
+    document.getElementById('addJobLoc').value = j.location || ''; 
+    document.getElementById('addJobDesc').value = j.description || ''; 
     document.getElementById('btnSaveJob').innerHTML = "<i class='fa-solid fa-save'></i> Update Job"; 
     document.getElementById('btnCancelJob').style.display = "inline-block"; 
     window.scrollTo({ top: 0, behavior: 'smooth' }); 
@@ -380,8 +466,15 @@ async function saveJob() {
     let loc = document.getElementById('addJobLoc').value.trim(); 
     let desc = document.getElementById('addJobDesc').value.trim(); 
 
-    if (!title || !req) return alert("Title and Req positions required!"); 
-    let payload = { title: title, openings: req, exp: exp, location: loc, description: desc, status: "Active" }; 
+    if (!title || !desc) return alert("Title and Description are required!"); 
+    let payload = { 
+        title: title, 
+        openings: req ? parseInt(req, 10) : 1, 
+        exp: exp, 
+        location: loc, 
+        description: desc, 
+        status: "Active" 
+    }; 
 
     if (editJobId) { 
         const { error } = await supabase.from('jobs').update(payload).eq('id', editJobId);
@@ -390,6 +483,7 @@ async function saveJob() {
             alert("Job Updated!"); 
             cancelEdit('job');
             fetchJobs();
+            if (typeof fetchPublicData === 'function') fetchPublicData();
         }
     } else { 
         const { error } = await supabase.from('jobs').insert([payload]);
@@ -398,6 +492,7 @@ async function saveJob() {
             alert("Job Posted!"); 
             cancelEdit('job');
             fetchJobs();
+            if (typeof fetchPublicData === 'function') fetchPublicData();
         }
     } 
 }
@@ -418,10 +513,24 @@ async function fetchJobs() {
         return;
     }
 
-    jobs.forEach(j => { 
-        let safeTitle = j.title ? j.title.replace(/'/g, "\\'") : ""; 
-        let safeDesc = j.description ? j.description.replace(/(\r\n|\n|\r)/gm, " ").replace(/'/g, "\\'") : ""; 
-        t.innerHTML += `<tr><td>${j.title}</td><td>${j.openings}</td><td>${j.exp}</td><td><span class="status-badge status-active">${j.status}</span></td><td><button class="btn-small btn-edit" onclick="editJob('${j.id}', '${safeTitle}', '${j.openings}', '${j.exp}', '${j.location}', '${safeDesc}')"><i class="fa-solid fa-pen"></i></button> <button class="btn-small btn-delete" onclick="deleteDoc('jobs', '${j.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; 
+    currentJobs = jobs || [];
+
+    currentJobs.forEach(j => { 
+        let row = document.createElement('tr');
+        row.innerHTML = `
+            <td><strong>${j.title}</strong></td>
+            <td>${j.openings || 1}</td>
+            <td>${j.exp || '-'}</td>
+            <td><span class="status-badge status-active">${j.status || 'Active'}</span></td>
+            <td>
+                <button class="btn-small btn-edit" data-id="${j.id}"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn-small btn-delete" data-del-id="${j.id}"><i class="fa-solid fa-trash"></i></button>
+            </td>
+        `;
+
+        row.querySelector('.btn-edit').addEventListener('click', () => populateEditJob(j.id));
+        row.querySelector('.btn-delete').addEventListener('click', () => deleteDoc('jobs', j.id));
+        t.appendChild(row);
     }); 
 }
 
@@ -429,14 +538,19 @@ async function fetchJobs() {
 // 7. USER MANAGEMENT CRUD
 // ====================================================
 let editUserId = null;
-function editUser(id, name, email, role) { 
-    editUserId = id; 
-    document.getElementById('addUserName').value = name; 
-    document.getElementById('addUserEmail').value = email; 
+let currentUsers = [];
+
+function populateEditUser(id) { 
+    const u = currentUsers.find(item => item.id === id);
+    if (!u) return;
+
+    editUserId = u.id; 
+    document.getElementById('addUserName').value = u.name || ''; 
+    document.getElementById('addUserEmail').value = u.email || ''; 
     document.getElementById('addUserEmail').disabled = true; 
     document.getElementById('addUserPass').disabled = true; 
     document.getElementById('addUserPass').placeholder = "Disabled during edit"; 
-    document.getElementById('addUserRole').value = role; 
+    document.getElementById('addUserRole').value = u.role || 'Only Manage Product'; 
     document.getElementById('btnSaveUser').innerHTML = "<i class='fa-solid fa-save'></i> Update User Role"; 
     document.getElementById('btnCancelUser').style.display = "inline-block"; 
     window.scrollTo({ top: 0, behavior: 'smooth' }); 
@@ -477,7 +591,7 @@ async function saveUser() {
             status: "Active"
         }]);
 
-        if (dbError) alert("User added with note: " + dbError.message);
+        if (dbError) alert("User note: " + dbError.message);
         else alert("User Created Successfully!");
 
         cancelEdit('user'); 
@@ -501,9 +615,24 @@ async function fetchUsers() {
         return;
     }
 
-    users.forEach(u => { 
-        let safeName = u.name ? u.name.replace(/'/g, "\\'") : ""; 
-        t.innerHTML += `<tr><td>${u.name}</td><td>${u.email}</td><td><span style="color:#007bb5; font-weight:600;">${u.role}</span></td><td><span class="status-badge status-active">${u.status}</span></td><td><button class="btn-small btn-edit" onclick="editUser('${u.id}', '${safeName}', '${u.email}', '${u.role}')"><i class="fa-solid fa-pen"></i></button> <button class="btn-small btn-delete" onclick="deleteDoc('users', '${u.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; 
+    currentUsers = users || [];
+
+    currentUsers.forEach(u => { 
+        let row = document.createElement('tr');
+        row.innerHTML = `
+            <td><strong>${u.name}</strong></td>
+            <td>${u.email}</td>
+            <td><span style="color:#007bb5; font-weight:600;">${u.role}</span></td>
+            <td><span class="status-badge status-active">${u.status || 'Active'}</span></td>
+            <td>
+                <button class="btn-small btn-edit" data-id="${u.id}"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn-small btn-delete" data-del-id="${u.id}"><i class="fa-solid fa-trash"></i></button>
+            </td>
+        `;
+
+        row.querySelector('.btn-edit').addEventListener('click', () => populateEditUser(u.id));
+        row.querySelector('.btn-delete').addEventListener('click', () => deleteDoc('users', u.id));
+        t.appendChild(row);
     }); 
 }
 
@@ -513,14 +642,23 @@ async function fetchUsers() {
 function cancelEdit(type) {
     if (type === 'prod') { 
         editProdId = null; 
+        existingImageUrl = "";
+        existingCatalogUrl = "";
         document.getElementById('addProdName').value = ''; 
         document.getElementById('addProdColor').value = ''; 
         document.getElementById('addProdQty').value = ''; 
+        const imgInput = document.getElementById('addProdImageFile');
+        if (imgInput) imgInput.value = '';
+        const catInput = document.getElementById('addProdCatalogFile');
+        if (catInput) catInput.value = '';
+        const imgLabel = document.getElementById('currentImgLabel');
+        if (imgLabel) imgLabel.innerText = '';
+        const catLabel = document.getElementById('currentCatLabel');
+        if (catLabel) catLabel.innerText = '';
         document.getElementById('addProdDesc').value = ''; 
         document.getElementById('addProdSpec').value = ''; 
-        document.getElementById('addProdImage').value = ''; 
-        document.getElementById('addProdCatalog').value = ''; 
-        document.getElementById('addProdHidden').checked = false; 
+        const hiddenEl = document.getElementById('addProdHidden');
+        if (hiddenEl) hiddenEl.checked = false; 
         document.getElementById('btnSaveProd').innerHTML = '<i class="fa-solid fa-save"></i> Save Product'; 
         document.getElementById('btnCancelProd').style.display = 'none'; 
     }
@@ -542,25 +680,24 @@ function cancelEdit(type) {
         document.getElementById('addUserEmail').disabled = false; 
         document.getElementById('addUserPass').disabled = false; 
         document.getElementById('addUserPass').placeholder = "Password (Min 6 chars)"; 
-        document.getElementById('btnSaveUser').innerHTML = '<i class="fa-solid fa-plus"></i> Create & Sync User'; 
+        document.getElementById('btnSaveUser').innerHTML = '<i class="fa-solid fa-plus"></i> Create User'; 
         document.getElementById('btnCancelUser').style.display = 'none'; 
     }
 }
 
 async function deleteDoc(col, id) { 
-    let msg = col === 'users' ? "Remove user's Role and Access from Dashboard?" : "Permanently delete?"; 
+    let msg = col === 'users' ? "Remove user access from Dashboard?" : "Permanently delete this record?"; 
     if (confirm(msg)) {
         const { error } = await supabase.from(col).delete().eq('id', id);
         if (error) alert(error.message);
         else {
-            if (col === 'products') fetchProducts();
-            if (col === 'jobs') fetchJobs();
+            if (col === 'products') { fetchProducts(); if (typeof fetchPublicData === 'function') fetchPublicData(); }
+            if (col === 'jobs') { fetchJobs(); if (typeof fetchPublicData === 'function') fetchPublicData(); }
             if (col === 'users') fetchUsers();
         }
     }
 }
 
-// Initial Load Event
 function initPortal() {
     loadDefaultAdminTheme();
     generateCaptcha();
