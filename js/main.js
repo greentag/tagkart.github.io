@@ -8,16 +8,16 @@ const sb = (typeof window.supabase !== 'undefined' && window.supabase.createClie
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     : null;
 
-// ---- Shop settings (apne hisaab se change karo) ----
-const ENQUIRY_WHATSAPP = "919999999999";     // country code ke saath, + ke bina
+// ---- Shop settings (change as per your business) ----
+const ENQUIRY_WHATSAPP = "919999999999";     // with country code, without +
 const ENQUIRY_EMAIL = "sales@dhamigroup.com";
 const DEFAULT_CATEGORIES = ["ERP Software", "Hardware", "Service"];
-const GST_RATE = 18;                         // % ; GST nahi lagana to 0 kar do
-const ORDERS_TABLE = "orders";               // Supabase table ka naam
+const GST_RATE = 18;                         // % ; set to 0 to disable GST
+const ORDERS_TABLE = "orders";               // Supabase table name
 
 let allProductsCache = [];   // Global cache for filtering
 let cart = [];               // [{id, name, qty, price}]
-let checkoutData = {};       // checkout form values (back/forward par bache rehte hain)
+let checkoutData = {};       // checkout form values (kept when going back/forward)
 
 // Current filter state
 const filterState = {
@@ -71,7 +71,7 @@ function cartTotals() {
 // ====================================================
 async function fetchPublicData() {
     if (!sb) {
-        console.warn("Supabase SDK ready nahi hai.");
+        console.warn("Supabase SDK is not ready.");
         return;
     }
 
@@ -134,7 +134,7 @@ function injectShopStyles() {
     const st = document.createElement('style');
     st.id = 'shopInjectedStyles';
     st.textContent = `
-        /* ---- Full screen width: parent containers ka max-width/padding hatao ---- */
+        /* ---- Full screen width: remove parent container max-width/padding ---- */
         body.shop-fullwidth { overflow-x: hidden; }
         body.shop-fullwidth #tabContainer,
         body.shop-fullwidth .tab-panel.active {
@@ -143,7 +143,7 @@ function injectShopStyles() {
             margin-left: 0 !important;
             margin-right: 0 !important;
         }
-        /* Safety net: kisi bhi parent ke andar ho, container poori screen width le */
+        /* Safety net: container takes full screen width inside any parent */
         #publicProductsContainer {
             width: 100vw !important;
             max-width: 100vw !important;
@@ -527,7 +527,7 @@ function summaryHtml() {
                 <div class="sum-line" style="border-top:1px solid #cfe0d6; padding-top:8px; margin-top:10px;"><span>Subtotal</span><span>${fmtINR(t.subtotal)}</span></div>
                 ${GST_RATE ? `<div class="sum-line"><span>GST (${GST_RATE}%)</span><span>${fmtINR(t.gst)}</span></div>` : ''}
                 <div class="sum-line sum-total"><span>Total</span><span>${fmtINR(t.total)}</span></div>
-            ` : `<p style="font-size:12px; color:#777; margin-top:10px;">Price confirm karke aapko quote bheja jayega.</p>`}
+            ` : `<p style="font-size:12px; color:#777; margin-top:10px;">We will confirm the price and send you a quotation.</p>`}
         </div>`;
 }
 
@@ -538,7 +538,7 @@ function renderCart() {
     if (cart.length === 0) {
         box.innerHTML = `
             <h3 style="color:#0d5c34; margin-bottom:12px;">Your Cart</h3>
-            <p style="color:#666; font-size:14px;">Cart khali hai. Products se "Shop Now" dabao.</p>
+            <p style="color:#666; font-size:14px;">Your cart is empty. Click "Shop Now" on a product to add it.</p>
             <div style="text-align:right; margin-top:16px;"><button class="shop-btn secondary" onclick="closeCart()">Close</button></div>`;
         return;
     }
@@ -702,8 +702,8 @@ async function placeOrder() {
             <h3 style="color:#0d5c34; margin:8px 0;">Thank you, ${escapeHtml(d.name)}!</h3>
             <p style="font-size:14px;">Your order number: <strong>${orderNo}</strong></p>
             <p style="font-size:13px; color:#555; margin-top:6px;">
-                ${saved ? 'Aapka order receive ho gaya hai. Hamari team jald hi aapse contact karegi.'
-                        : 'Order online save nahi ho paya. Neeche WhatsApp / Email se order bhej dijiye taaki hum aapse contact kar sakein.'}
+                ${saved ? 'Your order has been received. Our team will contact you shortly.'
+                        : 'We could not save your order online. Please send it using the WhatsApp or Email button below so we can contact you.'}
             </p>
             <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:18px;">
                 <a class="shop-btn primary" style="text-decoration:none;" target="_blank" rel="noopener" href="https://wa.me/${ENQUIRY_WHATSAPP}?text=${encodeURIComponent(message)}"><i class="fa-brands fa-whatsapp"></i> Send on WhatsApp</a>
@@ -712,7 +712,7 @@ async function placeOrder() {
             </div>
         </div>`;
 
-    // Cart clear (customer details form ke liye yaad rakhe)
+    // Clear cart (customer details are kept for the next order)
     cart = [];
     saveCart();
 }
