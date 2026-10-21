@@ -9,22 +9,28 @@ const sb = (typeof window.supabase !== 'undefined' && window.supabase.createClie
     : null;
 
 // ---- Shop settings (apne hisaab se change karo) ----
-const ENQUIRY_WHATSAPP = "919999999999";          // country code ke saath, + ke bina
+const ENQUIRY_WHATSAPP = "919999999999";     // country code ke saath, + ke bina
 const ENQUIRY_EMAIL = "sales@dhamigroup.com";
 const DEFAULT_CATEGORIES = ["ERP Software", "Hardware", "Service"];
+const GST_RATE = 18;                         // % ; GST nahi lagana to 0 kar do
+const ORDERS_TABLE = "orders";               // Supabase table ka naam
 
 let allProductsCache = [];   // Global cache for filtering
-let cart = [];               // [{id, name, qty}]
+let cart = [];               // [{id, name, qty, price}]
+let checkoutData = {};       // checkout form values (back/forward par bache rehte hain)
 
-// Current filter state (re-render ke baad bhi bacha rehta hai)
+// Current filter state
 const filterState = {
     cats: [],        // empty = All
-    stocks: [],      // empty = All  ('in-stock' / 'out-stock')
+    stocks: [],      // empty = All ('in-stock' / 'out-stock')
     rating: 0,
+    priceMin: '',
+    priceMax: '',
     search: '',
     sort: 'latest'
 };
 
+// ---------- helpers ----------
 function escapeHtml(str) {
     return String(str == null ? '' : str)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -43,6 +49,21 @@ function formatImageUrl(url) {
 
 function isOutOfStockItem(p) {
     return (!p.qty || parseInt(p.qty, 10) <= 0);
+}
+
+function priceOf(p) {
+    const n = parseFloat(p && p.price);
+    return isNaN(n) ? 0 : n;
+}
+
+function fmtINR(n) {
+    return '₹' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+}
+
+function cartTotals() {
+    const subtotal = cart.reduce((s, c) => s + (c.price || 0) * c.qty, 0);
+    const gst = Math.round(subtotal * GST_RATE) / 100;
+    return { subtotal, gst, total: subtotal + gst };
 }
 
 // ====================================================
@@ -106,15 +127,35 @@ async function fetchPublicData() {
 }
 
 // ====================================================
-// 2B. SHOP LAYOUT + FILTERS (WIDE LAYOUT)
+// 2B. SHOP LAYOUT + FILTERS (FULL-WIDTH)
 // ====================================================
 function injectShopStyles() {
     if (document.getElementById('shopInjectedStyles')) return;
     const st = document.createElement('style');
     st.id = 'shopInjectedStyles';
     st.textContent = `
-        .shop-wrap { display:flex; gap:30px; width:96%; max-width:1500px; margin:20px auto 0 auto; align-items:flex-start; text-align:left; }
-        .shop-sidebar { width:290px; flex-shrink:0; background:#fff; padding:20px; border-radius:12px; border:1px solid #eaeaea; box-shadow:0 2px 8px rgba(0,0,0,0.03); position:sticky; top:90px; }
+        /* ---- Full screen width: parent containers ka max-width/padding hatao ---- */
+        body.shop-fullwidth { overflow-x: hidden; }
+        body.shop-fullwidth #tabContainer,
+        body.shop-fullwidth .tab-panel.active {
+            max-width: none !important;
+            width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+        /* Safety net: kisi bhi parent ke andar ho, container poori screen width le */
+        #publicProductsContainer {
+            width: 100vw !important;
+            max-width: 100vw !important;
+            position: relative;
+            left: 50%;
+            margin-left: -50vw !important;
+            margin-right: 0 !important;
+            box-sizing: border-box;
+            padding: 0 clamp(12px, 2vw, 32px);
+        }
+        .shop-wrap { display:flex; gap:28px; width:100%; max-width:none; margin:20px 0 0 0; align-items:flex-start; text-align:left; box-sizing:border-box; }
+        .shop-sidebar { width:300px; flex-shrink:0; background:#fff; padding:20px; border-radius:12px; border:1px solid #eaeaea; box-shadow:0 2px 8px rgba(0,0,0,0.03); position:sticky; top:90px; box-sizing:border-box; }
         .shop-main { flex:1; min-width:0; }
         .shop-toolbar { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:16px; background:#fff; border:1px solid #eaeaea; border-radius:12px; padding:12px 16px; }
         .shop-toolbar input[type=text], .shop-toolbar select { padding:9px 12px; border:1px solid #ccc; border-radius:6px; font-size:13px; }
@@ -123,14 +164,31 @@ function injectShopStyles() {
         .shop-btn.primary { background:#1b8a4f; }
         .shop-btn.secondary { background:#777; }
         .shop-btn.orange { background:#e34f26; }
+        .price-row { display:flex; gap:8px; }
+        .price-row input { width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; font-size:13px; box-sizing:border-box; }
+
         #cartFab { position:fixed; right:22px; bottom:80px; z-index:9998; background:#e34f26; color:#fff; border:none; border-radius:50px; padding:12px 20px; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.25); }
-        #cartModal { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; display:none; align-items:center; justify-content:center; padding:16px; }
-        #cartModal .cart-box { background:#fff; color:#333; width:100%; max-width:560px; max-height:85vh; overflow:auto; border-radius:14px; padding:22px; }
+        #cartModal { position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:9999; display:none; align-items:center; justify-content:center; padding:16px; }
+        #cartModal .cart-box { background:#fff; color:#333; width:100%; max-width:960px; max-height:90vh; overflow:auto; border-radius:14px; padding:24px; box-sizing:border-box; }
         .cart-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid #eee; font-size:14px; }
         .cart-qty button { width:26px; height:26px; border:1px solid #ccc; background:#f7f7f7; border-radius:4px; cursor:pointer; }
+        .co-grid { display:grid; grid-template-columns: 1.4fr 1fr; gap:24px; }
+        .co-form { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+        .co-form .full { grid-column: 1 / -1; }
+        .co-form label { font-size:12px; font-weight:600; color:#444; display:block; margin-bottom:3px; }
+        .co-form input, .co-form select, .co-form textarea { width:100%; padding:9px; border:1px solid #ccc; border-radius:6px; font-size:13px; box-sizing:border-box; font-family:inherit; }
+        .co-form .err { border-color:#e34f26 !important; background:#fff6f3; }
+        .co-summary { background:#f7faf8; border:1px solid #dbe8e0; border-radius:10px; padding:16px; height:fit-content; }
+        .sum-line { display:flex; justify-content:space-between; font-size:13.5px; margin:6px 0; }
+        .sum-total { font-size:16px; font-weight:700; color:#0d5c34; border-top:1px solid #cfe0d6; padding-top:10px; margin-top:10px; }
+
         @media (max-width: 900px) {
-            .shop-wrap { flex-direction:column; width:98%; }
+            .shop-wrap { flex-direction:column; }
             .shop-sidebar { width:100%; position:static; }
+            .co-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 520px) {
+            .co-form { grid-template-columns: 1fr; }
         }
     `;
     document.head.appendChild(st);
@@ -157,23 +215,31 @@ function renderShopLayout() {
 
             <!-- SIDEBAR FILTERS -->
             <div class="shop-sidebar">
-                <h3 style="font-size: 18px; color: #0d5c34; margin-bottom: 15px; border-bottom: 2px solid #1b8a4f; padding-bottom: 8px;">Filters</h3>
+                <h3 style="font-size:18px; color:#0d5c34; margin-bottom:15px; border-bottom:2px solid #1b8a4f; padding-bottom:8px;">Filters</h3>
 
-                <div style="margin-bottom: 20px;">
-                    <h4 style="font-size: 14px; color: #333; margin-bottom: 10px;">Categories</h4>
+                <div style="margin-bottom:20px;">
+                    <h4 style="font-size:14px; color:#333; margin-bottom:10px;">Categories</h4>
                     <label style="display:block; font-size:13px; margin-bottom:6px; cursor:pointer;"><input type="checkbox" class="filter-cat" value="all" ${catChecked('all')} onchange="onFilterToggle(this,'filter-cat')"> All Categories</label>
                     ${cats.map(c => `<label style="display:block; font-size:13px; margin-bottom:6px; cursor:pointer;"><input type="checkbox" class="filter-cat" value="${escapeHtml(c)}" ${catChecked(c)} onchange="onFilterToggle(this,'filter-cat')"> ${escapeHtml(c)}</label>`).join('')}
                 </div>
 
-                <div style="margin-bottom: 20px;">
-                    <h4 style="font-size: 14px; color: #333; margin-bottom: 10px;">Product Status</h4>
+                <div style="margin-bottom:20px;">
+                    <h4 style="font-size:14px; color:#333; margin-bottom:10px;">Price Range (₹)</h4>
+                    <div class="price-row">
+                        <input type="number" id="filterPriceMin" min="0" placeholder="Min" value="${escapeHtml(filterState.priceMin)}" oninput="applyFilters()">
+                        <input type="number" id="filterPriceMax" min="0" placeholder="Max" value="${escapeHtml(filterState.priceMax)}" oninput="applyFilters()">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <h4 style="font-size:14px; color:#333; margin-bottom:10px;">Product Status</h4>
                     <label style="display:block; font-size:13px; margin-bottom:6px; cursor:pointer;"><input type="checkbox" class="filter-stock" value="all" ${stockChecked('all')} onchange="onFilterToggle(this,'filter-stock')"> All Status</label>
                     <label style="display:block; font-size:13px; margin-bottom:6px; cursor:pointer;"><input type="checkbox" class="filter-stock" value="in-stock" ${stockChecked('in-stock')} onchange="onFilterToggle(this,'filter-stock')"> In Stock</label>
                     <label style="display:block; font-size:13px; margin-bottom:6px; cursor:pointer;"><input type="checkbox" class="filter-stock" value="out-stock" ${stockChecked('out-stock')} onchange="onFilterToggle(this,'filter-stock')"> Out of Stock</label>
                 </div>
 
-                <div style="margin-bottom: 20px;">
-                    <h4 style="font-size: 14px; color: #333; margin-bottom: 10px;">Minimum Rating</h4>
+                <div style="margin-bottom:20px;">
+                    <h4 style="font-size:14px; color:#333; margin-bottom:10px;">Minimum Rating</h4>
                     <select id="filterRating" onchange="applyFilters()" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; font-size:13px;">
                         <option value="0" ${sel(filterState.rating, 0)}>All Ratings</option>
                         <option value="4" ${sel(filterState.rating, 4)}>4 Stars &amp; Above</option>
@@ -193,6 +259,8 @@ function renderShopLayout() {
                     <input type="text" id="shopSearch" placeholder="Search products..." value="${escapeHtml(filterState.search)}" oninput="applyFilters()">
                     <select id="shopSort" onchange="applyFilters()">
                         <option value="latest" ${sel(filterState.sort, 'latest')}>Sort: Latest</option>
+                        <option value="price-asc" ${sel(filterState.sort, 'price-asc')}>Price: Low → High</option>
+                        <option value="price-desc" ${sel(filterState.sort, 'price-desc')}>Price: High → Low</option>
                         <option value="name-asc" ${sel(filterState.sort, 'name-asc')}>Name A → Z</option>
                         <option value="name-desc" ${sel(filterState.sort, 'name-desc')}>Name Z → A</option>
                         <option value="rating" ${sel(filterState.sort, 'rating')}>Rating (High → Low)</option>
@@ -205,18 +273,19 @@ function renderShopLayout() {
         </div>
     `;
 
+    document.body.classList.add('shop-fullwidth');
     ensureCartUI();
     applyFilters();
 }
 
-// "All" checkbox ka logic: specific select karo to All hat jaye, sab hata do to All wapas aa jaye
+// "All" checkbox logic
 function onFilterToggle(el, groupClass) {
     const boxes = Array.from(document.querySelectorAll('.' + groupClass));
     const allBox = boxes.find(b => b.value === 'all');
 
     if (el.value === 'all') {
         if (el.checked) boxes.forEach(b => { if (b !== el) b.checked = false; });
-        else el.checked = true; // All ko uncheck nahi kar sakte
+        else el.checked = true;
     } else {
         if (allBox) allBox.checked = false;
         if (!boxes.some(b => b.checked) && allBox) allBox.checked = true;
@@ -228,6 +297,8 @@ function resetFilters() {
     filterState.cats = [];
     filterState.stocks = [];
     filterState.rating = 0;
+    filterState.priceMin = '';
+    filterState.priceMax = '';
     filterState.search = '';
     filterState.sort = 'latest';
     renderShopLayout();
@@ -235,7 +306,6 @@ function resetFilters() {
 
 // FILTER LOGIC
 function applyFilters() {
-    // Read UI -> state
     const catBoxes = document.querySelectorAll('.filter-cat');
     const stockBoxes = document.querySelectorAll('.filter-stock');
     if (catBoxes.length) {
@@ -247,11 +317,17 @@ function applyFilters() {
     const ratingEl = document.getElementById('filterRating');
     const searchEl = document.getElementById('shopSearch');
     const sortEl = document.getElementById('shopSort');
+    const pMinEl = document.getElementById('filterPriceMin');
+    const pMaxEl = document.getElementById('filterPriceMax');
     if (ratingEl) filterState.rating = parseFloat(ratingEl.value) || 0;
     if (searchEl) filterState.search = searchEl.value.trim();
     if (sortEl) filterState.sort = sortEl.value;
+    if (pMinEl) filterState.priceMin = pMinEl.value;
+    if (pMaxEl) filterState.priceMax = pMaxEl.value;
 
     const q = filterState.search.toLowerCase();
+    const pMin = filterState.priceMin === '' ? null : parseFloat(filterState.priceMin);
+    const pMax = filterState.priceMax === '' ? null : parseFloat(filterState.priceMax);
 
     let filtered = allProductsCache.filter(p => {
         const matchCat = filterState.cats.length === 0 || filterState.cats.includes(p.category);
@@ -264,20 +340,25 @@ function applyFilters() {
         const pRating = p.rating ? parseFloat(p.rating) : 5.0;
         const matchRating = pRating >= filterState.rating;
 
+        const price = priceOf(p);
+        const matchPrice = (pMin === null || isNaN(pMin) || price >= pMin) &&
+                           (pMax === null || isNaN(pMax) || price <= pMax);
+
         const matchSearch = !q ||
             (p.name || '').toLowerCase().includes(q) ||
             (p.specifications || '').toLowerCase().includes(q) ||
             (p.category || '').toLowerCase().includes(q);
 
-        return matchCat && matchStock && matchRating && matchSearch;
+        return matchCat && matchStock && matchRating && matchPrice && matchSearch;
     });
 
-    // Sorting (default order = created_at desc jo DB se aata hai)
     const rate = p => (p.rating ? parseFloat(p.rating) : 5.0);
     if (filterState.sort === 'name-asc') filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
     else if (filterState.sort === 'name-desc') filtered.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
     else if (filterState.sort === 'rating') filtered.sort((a, b) => rate(b) - rate(a));
     else if (filterState.sort === 'qty') filtered.sort((a, b) => (parseInt(b.qty, 10) || 0) - (parseInt(a.qty, 10) || 0));
+    else if (filterState.sort === 'price-asc') filtered.sort((a, b) => priceOf(a) - priceOf(b));
+    else if (filterState.sort === 'price-desc') filtered.sort((a, b) => priceOf(b) - priceOf(a));
 
     renderProductCards(filtered);
 
@@ -297,13 +378,18 @@ function renderProductCards(products) {
     listArea.innerHTML = products.map(p => {
         let directImg = formatImageUrl(p.image_url);
         let imgTag = directImg
-            ? `<img src="${escapeHtml(directImg)}" style="width:110px; height:110px; object-fit:cover; border-radius:8px; border:1px solid #eaeaea;" onerror="this.onerror=null; this.src='https://placehold.co/110x110?text=No+Image';">`
-            : `<div style="width:110px; height:110px; display:flex; align-items:center; justify-content:center; background:#f0f7f3; border-radius:8px;"><i class="fa-solid fa-boxes-stacked" style="font-size:30px; color:#1b8a4f;"></i></div>`;
+            ? `<img src="${escapeHtml(directImg)}" style="width:120px; height:120px; object-fit:cover; border-radius:8px; border:1px solid #eaeaea;" onerror="this.onerror=null; this.src='https://placehold.co/120x120?text=No+Image';">`
+            : `<div style="width:120px; height:120px; display:flex; align-items:center; justify-content:center; background:#f0f7f3; border-radius:8px;"><i class="fa-solid fa-boxes-stacked" style="font-size:30px; color:#1b8a4f;"></i></div>`;
 
         let out = isOutOfStockItem(p);
         let stockBadge = out
             ? `<span style="font-size:13px; font-weight:700; color:#e34f26;">Out of Stock</span>`
             : `<span style="font-size:13px; font-weight:700; color:#1b8a4f;">In Stock</span>`;
+
+        let price = priceOf(p);
+        let priceHtml = price > 0
+            ? `<div style="font-size:20px; font-weight:800; color:#0d5c34; margin-bottom:4px;">${fmtINR(price)}</div>${GST_RATE ? `<div style="font-size:11px; color:#777; margin-bottom:6px;">+ ${GST_RATE}% GST extra</div>` : ''}`
+            : `<div style="font-size:14px; font-weight:700; color:#555; margin-bottom:8px;">Price on request</div>`;
 
         let ratingVal = p.rating ? parseFloat(p.rating) : 5.0;
         let fullStars = Math.max(0, Math.min(5, Math.round(ratingVal)));
@@ -313,11 +399,12 @@ function renderProductCards(products) {
             ? `<a href="${escapeHtml(p.catalog_url)}" target="_blank" rel="noopener" style="background:#1b8a4f; color:#fff; padding:8px 14px; border-radius:6px; text-decoration:none; font-size:13px; font-weight:600; display:inline-block; margin-bottom:6px;"><i class="fa-solid fa-download"></i> Catalogue</a><br>`
             : '';
 
-        let shopBtn = `<button class="shop-btn" style="background:${out ? '#ccc' : '#e34f26'}; cursor:${out ? 'not-allowed' : 'pointer'};" ${out ? 'disabled' : ''} onclick="addToCart('${escapeHtml(String(p.id))}')"><i class="fa-solid fa-cart-plus"></i> Shop Now</button>`;
+        let btnLabel = price > 0 ? 'Shop Now' : 'Get Quote';
+        let shopBtn = `<button class="shop-btn" style="background:${out ? '#ccc' : '#e34f26'}; cursor:${out ? 'not-allowed' : 'pointer'};" ${out ? 'disabled' : ''} onclick="addToCart('${escapeHtml(String(p.id))}')"><i class="fa-solid fa-cart-plus"></i> ${btnLabel}</button>`;
 
         return `
-            <div style="display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #dbe8e0; border-radius:12px; padding:18px 22px; box-shadow:0 3px 10px rgba(0,0,0,0.04); gap:20px; flex-wrap:wrap;">
-                <div style="display:flex; align-items:center; gap:20px; flex:1; min-width:260px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #dbe8e0; border-radius:12px; padding:18px 24px; box-shadow:0 3px 10px rgba(0,0,0,0.04); gap:24px; flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:22px; flex:1; min-width:260px;">
                     <div style="position:relative;">
                         <span style="position:absolute; top:-6px; left:-6px; background:#1b8a4f; color:#fff; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px;">NEW</span>
                         ${imgTag}
@@ -332,7 +419,8 @@ function renderProductCards(products) {
                         </div>
                     </div>
                 </div>
-                <div style="text-align:right; min-width:140px;">
+                <div style="text-align:right; min-width:160px;">
+                    ${priceHtml}
                     <div style="margin-bottom:10px;">${stockBadge}</div>
                     ${catalogBtn}
                     ${shopBtn}
@@ -343,7 +431,7 @@ function renderProductCards(products) {
 }
 
 // ====================================================
-// 2C. CART / SHOP NOW (enquiry via WhatsApp / Email)
+// 2C. CART
 // ====================================================
 function loadCart() {
     try {
@@ -364,8 +452,9 @@ function addToCart(id) {
     const existing = cart.find(c => String(c.id) === String(id));
     if (existing) {
         if (existing.qty < max) existing.qty += 1;
+        existing.price = priceOf(p);
     } else {
-        cart.push({ id: String(p.id), name: p.name, qty: 1 });
+        cart.push({ id: String(p.id), name: p.name, qty: 1, price: priceOf(p) });
     }
     saveCart();
     openCart();
@@ -423,6 +512,25 @@ function closeCart() {
     if (m) m.style.display = 'none';
 }
 
+function summaryHtml() {
+    const t = cartTotals();
+    const hasPrice = cart.some(c => c.price > 0);
+    return `
+        <div class="co-summary">
+            <h4 style="margin:0 0 10px 0; color:#0d5c34;">Order Summary</h4>
+            ${cart.map(c => `
+                <div class="sum-line">
+                    <span>${escapeHtml(c.name)} × ${c.qty}</span>
+                    <span>${c.price > 0 ? fmtINR(c.price * c.qty) : 'On request'}</span>
+                </div>`).join('')}
+            ${hasPrice ? `
+                <div class="sum-line" style="border-top:1px solid #cfe0d6; padding-top:8px; margin-top:10px;"><span>Subtotal</span><span>${fmtINR(t.subtotal)}</span></div>
+                ${GST_RATE ? `<div class="sum-line"><span>GST (${GST_RATE}%)</span><span>${fmtINR(t.gst)}</span></div>` : ''}
+                <div class="sum-line sum-total"><span>Total</span><span>${fmtINR(t.total)}</span></div>
+            ` : `<p style="font-size:12px; color:#777; margin-top:10px;">Price confirm karke aapko quote bheja jayega.</p>`}
+        </div>`;
+}
+
 function renderCart() {
     const box = document.getElementById('cartBox');
     if (!box) return;
@@ -437,46 +545,176 @@ function renderCart() {
 
     box.innerHTML = `
         <h3 style="color:#0d5c34; margin-bottom:12px;">Your Cart</h3>
-        ${cart.map(c => `
-            <div class="cart-row">
-                <span style="flex:1;">${escapeHtml(c.name)}</span>
-                <span class="cart-qty">
-                    <button onclick="changeCartQty('${escapeHtml(c.id)}', -1)">−</button>
-                    <strong style="margin:0 8px;">${c.qty}</strong>
-                    <button onclick="changeCartQty('${escapeHtml(c.id)}', 1)">+</button>
-                </span>
-            </div>`).join('')}
-        <h4 style="margin:18px 0 8px 0; font-size:14px; color:#333;">Your Details</h4>
-        <input id="cartName" type="text" placeholder="Name" style="width:100%; padding:9px; border:1px solid #ccc; border-radius:6px; margin-bottom:8px;">
-        <input id="cartPhone" type="text" placeholder="Phone" style="width:100%; padding:9px; border:1px solid #ccc; border-radius:6px; margin-bottom:8px;">
-        <input id="cartCompany" type="text" placeholder="Company (optional)" style="width:100%; padding:9px; border:1px solid #ccc; border-radius:6px; margin-bottom:14px;">
-        <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+        <div class="co-grid">
+            <div>
+                ${cart.map(c => `
+                    <div class="cart-row">
+                        <span style="flex:1;">${escapeHtml(c.name)}<br><small style="color:#777;">${c.price > 0 ? fmtINR(c.price) + ' each' : 'Price on request'}</small></span>
+                        <span class="cart-qty">
+                            <button onclick="changeCartQty('${escapeHtml(c.id)}', -1)">−</button>
+                            <strong style="margin:0 8px;">${c.qty}</strong>
+                            <button onclick="changeCartQty('${escapeHtml(c.id)}', 1)">+</button>
+                        </span>
+                        <strong style="min-width:90px; text-align:right;">${c.price > 0 ? fmtINR(c.price * c.qty) : '-'}</strong>
+                    </div>`).join('')}
+            </div>
+            ${summaryHtml()}
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; margin-top:18px;">
             <button class="shop-btn secondary" onclick="clearCart()">Clear</button>
             <button class="shop-btn secondary" onclick="closeCart()">Continue Shopping</button>
-            <button class="shop-btn orange" onclick="sendEnquiry('email')"><i class="fa-solid fa-envelope"></i> Email</button>
-            <button class="shop-btn primary" onclick="sendEnquiry('whatsapp')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+            <button class="shop-btn primary" onclick="showCheckout()">Proceed to Checkout <i class="fa-solid fa-arrow-right"></i></button>
         </div>`;
 }
 
-function sendEnquiry(channel) {
-    if (cart.length === 0) return;
-    const name = (document.getElementById('cartName') || {}).value || '';
-    const phone = (document.getElementById('cartPhone') || {}).value || '';
-    const company = (document.getElementById('cartCompany') || {}).value || '';
+// ====================================================
+// 2D. CHECKOUT FORM
+// ====================================================
+function saveCheckoutFields() {
+    document.querySelectorAll('#coForm [data-f]').forEach(el => { checkoutData[el.dataset.f] = el.value; });
+}
 
-    if (!name.trim() || !phone.trim()) {
-        alert('Please Name aur Phone fill karo.');
-        return;
+function backToCart() {
+    saveCheckoutFields();
+    renderCart();
+}
+
+function showCheckout() {
+    const box = document.getElementById('cartBox');
+    if (!box || cart.length === 0) return;
+    const v = k => escapeHtml(checkoutData[k] || '');
+    const pay = checkoutData.payment || 'Bank Transfer / UPI';
+    const payOpt = o => `<option ${pay === o ? 'selected' : ''}>${o}</option>`;
+
+    box.innerHTML = `
+        <h3 style="color:#0d5c34; margin-bottom:14px;">Checkout</h3>
+        <div class="co-grid">
+            <div id="coForm" class="co-form">
+                <div><label>Full Name *</label><input data-f="name" type="text" value="${v('name')}"></div>
+                <div><label>Phone *</label><input data-f="phone" type="tel" maxlength="10" placeholder="10 digit number" value="${v('phone')}"></div>
+                <div><label>Email *</label><input data-f="email" type="email" value="${v('email')}"></div>
+                <div><label>Company</label><input data-f="company" type="text" value="${v('company')}"></div>
+                <div class="full"><label>GSTIN (optional)</label><input data-f="gstin" type="text" maxlength="15" value="${v('gstin')}"></div>
+                <div class="full"><label>Address *</label><textarea data-f="address" rows="2">${v('address')}</textarea></div>
+                <div><label>City *</label><input data-f="city" type="text" value="${v('city')}"></div>
+                <div><label>State *</label><input data-f="state" type="text" value="${v('state')}"></div>
+                <div><label>Pincode *</label><input data-f="pincode" type="text" maxlength="6" value="${v('pincode')}"></div>
+                <div>
+                    <label>Payment Preference</label>
+                    <select data-f="payment">
+                        ${payOpt('Bank Transfer / UPI')}
+                        ${payOpt('Cash on Delivery')}
+                        ${payOpt('Pay after Quotation')}
+                    </select>
+                </div>
+                <div class="full"><label>Notes (optional)</label><textarea data-f="notes" rows="2">${v('notes')}</textarea></div>
+                <div class="full" id="coError" style="color:#e34f26; font-size:13px; font-weight:600;"></div>
+            </div>
+            ${summaryHtml()}
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; margin-top:18px;">
+            <button class="shop-btn secondary" onclick="backToCart()"><i class="fa-solid fa-arrow-left"></i> Back to Cart</button>
+            <button class="shop-btn orange" id="placeOrderBtn" onclick="placeOrder()">Place Order</button>
+        </div>`;
+}
+
+function validateCheckout() {
+    saveCheckoutFields();
+    const d = checkoutData;
+    const errs = [];
+    const bad = new Set();
+
+    if (!(d.name || '').trim()) { errs.push('Name'); bad.add('name'); }
+    if (!/^[6-9]\d{9}$/.test((d.phone || '').trim())) { errs.push('valid 10 digit Phone'); bad.add('phone'); }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((d.email || '').trim())) { errs.push('valid Email'); bad.add('email'); }
+    if (!(d.address || '').trim()) { errs.push('Address'); bad.add('address'); }
+    if (!(d.city || '').trim()) { errs.push('City'); bad.add('city'); }
+    if (!(d.state || '').trim()) { errs.push('State'); bad.add('state'); }
+    if (!/^\d{6}$/.test((d.pincode || '').trim())) { errs.push('6 digit Pincode'); bad.add('pincode'); }
+    if ((d.gstin || '').trim() && !/^\d{2}[A-Z]{5}\d{4}[A-Z][A-Z\d]Z[A-Z\d]$/i.test(d.gstin.trim())) { errs.push('valid GSTIN'); bad.add('gstin'); }
+
+    document.querySelectorAll('#coForm [data-f]').forEach(el => el.classList.toggle('err', bad.has(el.dataset.f)));
+    const errBox = document.getElementById('coError');
+    if (errBox) errBox.textContent = errs.length ? 'Please check: ' + errs.join(', ') : '';
+    return errs.length === 0;
+}
+
+function generateOrderNo() {
+    const dt = new Date();
+    const ymd = dt.getFullYear().toString() + String(dt.getMonth() + 1).padStart(2, '0') + String(dt.getDate()).padStart(2, '0');
+    return `ORD-${ymd}-${Math.floor(1000 + Math.random() * 9000)}`;
+}
+
+function buildOrderMessage(orderNo, d, t) {
+    const lines = cart.map((c, i) => `${i + 1}. ${c.name} x ${c.qty}${c.price > 0 ? ' = ' + fmtINR(c.price * c.qty) : ''}`).join('\n');
+    return `New Order: ${orderNo}\n\n` +
+        `Name: ${d.name}\nPhone: ${d.phone}\nEmail: ${d.email}\nCompany: ${d.company || '-'}\nGSTIN: ${d.gstin || '-'}\n` +
+        `Address: ${d.address}, ${d.city}, ${d.state} - ${d.pincode}\nPayment: ${d.payment}\nNotes: ${d.notes || '-'}\n\n` +
+        `Items:\n${lines}\n\n` +
+        (t.subtotal > 0 ? `Subtotal: ${fmtINR(t.subtotal)}\n${GST_RATE ? `GST (${GST_RATE}%): ${fmtINR(t.gst)}\n` : ''}Total: ${fmtINR(t.total)}` : 'Price: On request');
+}
+
+async function placeOrder() {
+    if (!validateCheckout()) return;
+
+    const btn = document.getElementById('placeOrderBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Placing order...'; }
+
+    const d = { ...checkoutData };
+    const t = cartTotals();
+    const orderNo = generateOrderNo();
+    const message = buildOrderMessage(orderNo, d, t);
+    let saved = false;
+
+    if (sb) {
+        try {
+            const { error } = await sb.from(ORDERS_TABLE).insert({
+                order_no: orderNo,
+                customer_name: d.name.trim(),
+                phone: d.phone.trim(),
+                email: d.email.trim(),
+                company: (d.company || '').trim(),
+                gstin: (d.gstin || '').trim().toUpperCase(),
+                address: d.address.trim(),
+                city: d.city.trim(),
+                state: d.state.trim(),
+                pincode: d.pincode.trim(),
+                payment_method: d.payment,
+                notes: (d.notes || '').trim(),
+                items: cart.map(c => ({ id: c.id, name: c.name, qty: c.qty, price: c.price })),
+                subtotal: t.subtotal,
+                gst: t.gst,
+                total: t.total,
+                status: 'New'
+            });
+            if (error) console.error("Order save error:", error);
+            else saved = true;
+        } catch (e) {
+            console.error("Order save exception:", e);
+        }
     }
 
-    const lines = cart.map((c, i) => `${i + 1}. ${c.name} x ${c.qty}`).join('\n');
-    const msg = `New Product Enquiry\n\nName: ${name}\nPhone: ${phone}\nCompany: ${company || '-'}\n\nItems:\n${lines}`;
+    // Success screen
+    const box = document.getElementById('cartBox');
+    box.innerHTML = `
+        <div style="text-align:center; padding:10px 0;">
+            <div style="font-size:46px; color:#1b8a4f;"><i class="fa-solid fa-circle-check"></i></div>
+            <h3 style="color:#0d5c34; margin:8px 0;">Thank you, ${escapeHtml(d.name)}!</h3>
+            <p style="font-size:14px;">Your order number: <strong>${orderNo}</strong></p>
+            <p style="font-size:13px; color:#555; margin-top:6px;">
+                ${saved ? 'Aapka order receive ho gaya hai. Hamari team jald hi aapse contact karegi.'
+                        : 'Order online save nahi ho paya. Neeche WhatsApp / Email se order bhej dijiye taaki hum aapse contact kar sakein.'}
+            </p>
+            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:18px;">
+                <a class="shop-btn primary" style="text-decoration:none;" target="_blank" rel="noopener" href="https://wa.me/${ENQUIRY_WHATSAPP}?text=${encodeURIComponent(message)}"><i class="fa-brands fa-whatsapp"></i> Send on WhatsApp</a>
+                <a class="shop-btn orange" style="text-decoration:none;" href="mailto:${ENQUIRY_EMAIL}?subject=${encodeURIComponent('Order ' + orderNo)}&body=${encodeURIComponent(message)}"><i class="fa-solid fa-envelope"></i> Send Email</a>
+                <button class="shop-btn secondary" onclick="closeCart()">Close</button>
+            </div>
+        </div>`;
 
-    if (channel === 'whatsapp') {
-        window.open(`https://wa.me/${ENQUIRY_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
-    } else {
-        window.location.href = `mailto:${ENQUIRY_EMAIL}?subject=${encodeURIComponent('Product Enquiry')}&body=${encodeURIComponent(msg)}`;
-    }
+    // Cart clear (customer details form ke liye yaad rakhe)
+    cart = [];
+    saveCart();
 }
 
 // ====================================================
@@ -487,6 +725,10 @@ function showHome() {
     const tabEl = document.getElementById('tabContainer');
     if (homeEl) homeEl.style.display = 'block';
     if (tabEl) tabEl.style.display = 'none';
+
+    document.body.classList.remove('shop-fullwidth');
+    const fab = document.getElementById('cartFab');
+    if (fab) fab.style.display = 'none';
 
     let bgAbout = document.getElementById('aboutFullscreenBg');
     if (bgAbout) bgAbout.style.display = 'none';
@@ -512,13 +754,15 @@ function selectTab(tabName) {
             if (bgAbout) bgAbout.style.display = 'none';
         }
 
+        const isShopTab = (tabName === 'product' || tabName === 'shop');
+        document.body.classList.toggle('shop-fullwidth', isShopTab);
+
         if (['product', 'shop', 'career', 'serv-erp', 'serv-crm'].includes(tabName)) {
             fetchPublicData();
         }
 
-        // Cart button sirf product/shop tab par dikhao
         const fab = document.getElementById('cartFab');
-        if (fab) fab.style.display = (tabName === 'product' || tabName === 'shop') ? 'block' : 'none';
+        if (fab) fab.style.display = isShopTab ? 'block' : 'none';
 
         if (tabName === 'contact' || tabName === 'about') {
             let animatedItems = activePanel.querySelectorAll('.animate-text');
