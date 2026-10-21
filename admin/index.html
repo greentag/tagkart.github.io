@@ -386,7 +386,7 @@
                             <input type="number" id="addProdQty" placeholder="Quantity">
                         </div>
 
-                        <!-- Rating Input added here -->
+                        <!-- Rating Input Field Added Here -->
                         <div class="form-grid">
                             <input type="number" id="addProdRating" placeholder="Rating (e.g. 4.5)" min="1" max="5" step="0.1" value="5.0">
                         </div>
@@ -632,7 +632,14 @@
             let n2 = Math.floor(Math.random() * 9) + 1;
             captchaCorrect = n1 + n2;
             const q = document.getElementById('captchaQuestion');
-            if (q) q.innerText = `${n1} + ${n2} = ?`;
+            if (q) {
+                q.innerText = `${n1} + ${n2} = ?`;
+            } else {
+                setTimeout(() => {
+                    const qRetry = document.getElementById('captchaQuestion');
+                    if (qRetry) qRetry.innerText = `${n1} + ${n2} = ?`;
+                }, 100);
+            }
             const a = document.getElementById('captchaAnswer');
             if (a) a.value = '';
         }
@@ -814,7 +821,7 @@
         }
 
         // ==========================================
-        // 4. CRUD FOR PRODUCTS (WITH EDIT & DELETE & VIEW)
+        // 4. CRUD FOR PRODUCTS (WITH VIEW, EDIT, DELETE & RATING)
         // ==========================================
         async function fetchProducts() {
             if (!sb) return;
@@ -928,8 +935,8 @@
                     name, 
                     category, 
                     color, 
-                    qty: qty ? parseInt(qty, 10) : null,
-                    rating: rating ? parseFloat(rating) : 5.0, 
+                    qty: qty ? parseInt(qty, 10) : null, 
+                    rating: rating ? parseFloat(rating) : 5.0,
                     image_url: finalImageUrl, 
                     catalog_url: finalCatalogUrl, 
                     specifications, 
@@ -958,7 +965,7 @@
         }
 
         // ==========================================
-        // 5. CRUD FOR JOBS (WITH EDIT & DELETE & VIEW)
+        // 5. CRUD FOR JOBS (WITH VIEW, EDIT & DELETE)
         // ==========================================
         async function fetchJobs() {
             if (!sb) return;
@@ -983,7 +990,7 @@
                     </td>
                 `;
 
-                tr.querySelector('.btn-view-act').onclick = () => alert(`Job: ${j.title}\nDescription: ${j.description || 'N/A'}`);
+                tr.querySelector('.btn-view-act').onclick = () => alert(`Job Title: ${j.title}\nDescription: ${j.description || 'N/A'}`);
                 tr.querySelector('.btn-edit-act').onclick = () => editJob(j.id);
                 tr.querySelector('.btn-delete-act').onclick = () => deleteDoc('jobs', j.id);
                 tbody.appendChild(tr);
@@ -1044,7 +1051,7 @@
         }
 
         // ==========================================
-        // 6. CRUD FOR USERS (WITH EDIT & DELETE & VIEW)
+        // 6. CRUD FOR USERS (WITH VIEW, EDIT & DELETE)
         // ==========================================
         async function fetchUsers() {
             if (!sb) return;
@@ -1159,7 +1166,7 @@
                 document.getElementById('btnSaveProd').innerHTML = '<i class="fa-solid fa-save"></i> Save Product';
                 document.getElementById('btnCancelProd').style.display = 'none';
             }
-            if (type === 'job') {   
+            if (type === 'job') {
                 editJobId = null;
                 document.getElementById('addJobTitle').value = '';
                 document.getElementById('addJobReq').value = '';
