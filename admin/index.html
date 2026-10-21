@@ -386,8 +386,9 @@
                             <input type="number" id="addProdQty" placeholder="Quantity">
                         </div>
 
-                        <!-- Rating Input Field Added Here -->
+                        <!-- Price & Rating Input Fields -->
                         <div class="form-grid">
+                            <input type="number" id="addProdPrice" placeholder="Price in ₹ (leave blank for 'Get Quote')" min="0" step="0.01">
                             <input type="number" id="addProdRating" placeholder="Rating (e.g. 4.5)" min="1" max="5" step="0.1" value="5.0">
                         </div>
 
@@ -417,7 +418,7 @@
                         <button id="btnCancelProd" onclick="cancelEdit('prod')" style="background: #888; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none; margin-left: 10px;">Cancel</button>
                     </div>
                     <table class="admin-table">
-                        <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Qty</th><th>Rating</th><th>Status</th><th>Actions</th></tr></thead>
+                        <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Qty</th><th>Rating</th><th>Status</th><th>Actions</th></tr></thead>
                         <tbody id="prodTbody"></tbody>
                     </table>
                 </div>
@@ -554,7 +555,7 @@
         function resetInactivityTimer() {
             if (inactivityTimer) clearTimeout(inactivityTimer);
             inactivityTimer = setTimeout(() => {
-                alert("30 minute tak koi activity na hone ki wajah se session expire ho gaya hai.");
+                alert("Your session has expired due to 30 minutes of inactivity.");
                 logoutUser();
             }, INACTIVITY_LIMIT);
         }
@@ -821,7 +822,7 @@
         }
 
         // ==========================================
-        // 4. CRUD FOR PRODUCTS (WITH VIEW, EDIT, DELETE & RATING)
+        // 4. CRUD FOR PRODUCTS (WITH VIEW, EDIT, DELETE, PRICE & RATING)
         // ==========================================
         async function fetchProducts() {
             if (!sb) return;
@@ -843,10 +844,15 @@
                     ? `<img src="${p.image_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;" onerror="this.onerror=null; this.src='https://placehold.co/40x40?text=No+Img';">` 
                     : `<i class="fa-solid fa-image" style="font-size: 20px; color: #bbb;"></i>`;
 
+                const priceCell = (p.price && parseFloat(p.price) > 0)
+                    ? '<strong>₹' + Number(p.price).toLocaleString('en-IN') + '</strong>'
+                    : '<span style="color:#999;">On request</span>';
+
                 tr.innerHTML = `
                     <td>${imgThumb}</td>
                     <td><strong>${p.name}</strong></td>
                     <td>${p.category || '-'}</td>
+                    <td>${priceCell}</td>
                     <td>${p.qty || 0}</td>
                     <td>${p.rating || 5.0} ⭐</td>
                     <td><span class="status-badge ${p.status === 'Public' ? 'status-active' : 'status-inactive'}">${p.status || 'Public'}</span></td>
@@ -876,6 +882,7 @@
             document.getElementById('addProdCat').value = p.category || 'ERP Software';
             document.getElementById('addProdColor').value = p.color || '';
             document.getElementById('addProdQty').value = p.qty || '';
+            document.getElementById('addProdPrice').value = (p.price !== null && p.price !== undefined) ? p.price : '';
             if(document.getElementById('addProdRating')) {
                 document.getElementById('addProdRating').value = p.rating || 5.0;
             }
@@ -896,6 +903,7 @@
             const category = document.getElementById('addProdCat').value;
             const color = document.getElementById('addProdColor').value.trim();
             const qty = document.getElementById('addProdQty').value;
+            const price = document.getElementById('addProdPrice').value;
             const rating = document.getElementById('addProdRating') ? document.getElementById('addProdRating').value : 5.0;
             const specifications = document.getElementById('addProdSpec').value.trim();
             const description = document.getElementById('addProdDesc').value.trim();
@@ -906,6 +914,11 @@
 
             if (!name || !specifications) {
                 alert("Please fill Name and Specifications.");
+                return;
+            }
+
+            if (price !== '' && (isNaN(parseFloat(price)) || parseFloat(price) < 0)) {
+                alert("Please enter a valid Price (0 or more), or leave it blank.");
                 return;
             }
 
@@ -936,6 +949,7 @@
                     category, 
                     color, 
                     qty: qty ? parseInt(qty, 10) : null, 
+                    price: price !== '' ? parseFloat(price) : null,
                     rating: rating ? parseFloat(rating) : 5.0,
                     image_url: finalImageUrl, 
                     catalog_url: finalCatalogUrl, 
@@ -1155,6 +1169,7 @@
                 document.getElementById('addProdName').value = '';
                 document.getElementById('addProdColor').value = '';
                 document.getElementById('addProdQty').value = '';
+                document.getElementById('addProdPrice').value = '';
                 if(document.getElementById('addProdRating')) document.getElementById('addProdRating').value = '5.0';
                 document.getElementById('addProdImageFile').value = '';
                 document.getElementById('addProdCatalogFile').value = '';
