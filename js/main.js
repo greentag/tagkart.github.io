@@ -399,8 +399,18 @@ function renderProductCards(products) {
             ? `<a href="${escapeHtml(p.catalog_url)}" target="_blank" rel="noopener" style="background:#1b8a4f; color:#fff; padding:8px 14px; border-radius:6px; text-decoration:none; font-size:13px; font-weight:600; display:inline-block; margin-bottom:6px;"><i class="fa-solid fa-download"></i> Catalogue</a><br>`
             : '';
 
-        let btnLabel = price > 0 ? 'Shop Now' : 'Get Quote';
-        let shopBtn = `<button class="shop-btn" style="background:${out ? '#ccc' : '#e34f26'}; cursor:${out ? 'not-allowed' : 'pointer'};" ${out ? 'disabled' : ''} onclick="addToCart('${escapeHtml(String(p.id))}')"><i class="fa-solid fa-cart-plus"></i> ${btnLabel}</button>`;
+        let pid = escapeHtml(String(p.id));
+        let hasPrice = price > 0;
+        let disabledAttr = out ? 'disabled' : '';
+        let cursor = out ? 'not-allowed' : 'pointer';
+        let shopBtn = hasPrice
+            // Price available -> Shop Now + Buy Now
+            ? `<div style="display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;">
+                    <button class="shop-btn" style="background:${out ? '#ccc' : '#e34f26'}; cursor:${cursor};" ${disabledAttr} onclick="addToCart('${pid}')"><i class="fa-solid fa-cart-plus"></i> Shop Now</button>
+                    <button class="shop-btn" style="background:${out ? '#ccc' : '#1b8a4f'}; cursor:${cursor};" ${disabledAttr} onclick="buyNow('${pid}')"><i class="fa-solid fa-bolt"></i> Buy Now</button>
+               </div>`
+            // No price -> Get Quote only
+            : `<button class="shop-btn" style="background:${out ? '#ccc' : '#e34f26'}; cursor:${cursor};" ${disabledAttr} onclick="addToCart('${pid}')"><i class="fa-solid fa-file-invoice"></i> Get Quote</button>`;
 
         return `
             <div style="display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #dbe8e0; border-radius:12px; padding:18px 24px; box-shadow:0 3px 10px rgba(0,0,0,0.04); gap:24px; flex-wrap:wrap;">
@@ -445,9 +455,9 @@ function saveCart() {
     updateCartBadge();
 }
 
-function addToCart(id) {
+function addItemToCart(id) {
     const p = allProductsCache.find(x => String(x.id) === String(id));
-    if (!p || isOutOfStockItem(p)) return;
+    if (!p || isOutOfStockItem(p)) return false;
     const max = parseInt(p.qty, 10) || 1;
     const existing = cart.find(c => String(c.id) === String(id));
     if (existing) {
@@ -457,7 +467,25 @@ function addToCart(id) {
         cart.push({ id: String(p.id), name: p.name, qty: 1, price: priceOf(p) });
     }
     saveCart();
-    openCart();
+    return true;
+}
+
+// "Shop Now": add to cart and open the cart
+function addToCart(id) {
+    if (addItemToCart(id)) openCart();
+}
+
+// "Buy Now": add to cart and go straight to the checkout form
+function buyNow(id) {
+    if (!addItemToCart(id)) return;
+    ensureCartUI();
+    document.getElementById('cartModal').style.display = 'flex';
+    showCheckout();
+}
+
+// Use this on any "Shop Now" button/menu in your HTML: onclick="goShop()"
+function goShop() {
+    selectTab('product');
 }
 
 function changeCartQty(id, delta) {
