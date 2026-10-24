@@ -340,6 +340,16 @@
         .btn-mini { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; color: #fff; }
         .btn-mini.remove { background: #e34f26; }
         .btn-mini.undo { background: #888; }
+
+        /* Multi-image manager */
+        .img-manager { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+        .img-card { position: relative; width: 96px; text-align: center; }
+        .thumb-box.big { width: 96px; height: 96px; }
+        .cover-badge { position: absolute; top: 5px; left: 5px; background: #1b8a4f; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 700; }
+        .new-badge { position: absolute; bottom: 30px; left: 5px; background: #007bb5; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 700; }
+        .img-x { position: absolute; top: -7px; right: -7px; width: 22px; height: 22px; border-radius: 50%; border: none; background: #e34f26; color: #fff; cursor: pointer; font-size: 15px; line-height: 1; padding: 0; }
+        .btn-mini.cover { background: #007bb5; margin-top: 4px; width: 100%; }
+        .cover-label { display: block; margin-top: 4px; font-size: 11px; color: #1b8a4f; font-weight: 600; }
     </style>
 
     <!-- Supabase CDN Client -->
@@ -406,9 +416,9 @@
                         <!-- Attach File Inputs -->
                         <div class="form-grid">
                             <div class="file-upload-box">
-                                <label><i class="fa-solid fa-image"></i> Attach Product Image *</label>
-                                <input type="file" id="addProdImageFile" accept="image/*" onchange="onFilePicked('image')">
-                                <div id="currentImgBox"></div>
+                                <label><i class="fa-solid fa-images"></i> Product Images * (select one or many; first image is the cover)</label>
+                                <input type="file" id="addProdImageFile" accept="image/*" multiple onchange="onImagesPicked(this)">
+                                <div id="imageManager" class="img-manager"></div>
                             </div>
                             <div class="file-upload-box">
                                 <label><i class="fa-solid fa-file-pdf"></i> Attach Catalogue PDF (Optional)</label>
@@ -554,7 +564,8 @@
 
         let existingImageUrl = "";
         let existingCatalogUrl = "";
-        let removeImage = false;     // edit mode: remove current image on save
+        let imageItems = [];         // [{type:'existing', url} | {type:'new', file, preview}]
+        let removedImageUrls = [];   // existing images removed in edit mode
         let removeCatalog = false;   // edit mode: remove current catalogue on save
 
         let cacheProducts = [];
@@ -883,42 +894,76 @@
             });
         }
 
-        // ---- Current image / catalogue box (edit mode) ----
-        function renderCurrentFiles() {
-            const imgBox = document.getElementById('currentImgBox');
-            const catBox = document.getElementById('currentCatBox');
-
-            if (imgBox) {
-                if (!editProdId || !existingImageUrl) {
-                    imgBox.innerHTML = '';
-                } else if (removeImage) {
-                    imgBox.innerHTML = `<div class="file-current"><span style="flex:1; color:#e34f26; font-weight:600;">Current image will be removed when you save.</span><button type="button" class="btn-mini undo" onclick="toggleRemoveFile('image')">Undo</button></div>`;
-                } else {
-                    imgBox.innerHTML = `<div class="file-current"><div class="thumb-box"><img src="${existingImageUrl}" alt=""></div><div style="flex:1;"><strong>Current image</strong><br><small style="color:#777;">Choose a file above to replace it</small></div><button type="button" class="btn-mini remove" onclick="toggleRemoveFile('image')"><i class="fa-solid fa-trash"></i> Remove</button></div>`;
-                }
+        // ---- Product images (multiple) ----
+        function getProductImages(p) {
+            let list = [];
+            if (Array.isArray(p.images)) list = p.images.filter(Boolean);
+            else if (typeof p.images === 'string' && p.images) {
+                try { list = JSON.parse(p.images).filter(Boolean); } catch (e) { list = []; }
             }
+            if (list.length === 0 && p.image_url) list = [p.image_url];
+            return list;
+        }
 
-            if (catBox) {
-                if (!editProdId || !existingCatalogUrl) {
-                    catBox.innerHTML = '';
-                } else if (removeCatalog) {
-                    catBox.innerHTML = `<div class="file-current"><span style="flex:1; color:#e34f26; font-weight:600;">Current catalogue will be removed when you save.</span><button type="button" class="btn-mini undo" onclick="toggleRemoveFile('catalog')">Undo</button></div>`;
-                } else {
-                    catBox.innerHTML = `<div class="file-current"><i class="fa-solid fa-file-pdf" style="font-size:28px; color:#e34f26;"></i><div style="flex:1;"><strong>Current catalogue</strong><br><a href="${existingCatalogUrl}" target="_blank" rel="noopener" style="color:#007bb5;">Open file</a> <small style="color:#777;">&middot; choose a file above to replace it</small></div><button type="button" class="btn-mini remove" onclick="toggleRemoveFile('catalog')"><i class="fa-solid fa-trash"></i> Remove</button></div>`;
-                }
+        function renderImageManager() {
+            const box = document.getElementById('imageManager');
+            if (!box) return;
+            if (imageItems.length === 0) {
+                box.innerHTML = '<div style="font-size:12px; color:#888;">No images selected yet. You can select several images at once.</div>';
+                return;
+            }
+            box.innerHTML = imageItems.map((it, i) => `
+                <div class="img-card">
+                    <div class="thumb-box big"><img src="${it.type === 'new' ? it.preview : it.url}" alt=""></div>
+                    ${i === 0 ? '<span class="cover-badge">Cover</span>' : ''}
+                    ${it.type === 'new' ? '<span class="new-badge">New</span>' : ''}
+                    <button type="button" class="img-x" title="Remove image" onclick="removeImageItem(${i})">&times;</button>
+                    ${i === 0 ? '<span class="cover-label">Main image</span>' : `<button type="button" class="btn-mini cover" onclick="makeCover(${i})">Set as cover</button>`}
+                </div>`).join('');
+        }
+
+        function onImagesPicked(input) {
+            Array.from(input.files).forEach(f => imageItems.push({ type: 'new', file: f, preview: URL.createObjectURL(f) }));
+            input.value = '';
+            renderImageManager();
+        }
+
+        function removeImageItem(i) {
+            const it = imageItems[i];
+            if (!it) return;
+            if (it.type === 'existing') removedImageUrls.push(it.url);
+            else URL.revokeObjectURL(it.preview);
+            imageItems.splice(i, 1);
+            renderImageManager();
+        }
+
+        function makeCover(i) {
+            const [it] = imageItems.splice(i, 1);
+            imageItems.unshift(it);
+            renderImageManager();
+        }
+
+        // ---- Current catalogue box (edit mode) ----
+        function renderCurrentFiles() {
+            const catBox = document.getElementById('currentCatBox');
+            if (!catBox) return;
+            if (!editProdId || !existingCatalogUrl) {
+                catBox.innerHTML = '';
+            } else if (removeCatalog) {
+                catBox.innerHTML = `<div class="file-current"><span style="flex:1; color:#e34f26; font-weight:600;">Current catalogue will be removed when you save.</span><button type="button" class="btn-mini undo" onclick="toggleRemoveFile('catalog')">Undo</button></div>`;
+            } else {
+                catBox.innerHTML = `<div class="file-current"><i class="fa-solid fa-file-pdf" style="font-size:28px; color:#e34f26;"></i><div style="flex:1;"><strong>Current catalogue</strong><br><a href="${existingCatalogUrl}" target="_blank" rel="noopener" style="color:#007bb5;">Open file</a> <small style="color:#777;">&middot; choose a file above to replace it</small></div><button type="button" class="btn-mini remove" onclick="toggleRemoveFile('catalog')"><i class="fa-solid fa-trash"></i> Remove</button></div>`;
             }
         }
 
         function toggleRemoveFile(kind) {
-            if (kind === 'image') removeImage = !removeImage;
-            else removeCatalog = !removeCatalog;
+            removeCatalog = !removeCatalog;
             renderCurrentFiles();
         }
 
-        // Picking a new file cancels a pending "remove" (the new file replaces the old one)
+        // Picking a new catalogue cancels a pending "remove" (the new file replaces the old one)
         function onFilePicked(kind) {
-            if (kind === 'image') removeImage = false;
-            else removeCatalog = false;
+            removeCatalog = false;
             renderCurrentFiles();
         }
 
@@ -958,10 +1003,12 @@
             document.getElementById('addProdDesc').value = p.description || '';
             document.getElementById('addProdHidden').checked = (p.status === 'Hidden');
 
-            removeImage = false;
             removeCatalog = false;
+            removedImageUrls = [];
+            imageItems = getProductImages(p).map(url => ({ type: 'existing', url }));
             document.getElementById('addProdImageFile').value = '';
             document.getElementById('addProdCatalogFile').value = '';
+            renderImageManager();
             renderCurrentFiles();
 
             document.getElementById('btnSaveProd').innerHTML = '<i class="fa-solid fa-save"></i> Update Product';
@@ -993,13 +1040,12 @@
                 return;
             }
 
-            if (!editProdId && imgFileInput.files.length === 0) {
-                alert("Please attach a Product Image.");
-                return;
-            }
-
-            if (editProdId && removeImage && imgFileInput.files.length === 0) {
-                if (!confirm("You removed the current image and did not attach a new one. Save this product without an image?")) return;
+            if (imageItems.length === 0) {
+                if (!editProdId) {
+                    alert("Please attach at least one Product Image.");
+                    return;
+                }
+                if (!confirm("This product has no images. Save without any image?")) return;
             }
 
             const saveBtn = document.getElementById('btnSaveProd');
@@ -1008,17 +1054,16 @@
             saveBtn.disabled = true;
 
             try {
-                let finalImageUrl = existingImageUrl;
                 let finalCatalogUrl = existingCatalogUrl;
-                const filesToDelete = [];   // old files that were replaced or removed
+                const filesToDelete = [...removedImageUrls];   // old files that were removed or replaced
 
-                if (imgFileInput.files.length > 0) {
-                    finalImageUrl = await uploadFileToStorage(imgFileInput.files[0], 'images');
-                    if (existingImageUrl) filesToDelete.push(existingImageUrl);
-                } else if (removeImage) {
-                    finalImageUrl = "";
-                    if (existingImageUrl) filesToDelete.push(existingImageUrl);
+                // Upload new images, keeping the order shown in the image manager
+                const finalImages = [];
+                for (const it of imageItems) {
+                    if (it.type === 'existing') finalImages.push(it.url);
+                    else finalImages.push(await uploadFileToStorage(it.file, 'images'));
                 }
+                const finalImageUrl = finalImages[0] || "";
 
                 if (catFileInput.files.length > 0) {
                     finalCatalogUrl = await uploadFileToStorage(catFileInput.files[0], 'catalogues');
@@ -1035,7 +1080,8 @@
                     qty: qty ? parseInt(qty, 10) : null, 
                     price: price !== '' ? parseFloat(price) : null,
                     rating: rating ? parseFloat(rating) : 5.0,
-                    image_url: finalImageUrl, 
+                    image_url: finalImageUrl,
+                    images: finalImages, 
                     catalog_url: finalCatalogUrl, 
                     specifications, 
                     description, 
@@ -1258,8 +1304,11 @@
                 if(document.getElementById('addProdRating')) document.getElementById('addProdRating').value = '5.0';
                 document.getElementById('addProdImageFile').value = '';
                 document.getElementById('addProdCatalogFile').value = '';
-                removeImage = false;
                 removeCatalog = false;
+                removedImageUrls = [];
+                imageItems.forEach(it => { if (it.type === 'new') URL.revokeObjectURL(it.preview); });
+                imageItems = [];
+                renderImageManager();
                 renderCurrentFiles();
                 document.getElementById('addProdSpec').value = '';
                 document.getElementById('addProdDesc').value = '';
@@ -1292,6 +1341,7 @@
 
         // Start Auth check on load
         window.addEventListener('DOMContentLoaded', () => {
+            renderImageManager();
             initAuth();
         });
     </script>
