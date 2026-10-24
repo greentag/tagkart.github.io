@@ -376,10 +376,24 @@ function renderProductCards(products) {
     }
 
     listArea.innerHTML = products.map(p => {
-        let directImg = formatImageUrl(p.image_url);
-        let imgTag = directImg
-            ? `<img src="${escapeHtml(directImg)}" style="width:120px; height:120px; object-fit:contain; background:#fff; padding:4px; box-sizing:border-box; border-radius:8px; border:1px solid #eaeaea;" onerror="this.onerror=null; this.src='https://placehold.co/120x120?text=No+Image';">`
-            : `<div style="width:120px; height:120px; display:flex; align-items:center; justify-content:center; background:#f0f7f3; border-radius:8px;"><i class="fa-solid fa-boxes-stacked" style="font-size:30px; color:#1b8a4f;"></i></div>`;
+        let imgs = getProductImages(p).map(formatImageUrl);
+        let pid0 = escapeHtml(String(p.id));
+        let imgTag;
+        if (imgs.length > 0) {
+            let thumbs = '';
+            if (imgs.length > 1) {
+                thumbs = `<div style="display:flex; gap:4px; margin-top:6px; width:120px; flex-wrap:wrap; align-items:center;">` +
+                    imgs.slice(0, 4).map((u, i) => `<img src="${escapeHtml(u)}" alt="" onclick="openLightbox('${pid0}', ${i})" style="width:26px; height:26px; object-fit:contain; background:#fff; border:1px solid #dbe8e0; border-radius:4px; cursor:pointer;" onerror="this.style.display='none'">`).join('') +
+                    (imgs.length > 4 ? `<span onclick="openLightbox('${pid0}', 4)" style="font-size:11px; color:#1b8a4f; font-weight:700; cursor:pointer;">+${imgs.length - 4}</span>` : '') +
+                    `</div>`;
+            }
+            imgTag = `<div>
+                <img src="${escapeHtml(imgs[0])}" alt="${escapeHtml(p.name)}" title="Click to view${imgs.length > 1 ? ' all ' + imgs.length + ' photos' : ''}" onclick="openLightbox('${pid0}', 0)" style="width:120px; height:120px; object-fit:contain; background:#fff; padding:4px; box-sizing:border-box; border-radius:8px; border:1px solid #eaeaea; cursor:zoom-in;" onerror="this.onerror=null; this.src='https://placehold.co/120x120?text=No+Image';">
+                ${thumbs}
+            </div>`;
+        } else {
+            imgTag = `<div style="width:120px; height:120px; display:flex; align-items:center; justify-content:center; background:#f0f7f3; border-radius:8px;"><i class="fa-solid fa-boxes-stacked" style="font-size:30px; color:#1b8a4f;"></i></div>`;
+        }
 
         let out = isOutOfStockItem(p);
         let stockBadge = out
@@ -438,6 +452,130 @@ function renderProductCards(products) {
             </div>
         `;
     }).join('');
+}
+
+// ====================================================
+// 2B-2. IMAGE GALLERY + LIGHTBOX
+// ====================================================
+let lbImages = [];
+let lbIndex = 0;
+
+// Returns all images of a product (new "images" list, falls back to the single image_url)
+function getProductImages(p) {
+    let list = [];
+    if (Array.isArray(p.images)) list = p.images.filter(Boolean);
+    else if (typeof p.images === 'string' && p.images) {
+        try { list = JSON.parse(p.images).filter(Boolean); } catch (e) { list = []; }
+    }
+    if (list.length === 0 && p.image_url) list = [p.image_url];
+    return list;
+}
+
+function ensureLightbox() {
+    if (document.getElementById('lbOverlay')) return;
+
+    const st = document.createElement('style');
+    st.textContent = `
+        #lbOverlay { position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:10000; display:none; flex-direction:column; align-items:center; justify-content:center; user-select:none; }
+        #lbOverlay .lb-title { position:absolute; top:14px; left:20px; right:70px; color:#fff; font-size:15px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        #lbOverlay .lb-close { position:absolute; top:10px; right:18px; background:none; border:none; color:#fff; font-size:38px; line-height:1; cursor:pointer; z-index:2; }
+        #lbOverlay .lb-stage { flex:1; width:100%; display:flex; overflow:auto; padding:56px 70px 10px 70px; box-sizing:border-box; }
+        #lbOverlay .lb-img { margin:auto; max-width:100%; max-height:100%; object-fit:contain; cursor:zoom-in; background:#fff; border-radius:6px; }
+        #lbOverlay .lb-img.zoomed { max-width:none; max-height:none; cursor:zoom-out; }
+        #lbOverlay .lb-nav { position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.15); color:#fff; border:none; width:46px; height:46px; border-radius:50%; font-size:20px; cursor:pointer; z-index:2; }
+        #lbOverlay .lb-nav:hover { background:rgba(255,255,255,0.3); }
+        #lbOverlay .lb-prev { left:14px; }
+        #lbOverlay .lb-next { right:14px; }
+        #lbOverlay .lb-count { color:#ddd; font-size:13px; margin:6px 0; }
+        #lbOverlay .lb-thumbs { display:flex; gap:8px; padding:6px 12px 16px; max-width:100%; overflow-x:auto; }
+        #lbOverlay .lb-thumbs img { width:62px; height:62px; object-fit:contain; background:#fff; border-radius:6px; border:2px solid transparent; cursor:pointer; opacity:0.65; flex-shrink:0; }
+        #lbOverlay .lb-thumbs img.active { border-color:#1b8a4f; opacity:1; }
+        @media (max-width: 600px) {
+            #lbOverlay .lb-stage { padding:56px 8px 10px 8px; }
+            #lbOverlay .lb-nav { width:38px; height:38px; }
+        }
+    `;
+    document.head.appendChild(st);
+
+    const ov = document.createElement('div');
+    ov.id = 'lbOverlay';
+    ov.innerHTML = `
+        <div class="lb-title" id="lbTitle"></div>
+        <button class="lb-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
+        <button class="lb-nav lb-prev" id="lbPrev" onclick="lbStep(-1)" aria-label="Previous image">&#10094;</button>
+        <div class="lb-stage" id="lbStage"><img id="lbImg" class="lb-img" alt="" onclick="lbToggleZoom()"></div>
+        <button class="lb-nav lb-next" id="lbNext" onclick="lbStep(1)" aria-label="Next image">&#10095;</button>
+        <div class="lb-count" id="lbCount"></div>
+        <div class="lb-thumbs" id="lbThumbs"></div>`;
+    ov.addEventListener('click', (e) => { if (e.target === ov || e.target.id === 'lbStage') closeLightbox(); });
+    document.body.appendChild(ov);
+
+    document.addEventListener('keydown', (e) => {
+        if (ov.style.display !== 'flex') return;
+        if (e.key === 'Escape') closeLightbox();
+        else if (e.key === 'ArrowLeft') lbStep(-1);
+        else if (e.key === 'ArrowRight') lbStep(1);
+    });
+
+    let sx = null;
+    ov.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; }, { passive: true });
+    ov.addEventListener('touchend', (e) => {
+        if (sx === null) return;
+        const dx = e.changedTouches[0].clientX - sx;
+        sx = null;
+        const img = document.getElementById('lbImg');
+        if (Math.abs(dx) > 50 && !(img && img.classList.contains('zoomed'))) lbStep(dx < 0 ? 1 : -1);
+    });
+}
+
+function openLightbox(productId, startIndex) {
+    const p = allProductsCache.find(x => String(x.id) === String(productId));
+    if (!p) return;
+    lbImages = getProductImages(p).map(formatImageUrl);
+    if (lbImages.length === 0) return;
+    ensureLightbox();
+    document.getElementById('lbTitle').textContent = p.name || '';
+    lbIndex = Math.max(0, Math.min(lbImages.length - 1, startIndex || 0));
+    document.getElementById('lbOverlay').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    lbShow();
+}
+
+function closeLightbox() {
+    const ov = document.getElementById('lbOverlay');
+    if (ov) ov.style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function lbShow() {
+    const img = document.getElementById('lbImg');
+    img.classList.remove('zoomed');
+    img.onerror = function () { this.onerror = null; this.src = 'https://placehold.co/600x400?text=Image+not+available'; };
+    img.src = lbImages[lbIndex];
+    document.getElementById('lbCount').textContent = `${lbIndex + 1} / ${lbImages.length}`;
+    const multi = lbImages.length > 1;
+    document.getElementById('lbPrev').style.display = multi ? 'block' : 'none';
+    document.getElementById('lbNext').style.display = multi ? 'block' : 'none';
+    const th = document.getElementById('lbThumbs');
+    th.style.display = multi ? 'flex' : 'none';
+    th.innerHTML = lbImages.map((u, i) => `<img src="${escapeHtml(u)}" alt="" class="${i === lbIndex ? 'active' : ''}" onclick="lbGo(${i})" onerror="this.style.display='none'">`).join('');
+    const active = th.querySelector('img.active');
+    if (active && active.scrollIntoView) active.scrollIntoView({ block: 'nearest', inline: 'center' });
+}
+
+function lbStep(delta) {
+    if (lbImages.length < 2) return;
+    lbIndex = (lbIndex + delta + lbImages.length) % lbImages.length;
+    lbShow();
+}
+
+function lbGo(i) {
+    lbIndex = i;
+    lbShow();
+}
+
+function lbToggleZoom() {
+    document.getElementById('lbImg').classList.toggle('zoomed');
 }
 
 // ====================================================
