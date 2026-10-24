@@ -414,17 +414,13 @@ function renderProductCards(products) {
             : '';
 
         let pid = escapeHtml(String(p.id));
-        let hasPrice = price > 0;
-        let disabledAttr = out ? 'disabled' : '';
-        let cursor = out ? 'not-allowed' : 'pointer';
-        let shopBtn = hasPrice
-            // Price available -> Shop Now + Buy Now
-            ? `<div style="display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;">
-                    <button class="shop-btn" style="background:${out ? '#ccc' : '#e34f26'}; cursor:${cursor};" ${disabledAttr} onclick="addToCart('${pid}')"><i class="fa-solid fa-cart-plus"></i> Shop Now</button>
-                    <button class="shop-btn" style="background:${out ? '#ccc' : '#1b8a4f'}; cursor:${cursor};" ${disabledAttr} onclick="buyNow('${pid}')"><i class="fa-solid fa-bolt"></i> Buy Now</button>
-               </div>`
-            // No price -> Get Quote only
-            : `<button class="shop-btn" style="background:${out ? '#ccc' : '#e34f26'}; cursor:${cursor};" ${disabledAttr} onclick="addToCart('${pid}')"><i class="fa-solid fa-file-invoice"></i> Get Quote</button>`;
+        // One button only:
+        //   in stock + has price  -> Shop Now
+        //   out of stock OR no price -> Get Quote
+        let quoteOnly = out || !(price > 0);
+        let shopBtn = quoteOnly
+            ? `<button class="shop-btn" style="background:#e34f26;" onclick="addToCart('${pid}')"><i class="fa-solid fa-file-invoice"></i> Get Quote</button>`
+            : `<button class="shop-btn" style="background:#1b8a4f;" onclick="addToCart('${pid}')"><i class="fa-solid fa-cart-plus"></i> Shop Now</button>`;
 
         return `
             <div style="display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #dbe8e0; border-radius:12px; padding:18px 24px; box-shadow:0 3px 10px rgba(0,0,0,0.04); gap:24px; flex-wrap:wrap;">
@@ -595,14 +591,16 @@ function saveCart() {
 
 function addItemToCart(id) {
     const p = allProductsCache.find(x => String(x.id) === String(id));
-    if (!p || isOutOfStockItem(p)) return false;
-    const max = parseInt(p.qty, 10) || 1;
+    if (!p) return false;
+    const out = isOutOfStockItem(p);
+    const max = out ? 9999 : (parseInt(p.qty, 10) || 1);   // out-of-stock items are quote requests: no stock limit
+    const unitPrice = out ? 0 : priceOf(p);                // out-of-stock items are always quoted, never billed
     const existing = cart.find(c => String(c.id) === String(id));
     if (existing) {
         if (existing.qty < max) existing.qty += 1;
-        existing.price = priceOf(p);
+        existing.price = unitPrice;
     } else {
-        cart.push({ id: String(p.id), name: p.name, qty: 1, price: priceOf(p) });
+        cart.push({ id: String(p.id), name: p.name, qty: 1, price: unitPrice });
     }
     saveCart();
     return true;
@@ -611,14 +609,6 @@ function addItemToCart(id) {
 // "Shop Now": add to cart and open the cart
 function addToCart(id) {
     if (addItemToCart(id)) openCart();
-}
-
-// "Buy Now": add to cart and go straight to the checkout form
-function buyNow(id) {
-    if (!addItemToCart(id)) return;
-    ensureCartUI();
-    document.getElementById('cartModal').style.display = 'flex';
-    showCheckout();
 }
 
 // Use this on any "Shop Now" button/menu in your HTML: onclick="goShop()"
@@ -630,7 +620,7 @@ function changeCartQty(id, delta) {
     const item = cart.find(c => String(c.id) === String(id));
     if (!item) return;
     const p = allProductsCache.find(x => String(x.id) === String(id));
-    const max = p ? (parseInt(p.qty, 10) || 1) : 9999;
+    const max = p ? (isOutOfStockItem(p) ? 9999 : (parseInt(p.qty, 10) || 1)) : 9999;
     item.qty = Math.max(0, Math.min(max, item.qty + delta));
     if (item.qty === 0) cart = cart.filter(c => String(c.id) !== String(id));
     saveCart();
@@ -693,6 +683,7 @@ function summaryHtml() {
                 <div class="sum-line" style="border-top:1px solid #cfe0d6; padding-top:8px; margin-top:10px;"><span>Subtotal</span><span>${fmtINR(t.subtotal)}</span></div>
                 ${GST_RATE ? `<div class="sum-line"><span>GST (${GST_RATE}%)</span><span>${fmtINR(t.gst)}</span></div>` : ''}
                 <div class="sum-line sum-total"><span>Total</span><span>${fmtINR(t.total)}</span></div>
+                ${cart.some(c => !(c.price > 0)) ? '<p style="font-size:12px; color:#777; margin-top:8px;">Items marked "On request" will be quoted separately.</p>' : ''}
             ` : `<p style="font-size:12px; color:#777; margin-top:10px;">We will confirm the price and send you a quotation.</p>`}
         </div>`;
 }
@@ -812,7 +803,7 @@ function generateOrderNo() {
 }
 
 function buildOrderMessage(orderNo, d, t) {
-    const lines = cart.map((c, i) => `${i + 1}. ${c.name} x ${c.qty}${c.price > 0 ? ' = ' + fmtINR(c.price * c.qty) : ''}`).join('\n');
+    const lines = cart.map((c, i) => `${i + 1}. ${c.name} x ${c.qty}${c.price > 0 ? ' = ' + fmtINR(c.price * c.qty) : ' (quote requested)'}`).join('\n');
     return `New Order: ${orderNo}\n\n` +
         `Name: ${d.name}\nPhone: ${d.phone}\nEmail: ${d.email}\nCompany: ${d.company || '-'}\nGSTIN: ${d.gstin || '-'}\n` +
         `Address: ${d.address}, ${d.city}, ${d.state} - ${d.pincode}\nPayment: ${d.payment}\nNotes: ${d.notes || '-'}\n\n` +
