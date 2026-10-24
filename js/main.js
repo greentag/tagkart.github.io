@@ -378,7 +378,7 @@ function renderProductCards(products) {
     listArea.innerHTML = products.map(p => {
         let directImg = formatImageUrl(p.image_url);
         let imgTag = directImg
-            ? `<img src="${escapeHtml(directImg)}" style="width:120px; height:120px; object-fit:cover; border-radius:8px; border:1px solid #eaeaea;" onerror="this.onerror=null; this.src='https://placehold.co/120x120?text=No+Image';">`
+            ? `<img src="${escapeHtml(directImg)}" style="width:120px; height:120px; object-fit:contain; background:#fff; padding:4px; box-sizing:border-box; border-radius:8px; border:1px solid #eaeaea;" onerror="this.onerror=null; this.src='https://placehold.co/120x120?text=No+Image';">`
             : `<div style="width:120px; height:120px; display:flex; align-items:center; justify-content:center; background:#f0f7f3; border-radius:8px;"><i class="fa-solid fa-boxes-stacked" style="font-size:30px; color:#1b8a4f;"></i></div>`;
 
         let out = isOutOfStockItem(p);
