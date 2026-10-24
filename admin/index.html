@@ -329,6 +329,17 @@
         .btn-view-act { background: #28a745; }
         .btn-edit-act { background: #007bb5; }
         .btn-delete-act { background: #e34f26; }
+
+        /* Image fits inside its box (shrinks, never cropped) */
+        .thumb-box { width: 56px; height: 56px; background: #fff; border: 1px solid #ddd; border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-sizing: border-box; padding: 3px; }
+        .thumb-box img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block; }
+
+        /* Current file (edit mode) */
+        .file-current { display: flex; align-items: center; gap: 12px; margin-top: 6px; padding: 8px 10px; background: #f8fbf9; border: 1px dashed #cfe0d6; border-radius: 6px; font-size: 12px; color: #444; }
+        .file-current .thumb-box { width: 72px; height: 72px; flex-shrink: 0; }
+        .btn-mini { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; color: #fff; }
+        .btn-mini.remove { background: #e34f26; }
+        .btn-mini.undo { background: #888; }
     </style>
 
     <!-- Supabase CDN Client -->
@@ -396,13 +407,13 @@
                         <div class="form-grid">
                             <div class="file-upload-box">
                                 <label><i class="fa-solid fa-image"></i> Attach Product Image *</label>
-                                <input type="file" id="addProdImageFile" accept="image/*">
-                                <span id="currentImgLabel" style="font-size: 11px; color: #1b8a4f; font-weight: 600;"></span>
+                                <input type="file" id="addProdImageFile" accept="image/*" onchange="onFilePicked('image')">
+                                <div id="currentImgBox"></div>
                             </div>
                             <div class="file-upload-box">
                                 <label><i class="fa-solid fa-file-pdf"></i> Attach Catalogue PDF (Optional)</label>
-                                <input type="file" id="addProdCatalogFile" accept=".pdf,.doc,.docx">
-                                <span id="currentCatLabel" style="font-size: 11px; color: #1b8a4f; font-weight: 600;"></span>
+                                <input type="file" id="addProdCatalogFile" accept=".pdf,.doc,.docx" onchange="onFilePicked('catalog')">
+                                <div id="currentCatBox"></div>
                             </div>
                         </div>
 
@@ -543,6 +554,8 @@
 
         let existingImageUrl = "";
         let existingCatalogUrl = "";
+        let removeImage = false;     // edit mode: remove current image on save
+        let removeCatalog = false;   // edit mode: remove current catalogue on save
 
         let cacheProducts = [];
         let cacheJobs = [];
@@ -841,8 +854,8 @@
             cacheProducts.forEach(p => {
                 const tr = document.createElement('tr');
                 const imgThumb = (p.image_url && p.image_url.trim() !== '')
-                    ? `<img src="${p.image_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;" onerror="this.onerror=null; this.src='https://placehold.co/40x40?text=No+Img';">` 
-                    : `<i class="fa-solid fa-image" style="font-size: 20px; color: #bbb;"></i>`;
+                    ? `<div class="thumb-box"><img src="${p.image_url}" alt="" onerror="this.onerror=null; this.src='https://placehold.co/56x56?text=No+Img';"></div>` 
+                    : `<div class="thumb-box"><i class="fa-solid fa-image" style="font-size: 20px; color: #bbb;"></i></div>`;
 
                 const priceCell = (p.price && parseFloat(p.price) > 0)
                     ? '<strong>₹' + Number(p.price).toLocaleString('en-IN') + '</strong>'
@@ -870,6 +883,61 @@
             });
         }
 
+        // ---- Current image / catalogue box (edit mode) ----
+        function renderCurrentFiles() {
+            const imgBox = document.getElementById('currentImgBox');
+            const catBox = document.getElementById('currentCatBox');
+
+            if (imgBox) {
+                if (!editProdId || !existingImageUrl) {
+                    imgBox.innerHTML = '';
+                } else if (removeImage) {
+                    imgBox.innerHTML = `<div class="file-current"><span style="flex:1; color:#e34f26; font-weight:600;">Current image will be removed when you save.</span><button type="button" class="btn-mini undo" onclick="toggleRemoveFile('image')">Undo</button></div>`;
+                } else {
+                    imgBox.innerHTML = `<div class="file-current"><div class="thumb-box"><img src="${existingImageUrl}" alt=""></div><div style="flex:1;"><strong>Current image</strong><br><small style="color:#777;">Choose a file above to replace it</small></div><button type="button" class="btn-mini remove" onclick="toggleRemoveFile('image')"><i class="fa-solid fa-trash"></i> Remove</button></div>`;
+                }
+            }
+
+            if (catBox) {
+                if (!editProdId || !existingCatalogUrl) {
+                    catBox.innerHTML = '';
+                } else if (removeCatalog) {
+                    catBox.innerHTML = `<div class="file-current"><span style="flex:1; color:#e34f26; font-weight:600;">Current catalogue will be removed when you save.</span><button type="button" class="btn-mini undo" onclick="toggleRemoveFile('catalog')">Undo</button></div>`;
+                } else {
+                    catBox.innerHTML = `<div class="file-current"><i class="fa-solid fa-file-pdf" style="font-size:28px; color:#e34f26;"></i><div style="flex:1;"><strong>Current catalogue</strong><br><a href="${existingCatalogUrl}" target="_blank" rel="noopener" style="color:#007bb5;">Open file</a> <small style="color:#777;">&middot; choose a file above to replace it</small></div><button type="button" class="btn-mini remove" onclick="toggleRemoveFile('catalog')"><i class="fa-solid fa-trash"></i> Remove</button></div>`;
+                }
+            }
+        }
+
+        function toggleRemoveFile(kind) {
+            if (kind === 'image') removeImage = !removeImage;
+            else removeCatalog = !removeCatalog;
+            renderCurrentFiles();
+        }
+
+        // Picking a new file cancels a pending "remove" (the new file replaces the old one)
+        function onFilePicked(kind) {
+            if (kind === 'image') removeImage = false;
+            else removeCatalog = false;
+            renderCurrentFiles();
+        }
+
+        // Best-effort cleanup of replaced/removed files from Supabase Storage
+        async function deleteStoredFiles(urls) {
+            const marker = '/storage/v1/object/public/products/';
+            const paths = urls.map(u => {
+                const i = u ? u.indexOf(marker) : -1;
+                return i === -1 ? null : decodeURIComponent(u.substring(i + marker.length).split('?')[0]);
+            }).filter(Boolean);
+            if (paths.length === 0) return;
+            try {
+                const { error } = await sb.storage.from('products').remove(paths);
+                if (error) console.warn("Old file cleanup failed:", error.message);
+            } catch (e) {
+                console.warn("Old file cleanup failed:", e);
+            }
+        }
+
         function editProduct(id) {
             const p = cacheProducts.find(item => item.id === id);
             if (!p) return;
@@ -890,8 +958,11 @@
             document.getElementById('addProdDesc').value = p.description || '';
             document.getElementById('addProdHidden').checked = (p.status === 'Hidden');
 
-            document.getElementById('currentImgLabel').innerText = existingImageUrl ? "Current Image Attached (Upload new to replace)" : "";
-            document.getElementById('currentCatLabel').innerText = existingCatalogUrl ? "Current PDF Attached (Upload new to replace)" : "";
+            removeImage = false;
+            removeCatalog = false;
+            document.getElementById('addProdImageFile').value = '';
+            document.getElementById('addProdCatalogFile').value = '';
+            renderCurrentFiles();
 
             document.getElementById('btnSaveProd').innerHTML = '<i class="fa-solid fa-save"></i> Update Product';
             document.getElementById('btnCancelProd').style.display = 'inline-block';
@@ -927,6 +998,10 @@
                 return;
             }
 
+            if (editProdId && removeImage && imgFileInput.files.length === 0) {
+                if (!confirm("You removed the current image and did not attach a new one. Save this product without an image?")) return;
+            }
+
             const saveBtn = document.getElementById('btnSaveProd');
             const originalText = saveBtn.innerHTML;
             saveBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Uploading...";
@@ -935,13 +1010,22 @@
             try {
                 let finalImageUrl = existingImageUrl;
                 let finalCatalogUrl = existingCatalogUrl;
+                const filesToDelete = [];   // old files that were replaced or removed
 
                 if (imgFileInput.files.length > 0) {
                     finalImageUrl = await uploadFileToStorage(imgFileInput.files[0], 'images');
+                    if (existingImageUrl) filesToDelete.push(existingImageUrl);
+                } else if (removeImage) {
+                    finalImageUrl = "";
+                    if (existingImageUrl) filesToDelete.push(existingImageUrl);
                 }
 
                 if (catFileInput.files.length > 0) {
                     finalCatalogUrl = await uploadFileToStorage(catFileInput.files[0], 'catalogues');
+                    if (existingCatalogUrl) filesToDelete.push(existingCatalogUrl);
+                } else if (removeCatalog) {
+                    finalCatalogUrl = "";
+                    if (existingCatalogUrl) filesToDelete.push(existingCatalogUrl);
                 }
 
                 const payload = { 
@@ -968,6 +1052,7 @@
                     alert("Product saved successfully!");
                 }
 
+                await deleteStoredFiles(filesToDelete);
                 cancelEdit('prod');
                 fetchProducts();
             } catch (err) {
@@ -1173,8 +1258,9 @@
                 if(document.getElementById('addProdRating')) document.getElementById('addProdRating').value = '5.0';
                 document.getElementById('addProdImageFile').value = '';
                 document.getElementById('addProdCatalogFile').value = '';
-                document.getElementById('currentImgLabel').innerText = '';
-                document.getElementById('currentCatLabel').innerText = '';
+                removeImage = false;
+                removeCatalog = false;
+                renderCurrentFiles();
                 document.getElementById('addProdSpec').value = '';
                 document.getElementById('addProdDesc').value = '';
                 document.getElementById('addProdHidden').checked = false;
