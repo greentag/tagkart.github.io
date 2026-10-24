@@ -85,7 +85,8 @@ async function fetchPublicData() {
         if (prodErr) console.error("Products error:", prodErr);
 
         if (products) {
-            allProductsCache = products.filter(p => p.status !== 'Hidden');
+            // Inactive (or old 'Hidden') products are not shown on the website
+            allProductsCache = products.filter(p => p.status !== 'Hidden' && p.status !== 'Inactive');
             renderShopLayout();
         }
     } catch (e) {
@@ -102,8 +103,9 @@ async function fetchPublicData() {
         let jobContainer = document.getElementById('publicJobsContainer');
         if (jobContainer) {
             jobContainer.innerHTML = '';
-            if (jobs && jobs.length > 0) {
-                jobs.forEach(j => {
+            const activeJobs = (jobs || []).filter(j => j.status !== 'Inactive' && j.status !== 'Hidden');
+            if (activeJobs.length > 0) {
+                activeJobs.forEach(j => {
                     jobContainer.innerHTML += `
                         <div style="border-left: 5px solid var(--primary-color, #1b8a4f); background: var(--bg-main, #f0f7f3); padding: 22px; margin-top: 18px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
                             <h4 style="color: var(--primary-hover, #0d5c34); font-size: 18px; margin-bottom: 6px;">${escapeHtml(j.title)}</h4>
