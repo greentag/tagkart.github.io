@@ -9,8 +9,8 @@ const sb = (typeof window.supabase !== 'undefined' && window.supabase.createClie
     : null;
 
 // ---- Shop settings (change as per your business) ----
-const ENQUIRY_WHATSAPP = "919999999999";     // with country code, without +
-const ENQUIRY_EMAIL = "sales@dhamigroup.com";
+const ENQUIRY_WHATSAPP = "919716938334";     // with country code, without +
+const ENQUIRY_EMAIL = "pspujari88@gmail.com";
 const DEFAULT_CATEGORIES = ["ERP Software", "Hardware", "Service"];
 const GST_RATE = 18;                         // % ; set to 0 to disable GST
 const ORDERS_TABLE = "orders";               // Supabase table name
@@ -54,6 +54,20 @@ function isOutOfStockItem(p) {
 function priceOf(p) {
     const n = parseFloat(p && p.price);
     return isNaN(n) ? 0 : n;
+}
+
+// Shop page active? (used so the cart button / full-width layout never leak onto other pages)
+function isShopTabActive() {
+    return ['panel-product', 'panel-shop'].some(id => {
+        const el = document.getElementById(id);
+        return !!(el && el.classList.contains('active'));
+    });
+}
+
+// "NEW" badge only for products added in the last 30 days
+function isNewProduct(p) {
+    if (!p || !p.created_at) return false;
+    return (Date.now() - new Date(p.created_at).getTime()) < 30 * 24 * 60 * 60 * 1000;
 }
 
 function fmtINR(n) {
@@ -275,8 +289,11 @@ function renderShopLayout() {
         </div>
     `;
 
-    document.body.classList.add('shop-fullwidth');
+    const onShop = isShopTabActive();
+    document.body.classList.toggle('shop-fullwidth', onShop);
     ensureCartUI();
+    const fabEl = document.getElementById('cartFab');
+    if (fabEl) fabEl.style.display = onShop ? 'block' : 'none';
     applyFilters();
 }
 
@@ -428,7 +445,7 @@ function renderProductCards(products) {
             <div style="display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #dbe8e0; border-radius:12px; padding:18px 24px; box-shadow:0 3px 10px rgba(0,0,0,0.04); gap:24px; flex-wrap:wrap;">
                 <div style="display:flex; align-items:center; gap:22px; flex:1; min-width:260px;">
                     <div style="position:relative;">
-                        <span style="position:absolute; top:-6px; left:-6px; background:#1b8a4f; color:#fff; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px;">NEW</span>
+                        ${isNewProduct(p) ? '<span style="position:absolute; top:-6px; left:-6px; background:#1b8a4f; color:#fff; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px;">NEW</span>' : ''}
                         ${imgTag}
                     </div>
                     <div>
@@ -640,6 +657,7 @@ function ensureCartUI() {
         const fab = document.createElement('button');
         fab.id = 'cartFab';
         fab.onclick = openCart;
+        fab.style.display = 'none';
         document.body.appendChild(fab);
     }
     if (!document.getElementById('cartModal')) {
@@ -882,7 +900,7 @@ async function placeOrder() {
 function showHome() {
     const homeEl = document.getElementById('homePage');
     const tabEl = document.getElementById('tabContainer');
-    if (homeEl) homeEl.style.display = 'block';
+    if (homeEl) homeEl.style.display = '';   // '' = back to the CSS layout (flex)
     if (tabEl) tabEl.style.display = 'none';
 
     document.body.classList.remove('shop-fullwidth');
@@ -916,7 +934,7 @@ function selectTab(tabName) {
         const isShopTab = (tabName === 'product' || tabName === 'shop');
         document.body.classList.toggle('shop-fullwidth', isShopTab);
 
-        if (['product', 'shop', 'career', 'serv-erp', 'serv-crm'].includes(tabName)) {
+        if (['product', 'shop', 'career'].includes(tabName)) {
             fetchPublicData();
         }
 
