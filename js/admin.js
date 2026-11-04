@@ -202,6 +202,8 @@ if (supabase) {
             fetchProducts();
             fetchJobs();
             fetchUsers();
+            fetchOrders();
+            fetchEnquiries();
             startInactivityTracker();
         } else {
             stopInactivityTracker();
@@ -212,29 +214,28 @@ if (supabase) {
 }
 
 function applyPermissions(role) {
-    let navProd = document.getElementById('nav-manage-prod');
-    let navCar = document.getElementById('nav-manage-car');
-    let navUser = document.getElementById('nav-manage-user');
-
-    if (!navProd || !navCar || !navUser) return;
-    navProd.style.display = 'none';
-    navCar.style.display = 'none';
-    navUser.style.display = 'none';
+    const nav = {
+        prod: document.getElementById('nav-manage-prod'),
+        car: document.getElementById('nav-manage-car'),
+        user: document.getElementById('nav-manage-user'),
+        order: document.getElementById('nav-manage-order'),
+        msg: document.getElementById('nav-manage-msg')
+    };
+    if (!nav.prod || !nav.car || !nav.user) return;
+    Object.values(nav).forEach(el => { if (el) el.style.display = 'none'; });
+    const show = (key) => { if (nav[key]) nav[key].style.display = 'block'; };
 
     if (role === "System Administrator") {
-        navProd.style.display = 'block';
-        navCar.style.display = 'block';
-        navUser.style.display = 'block';
+        ['prod', 'car', 'user', 'order', 'msg'].forEach(show);
         switchAdminTab('manage-prod');
     } else if (role === "Manager - Both") {
-        navProd.style.display = 'block';
-        navCar.style.display = 'block';
+        ['prod', 'car', 'order', 'msg'].forEach(show);
         switchAdminTab('manage-prod');
     } else if (role === "Only Manage Product") {
-        navProd.style.display = 'block';
+        ['prod', 'order'].forEach(show);
         switchAdminTab('manage-prod');
     } else if (role === "Only Manage Career") {
-        navCar.style.display = 'block';
+        show('car');
         switchAdminTab('manage-car');
     } else {
         alert("You don't have access to the Dashboard!");
@@ -763,7 +764,11 @@ async function saveUser() {
     } else {
         if (pass.length < 6) return alert("Password min 6 chars.");
 
-        const { data: authData, error: authError } = await supabase.auth.signUp({
+        // Separate, non-persisting client: otherwise signUp() would replace the admin's own login session
+        const tmpClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+        });
+        const { data: authData, error: authError } = await tmpClient.auth.signUp({
             email: email,
             password: pass
         });
@@ -900,8 +905,167 @@ async function deleteDoc(col, id) {
             if (col === 'products') { fetchProducts(); if (typeof fetchPublicData === 'function') fetchPublicData(); }
             if (col === 'jobs') { fetchJobs(); if (typeof fetchPublicData === 'function') fetchPublicData(); }
             if (col === 'users') fetchUsers();
+            if (col === 'orders') fetchOrders();
+            if (col === 'enquiries') fetchEnquiries();
         }
     }
+}
+
+// ====================================================
+// 9. ORDERS & ENQUIRIES (from the website forms)
+// ====================================================
+let currentOrders = [];
+let currentEnquiries = [];
+const ORDER_STATUSES = ['New', 'Contacted', 'Quoted', 'Confirmed', 'Completed', 'Cancelled'];
+const ENQUIRY_STATUSES = ['New', 'In Progress', 'Closed'];
+
+function fmtDate(d) {
+    try { return new Date(d).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }); }
+    catch (e) { return ''; }
+}
+function fmtMoney(n) {
+    return '₹' + Number(n || 0).toLocaleString('en-IN');
+}
+function statusOptions(list, current) {
+    return list.map(s => `<option ${s === current ? 'selected' : ''}>${s}</option>`).join('');
+}
+function setBadge(id, count) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = count;
+    el.style.display = count > 0 ? 'inline-block' : 'none';
+}
+
+function showDetailModal(title, html) {
+    document.getElementById('detailTitle').innerHTML = title;
+    document.getElementById('detailBody').innerHTML = html;
+    document.getElementById('detailModal').style.display = 'flex';
+}
+function closeDetailModal() {
+    document.getElementById('detailModal').style.display = 'none';
+}
+
+async function updateRecordStatus(table, id, value) {
+    const { error } = await supabase.from(table).update({ status: value }).eq('id', id);
+    if (error) alert("Could not update status: " + error.message);
+    if (table === 'orders') fetchOrders();
+    if (table === 'enquiries') fetchEnquiries();
+}
+
+// ---- Orders ----
+async function fetchOrders() {
+    if (!supabase) return;
+    const t = document.getElementById('orderTbody');
+    if (!t) return;
+    const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+    t.innerHTML = '';
+    if (error) { console.error("Orders Fetch Error:", error.message); return; }
+
+    currentOrders = data || [];
+    setBadge('orderBadge', currentOrders.filter(o => o.status === 'New').length);
+
+    if (currentOrders.length === 0) {
+        t.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#888;">No orders yet.</td></tr>';
+        return;
+    }
+    currentOrders.forEach(o => {
+        const items = Array.isArray(o.items) ? o.items : [];
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><strong>${esc(o.order_no)}</strong></td>
+            <td>${fmtDate(o.created_at)}</td>
+            <td>${esc(o.customer_name)}<br><small style="color:#777;">${esc(o.phone)}</small></td>
+            <td>${items.length}</td>
+            <td>${Number(o.total) > 0 ? '<strong>' + fmtMoney(o.total) + '</strong>' : '<span style="color:#999;">Quote</span>'}</td>
+            <td><select class="status-select">${statusOptions(ORDER_STATUSES, o.status || 'New')}</select></td>
+            <td>
+                <button class="btn-table-action btn-view-act" title="View"><i class="fa-solid fa-eye"></i></button>
+                <button class="btn-table-action btn-delete-act" title="Delete"><i class="fa-solid fa-trash"></i></button>
+            </td>`;
+        row.querySelector('.status-select').addEventListener('change', (e) => updateRecordStatus('orders', o.id, e.target.value));
+        row.querySelector('.btn-view-act').addEventListener('click', () => viewOrder(o.id));
+        row.querySelector('.btn-delete-act').addEventListener('click', () => deleteDoc('orders', o.id));
+        t.appendChild(row);
+    });
+}
+
+function viewOrder(id) {
+    const o = currentOrders.find(x => x.id === id);
+    if (!o) return;
+    const items = Array.isArray(o.items) ? o.items : [];
+    const rows = items.map(i => `<tr><td>${esc(i.name)}</td><td style="text-align:center;">${esc(i.qty)}</td><td style="text-align:right;">${Number(i.price) > 0 ? fmtMoney(i.price * i.qty) : 'Quote'}</td></tr>`).join('');
+    showDetailModal('Order ' + esc(o.order_no), `
+        <p style="color:#777; margin:0 0 10px;">${fmtDate(o.created_at)} &middot; Status: <strong>${esc(o.status || 'New')}</strong></p>
+        <p><strong>${esc(o.customer_name)}</strong>${o.company ? ' &middot; ' + esc(o.company) : ''}<br>
+           Phone: ${esc(o.phone)} &middot; Email: ${esc(o.email)}<br>
+           ${o.gstin ? 'GSTIN: ' + esc(o.gstin) + '<br>' : ''}
+           ${esc(o.address || '')}, ${esc(o.city || '')}, ${esc(o.state || '')} - ${esc(o.pincode || '')}</p>
+        <p>Payment: ${esc(o.payment_method || '-')}<br>Customer notes: ${esc(o.notes || '-')}</p>
+        <table class="admin-table" style="margin-top:10px;">
+            <thead><tr><th>Item</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Amount</th></tr></thead>
+            <tbody>${rows}</tbody>
+        </table>
+        <p style="text-align:right; margin-top:10px;">
+            Subtotal: ${fmtMoney(o.subtotal)} &middot; GST: ${fmtMoney(o.gst)}<br>
+            <strong style="font-size:16px;">Total: ${fmtMoney(o.total)}</strong>
+        </p>
+        <label style="font-weight:600; font-size:13px;">Internal notes</label>
+        <textarea id="orderAdminNote" rows="3" style="width:100%; margin:6px 0 10px;">${esc(o.admin_notes || '')}</textarea>
+        <button class="action-btn" style="width:auto;" onclick="saveOrderNote('${esc(o.id)}')"><i class="fa-solid fa-save"></i> Save note</button>`);
+}
+
+async function saveOrderNote(id) {
+    const note = document.getElementById('orderAdminNote').value.trim();
+    const { error } = await supabase.from('orders').update({ admin_notes: note }).eq('id', id);
+    if (error) return alert("Could not save note: " + error.message);
+    alert("Note saved.");
+    fetchOrders();
+}
+
+// ---- Enquiries / contact messages ----
+async function fetchEnquiries() {
+    if (!supabase) return;
+    const t = document.getElementById('msgTbody');
+    if (!t) return;
+    const { data, error } = await supabase.from('enquiries').select('*').order('created_at', { ascending: false });
+    t.innerHTML = '';
+    if (error) { console.error("Enquiries Fetch Error:", error.message); return; }
+
+    currentEnquiries = data || [];
+    setBadge('msgBadge', currentEnquiries.filter(m => m.status === 'New').length);
+
+    if (currentEnquiries.length === 0) {
+        t.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">No messages yet.</td></tr>';
+        return;
+    }
+    currentEnquiries.forEach(m => {
+        const row = document.createElement('tr');
+        const msg = String(m.message || '');
+        row.innerHTML = `
+            <td>${fmtDate(m.created_at)}</td>
+            <td><span class="status-badge ${m.type === 'enquiry' ? 'status-active' : 'status-inactive'}" style="background:#e8f1ff; color:#1e40af;">${esc(m.type)}</span></td>
+            <td><strong>${esc(m.name)}</strong><br><small style="color:#777;">${esc(m.email || '')} ${esc(m.mobile || '')}</small></td>
+            <td>${esc(msg.length > 70 ? msg.slice(0, 70) + '...' : msg)}</td>
+            <td><select class="status-select">${statusOptions(ENQUIRY_STATUSES, m.status || 'New')}</select></td>
+            <td>
+                <button class="btn-table-action btn-view-act" title="View"><i class="fa-solid fa-eye"></i></button>
+                <button class="btn-table-action btn-delete-act" title="Delete"><i class="fa-solid fa-trash"></i></button>
+            </td>`;
+        row.querySelector('.status-select').addEventListener('change', (e) => updateRecordStatus('enquiries', m.id, e.target.value));
+        row.querySelector('.btn-view-act').addEventListener('click', () => viewEnquiry(m.id));
+        row.querySelector('.btn-delete-act').addEventListener('click', () => deleteDoc('enquiries', m.id));
+        t.appendChild(row);
+    });
+}
+
+function viewEnquiry(id) {
+    const m = currentEnquiries.find(x => x.id === id);
+    if (!m) return;
+    showDetailModal('Message from ' + esc(m.name), `
+        <p style="color:#777; margin:0 0 10px;">${fmtDate(m.created_at)} &middot; ${esc(m.type)} &middot; Status: <strong>${esc(m.status || 'New')}</strong></p>
+        <p>Email: ${esc(m.email || '-')}<br>Mobile: ${esc(m.mobile || '-')}<br>
+           ${m.company ? 'Company: ' + esc(m.company) + '<br>' : ''}${m.service ? 'Service: ' + esc(m.service) + '<br>' : ''}</p>
+        <div style="background:#f8fbf9; border:1px solid #dbe8e0; border-radius:8px; padding:12px; white-space:pre-wrap;">${esc(m.message)}</div>`);
 }
 
 function initPortal() {
