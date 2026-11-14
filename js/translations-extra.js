@@ -16,7 +16,8 @@
         'hx_b_t', 'hx_b_p', 'hx_b_e', 'hx_b_w',
         'hx_p1', 'hx_p2', 'hx_p3', 'hx_pn4', 'hx_p4', 'hx_call', 'hx_chat_team',
         'hx_ph_name', 'hx_ph_email', 'hx_ph_mobile', 'hx_ph_company', 'hx_ph_msg', 'hx_svc_ph', 'hx_other',
-        'hx_m_fill', 'hx_m_phone', 'hx_sending', 'hx_m_ok', 'hx_m_fail'
+        'hx_m_fill', 'hx_m_phone', 'hx_sending', 'hx_m_ok', 'hx_m_fail',
+        'hx_jb_t', 'hx_jb_s', 'hx_jb_b', 'hx_view'
     ];
 
     var T = {
@@ -80,7 +81,11 @@
             'Please enter a valid mobile number.',
             'Sending...',
             'Thank you! Your message has been sent. We will contact you soon.',
-            'Sorry, we could not send your message. Please call us on 9716938334.'
+            'Sorry, we could not send your message. Please call us on 9716938334.',
+            'Join Our Team',
+            'Open positions at Dhami Group - click a role to see its full details.',
+            'View All Openings',
+            'View details'
         ],
         hi: [
             'उत्पाद देखें',
@@ -142,7 +147,11 @@
             'कृपया सही मोबाइल नंबर दर्ज करें।',
             'भेजा जा रहा है...',
             'धन्यवाद! आपका संदेश भेज दिया गया है। हम जल्द ही संपर्क करेंगे।',
-            'क्षमा करें, संदेश नहीं भेजा जा सका। कृपया 9716938334 पर कॉल करें।'
+            'क्षमा करें, संदेश नहीं भेजा जा सका। कृपया 9716938334 पर कॉल करें।',
+            'हमारी टीम से जुड़ें',
+            'धामी ग्रुप में खुली भूमिकाएँ - पूरा विवरण देखने के लिए किसी भूमिका पर क्लिक करें।',
+            'सभी रिक्तियाँ देखें',
+            'विवरण देखें'
         ],
         es: [
             'Explorar Productos',
@@ -204,7 +213,11 @@
             'Ingrese un número de móvil válido.',
             'Enviando...',
             '¡Gracias! Su mensaje ha sido enviado. Nos pondremos en contacto pronto.',
-            'Lo sentimos, no pudimos enviar su mensaje. Llámenos al 9716938334.'
+            'Lo sentimos, no pudimos enviar su mensaje. Llámenos al 9716938334.',
+            'Únase a Nuestro Equipo',
+            'Puestos abiertos en Dhami Group: haga clic en un puesto para ver todos los detalles.',
+            'Ver Todas las Vacantes',
+            'Ver detalles'
         ],
         fr: [
             'Découvrir les Produits',
@@ -266,7 +279,11 @@
             'Veuillez saisir un numéro de mobile valide.',
             'Envoi...',
             'Merci ! Votre message a été envoyé. Nous vous contacterons bientôt.',
-            "Désolé, votre message n'a pas pu être envoyé. Appelez-nous au 9716938334."
+            "Désolé, votre message n'a pas pu être envoyé. Appelez-nous au 9716938334.",
+            'Rejoignez Notre Équipe',
+            'Postes ouverts chez Dhami Group : cliquez sur un poste pour voir tous les détails.',
+            'Voir Toutes les Offres',
+            'Voir les détails'
         ],
         de: [
             'Produkte Entdecken',
@@ -328,7 +345,11 @@
             'Bitte geben Sie eine gültige Handynummer ein.',
             'Wird gesendet...',
             'Danke! Ihre Nachricht wurde gesendet. Wir melden uns bald.',
-            'Leider konnte Ihre Nachricht nicht gesendet werden. Bitte rufen Sie uns an: 9716938334.'
+            'Leider konnte Ihre Nachricht nicht gesendet werden. Bitte rufen Sie uns an: 9716938334.',
+            'Werden Sie Teil Unseres Teams',
+            'Offene Stellen bei der Dhami Group – klicken Sie auf eine Stelle, um alle Details zu sehen.',
+            'Alle Stellen Ansehen',
+            'Details ansehen'
         ],
         zh: [
             '浏览产品',
@@ -390,7 +411,11 @@
             '请输入有效的手机号码。',
             '发送中...',
             '谢谢！您的信息已发送，我们会尽快联系您。',
-            '抱歉，信息发送失败。请致电 9716938334。'
+            '抱歉，信息发送失败。请致电 9716938334。',
+            '加入我们的团队',
+            'Dhami Group 的开放职位——点击职位查看完整详情。',
+            '查看全部职位',
+            '查看详情'
         ]
     };
 
