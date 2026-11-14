@@ -4,7 +4,7 @@
 const SUPABASE_URL = "https://yuyndtoqcwawlhrjespt.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1eW5kdG9xY3dhd2xocmplc3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MDkzOTIsImV4cCI6MjEwNjA4NTM5Mn0.TJ1DuBlYANnTNogfbt5WB64UsxNjVUyNkLR2gpHqNR0";
 
-const supabase = (typeof window.supabase !== 'undefined' && window.supabase.createClient)
+var sb = (typeof window.supabase !== 'undefined' && window.supabase.createClient)
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: { persistSession: true, storage: window.sessionStorage, autoRefreshToken: true }
       })
@@ -153,8 +153,8 @@ function stopInactivityTracker() {
 // ====================================================
 // 4. SUPABASE AUTH STATE & PERMISSIONS
 // ====================================================
-if (supabase) {
-    supabase.auth.onAuthStateChange(async (event, session) => {
+if (sb) {
+    sb.auth.onAuthStateChange(async (event, session) => {
         let adminPortal = document.getElementById('adminPortal');
         let websiteView = document.getElementById('websiteView');
         const user = session ? session.user : null;
@@ -173,7 +173,7 @@ if (supabase) {
             if (adminRole) adminRole.innerText = "Loading Role...";
 
             try {
-                const { data, error } = await supabase
+                const { data, error } = await sb
                     .from('users')
                     .select('*')
                     .eq('email', user.email)
@@ -270,7 +270,7 @@ async function handleLogin() {
         return;
     }
 
-    if (!supabase) {
+    if (!sb) {
         alert("Supabase SDK not loaded. Check connection.");
         return;
     }
@@ -278,7 +278,7 @@ async function handleLogin() {
     const btn = document.getElementById('btnLogin');
     if (btn) btn.innerText = "Verifying...";
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await sb.auth.signInWithPassword({
         email: email,
         password: pass
     });
@@ -294,15 +294,15 @@ async function handleLogin() {
 
 async function logoutUser() {
     stopInactivityTracker();
-    if (supabase) await supabase.auth.signOut();
+    if (sb) await sb.auth.signOut();
     window.location.reload();
 }
 
 async function sendResetLink() {
     let email = document.getElementById('resetEmail').value.trim();
     let msg = document.getElementById('resetMessage');
-    if (email && supabase) {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    if (email && sb) {
+        const { error } = await sb.auth.resetPasswordForEmail(email, {
             redirectTo: window.location.href
         });
 
@@ -326,7 +326,7 @@ async function uploadFileToStorage(file, folder) {
     const cleanName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
     const filePath = `${folder}/${cleanName}`;
 
-    const { data, error } = await supabase.storage.from('products').upload(filePath, file, {
+    const { data, error } = await sb.storage.from('products').upload(filePath, file, {
         cacheControl: '3600',
         upsert: true
     });
@@ -335,7 +335,7 @@ async function uploadFileToStorage(file, folder) {
         throw new Error("File Upload Failed: " + error.message);
     }
 
-    const { data: publicData } = supabase.storage.from('products').getPublicUrl(filePath);
+    const { data: publicData } = sb.storage.from('products').getPublicUrl(filePath);
     return publicData.publicUrl;
 }
 
@@ -348,7 +348,7 @@ async function deleteStoredFiles(urls) {
     }).filter(Boolean);
     if (paths.length === 0) return;
     try {
-        const { error } = await supabase.storage.from('products').remove(paths);
+        const { error } = await sb.storage.from('products').remove(paths);
         if (error) console.warn("Old file cleanup failed:", error.message);
     } catch (e) {
         console.warn("Old file cleanup failed:", e);
@@ -543,11 +543,11 @@ async function saveProduct() {
         };
 
         if (editProdId) {
-            const { error } = await supabase.from('products').update(payload).eq('id', editProdId);
+            const { error } = await sb.from('products').update(payload).eq('id', editProdId);
             if (error) throw error;
             alert("Product Updated Successfully!");
         } else {
-            const { error } = await supabase.from('products').insert([payload]);
+            const { error } = await sb.from('products').insert([payload]);
             if (error) throw error;
             alert("Product Added Successfully!");
         }
@@ -565,8 +565,8 @@ async function saveProduct() {
 }
 
 async function fetchProducts() {
-    if (!supabase) return;
-    const { data: products, error } = await supabase
+    if (!sb) return;
+    const { data: products, error } = await sb
         .from('products')
         .select('*')
         .order('created_at', { ascending: false });
@@ -661,7 +661,7 @@ async function saveJob() {
     };
 
     if (editJobId) {
-        const { error } = await supabase.from('jobs').update(payload).eq('id', editJobId);
+        const { error } = await sb.from('jobs').update(payload).eq('id', editJobId);
         if (error) alert(error.message);
         else {
             alert("Job Updated!");
@@ -670,7 +670,7 @@ async function saveJob() {
             if (typeof fetchPublicData === 'function') fetchPublicData();
         }
     } else {
-        const { error } = await supabase.from('jobs').insert([payload]);
+        const { error } = await sb.from('jobs').insert([payload]);
         if (error) alert(error.message);
         else {
             alert("Job Posted!");
@@ -682,8 +682,8 @@ async function saveJob() {
 }
 
 async function fetchJobs() {
-    if (!supabase) return;
-    const { data: jobs, error } = await supabase
+    if (!sb) return;
+    const { data: jobs, error } = await sb
         .from('jobs')
         .select('*')
         .order('created_at', { ascending: false });
@@ -754,7 +754,7 @@ async function saveUser() {
     if (!name || (!editUserId && (!email || !pass))) return alert("All fields are required!");
 
     if (editUserId) {
-        const { error } = await supabase.from('users').update({ name: name, role: role }).eq('id', editUserId);
+        const { error } = await sb.from('users').update({ name: name, role: role }).eq('id', editUserId);
         if (error) alert(error.message);
         else {
             alert("User access updated!");
@@ -776,7 +776,7 @@ async function saveUser() {
         if (authError) return alert(authError.message);
 
         const userId = authData.user ? authData.user.id : crypto.randomUUID();
-        const { error: dbError } = await supabase.from('users').insert([{
+        const { error: dbError } = await sb.from('users').insert([{
             id: userId,
             name: name,
             email: email,
@@ -793,8 +793,8 @@ async function saveUser() {
 }
 
 async function fetchUsers() {
-    if (!supabase) return;
-    const { data: users, error } = await supabase
+    if (!sb) return;
+    const { data: users, error } = await sb
         .from('users')
         .select('*')
         .order('created_at', { ascending: false });
@@ -836,7 +836,7 @@ async function fetchUsers() {
 // ====================================================
 async function toggleStatus(col, id, makeActive) {
     const newStatus = makeActive ? 'Active' : 'Inactive';
-    const { error } = await supabase.from(col).update({ status: newStatus }).eq('id', id);
+    const { error } = await sb.from(col).update({ status: newStatus }).eq('id', id);
     if (error) alert("Could not update status: " + error.message);
     if (col === 'products') fetchProducts();
     if (col === 'jobs') fetchJobs();
@@ -899,7 +899,7 @@ function cancelEdit(type) {
 async function deleteDoc(col, id) {
     let msg = col === 'users' ? "Remove user access from Dashboard?" : "Permanently delete this record?";
     if (confirm(msg)) {
-        const { error } = await supabase.from(col).delete().eq('id', id);
+        const { error } = await sb.from(col).delete().eq('id', id);
         if (error) alert(error.message);
         else {
             if (col === 'products') { fetchProducts(); if (typeof fetchPublicData === 'function') fetchPublicData(); }
@@ -946,7 +946,7 @@ function closeDetailModal() {
 }
 
 async function updateRecordStatus(table, id, value) {
-    const { error } = await supabase.from(table).update({ status: value }).eq('id', id);
+    const { error } = await sb.from(table).update({ status: value }).eq('id', id);
     if (error) alert("Could not update status: " + error.message);
     if (table === 'orders') fetchOrders();
     if (table === 'enquiries') fetchEnquiries();
@@ -954,10 +954,10 @@ async function updateRecordStatus(table, id, value) {
 
 // ---- Orders ----
 async function fetchOrders() {
-    if (!supabase) return;
+    if (!sb) return;
     const t = document.getElementById('orderTbody');
     if (!t) return;
-    const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+    const { data, error } = await sb.from('orders').select('*').order('created_at', { ascending: false });
     t.innerHTML = '';
     if (error) { console.error("Orders Fetch Error:", error.message); return; }
 
@@ -1016,7 +1016,7 @@ function viewOrder(id) {
 
 async function saveOrderNote(id) {
     const note = document.getElementById('orderAdminNote').value.trim();
-    const { error } = await supabase.from('orders').update({ admin_notes: note }).eq('id', id);
+    const { error } = await sb.from('orders').update({ admin_notes: note }).eq('id', id);
     if (error) return alert("Could not save note: " + error.message);
     alert("Note saved.");
     fetchOrders();
@@ -1024,10 +1024,10 @@ async function saveOrderNote(id) {
 
 // ---- Enquiries / contact messages ----
 async function fetchEnquiries() {
-    if (!supabase) return;
+    if (!sb) return;
     const t = document.getElementById('msgTbody');
     if (!t) return;
-    const { data, error } = await supabase.from('enquiries').select('*').order('created_at', { ascending: false });
+    const { data, error } = await sb.from('enquiries').select('*').order('created_at', { ascending: false });
     t.innerHTML = '';
     if (error) { console.error("Enquiries Fetch Error:", error.message); return; }
 
@@ -1069,9 +1069,17 @@ function viewEnquiry(id) {
 }
 
 function initPortal() {
-    loadDefaultAdminTheme();
-    generateCaptcha();
-    renderImageManager();
+    // each step on its own, so one failing step can never leave the captcha stuck on "Loading..."
+    [loadDefaultAdminTheme, generateCaptcha, renderImageManager].forEach(function (fn) {
+        try { fn(); } catch (e) { console.error(fn.name + ' failed:', e); }
+    });
+    if (!sb) {
+        const box = document.getElementById('loginError');
+        if (box) {
+            box.style.display = 'block';
+            box.innerText = 'Could not load the Supabase library. Check your internet connection or ad-blocker and refresh.';
+        }
+    }
 }
 
 if (document.readyState === 'loading') {
