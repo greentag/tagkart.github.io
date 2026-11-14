@@ -54,13 +54,15 @@
     body.dark-mode{--hx-bg:#0f1714;--hx-alt:#131d19;--hx-card:#1a2621;--hx-text:#e8f1ec;--hx-muted:#9bb0a5;--hx-line:#2a3a33}
     .hx-sec{position:relative;padding:70px 6%;overflow:hidden;background:var(--hx-bg);color:var(--hx-text);font-family:'Poppins',sans-serif;box-sizing:border-box}
     .hx-sec.alt{background:var(--hx-alt)}
-    .hx-title{text-align:center;font-size:clamp(24px,3.2vw,36px);font-weight:700;color:var(--hx-ph);margin:0 0 8px}
+    .hx-title{text-align:center;font-size:clamp(24px,3.2vw,36px);font-weight:700;margin:0 0 8px;background:linear-gradient(90deg,var(--hx-ph),var(--hx-p),var(--hx-a),var(--hx-ph));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--hx-ph);animation:hxGrad 7s linear infinite}
+    @keyframes hxGrad{to{background-position:300% 0}}
     body.dark-mode .hx-title{color:var(--hx-p)}
     .hx-title:after{content:"";display:block;width:70px;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--hx-p),var(--hx-a));margin:12px auto 0}
     .hx-sub{text-align:center;color:var(--hx-muted);max-width:680px;margin:14px auto 40px;font-size:15px;line-height:1.6}
     .hx-blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.22;background:var(--hx-p);animation:hxFloat 12s ease-in-out infinite;pointer-events:none}
     @keyframes hxFloat{50%{transform:translate(30px,-30px) scale(1.12)}}
     .hx-reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+    .hx-reveal.l{transform:translateX(-60px)}.hx-reveal.r{transform:translateX(60px)}.hx-reveal.z{transform:scale(.8)}
     .hx-reveal.in{opacity:1;transform:none}
     .hx-grid{display:grid;gap:22px;position:relative;z-index:1}
     .hx-card{background:var(--hx-card);border:1px solid var(--hx-line);border-radius:16px;padding:26px 22px;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;box-shadow:0 4px 14px rgba(0,0,0,.05)}
@@ -147,6 +149,28 @@
     @media(max-width:600px){.hx-sec{padding:50px 5%}.hx-services{grid-template-columns:1fr}.hx-stat b{font-size:28px}}
     @media(prefers-reduced-motion:reduce){.hx-reveal{opacity:1;transform:none;transition:none}.hx-blob,.hx-bar,.hx-line,.hx-float,.hx-track,.hx-banner .c{animation:none}.hx-line{stroke-dashoffset:0}}
 
+    /* ---- animation chrome: progress bar, section dots, scrollers ---- */
+    .hx-progress{position:fixed;top:0;left:0;height:4px;width:0;background:linear-gradient(90deg,var(--hx-p),var(--hx-a),#00f2fe);z-index:10001;box-shadow:0 0 10px var(--hx-p);transition:width .12s linear}
+    .hx-dots{position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:900;display:flex;flex-direction:column;gap:13px}
+    .hx-dots a{position:relative;width:12px;height:12px;border-radius:50%;background:rgba(127,127,127,.5);display:block;cursor:pointer;transition:transform .3s,background .3s}
+    .hx-dots a.on{background:var(--hx-p);transform:scale(1.5);box-shadow:0 0 10px var(--hx-p)}
+    .hx-dots a span{position:absolute;right:22px;top:50%;transform:translateY(-50%);background:#1b1b1b;color:#fff;font-size:11px;padding:3px 10px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s}
+    .hx-dots a:hover span{opacity:1}
+    .hx-scrollhint{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;border:2px solid var(--primary-color,#1b8a4f);color:var(--primary-color,#1b8a4f);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;animation:hxHint 1.6s ease-in-out infinite}
+    @keyframes hxHint{50%{transform:translate(-50%,8px)}}
+    .hx-scroller{position:relative;z-index:1}
+    .hx-lane{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:12px 4px 26px;scrollbar-width:none;cursor:grab}
+    .hx-lane::-webkit-scrollbar{display:none}
+    .hx-lane.drag{cursor:grabbing;scroll-snap-type:none}
+    .hx-arrow{position:absolute;top:calc(50% - 22px);width:44px;height:44px;border-radius:50%;border:none;background:var(--hx-card);color:var(--hx-p);box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer;z-index:3;font-size:16px;transition:transform .2s}
+    .hx-arrow:hover{transform:scale(1.12)}.hx-arrow.l{left:-10px}.hx-arrow.r{right:-10px}
+    .hx-job{min-width:270px;max-width:270px;scroll-snap-align:start;cursor:pointer;padding:22px}
+    .hx-job p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .hx-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+    .hx-chips span{background:rgba(127,127,127,.14);border-radius:20px;padding:3px 10px;font-size:11.5px;color:var(--hx-muted)}
+    @media(max-width:900px){.hx-dots{display:none}.hx-arrow{display:none}}
+    @media(prefers-reduced-motion:reduce){.hx-title,.hx-scrollhint{animation:none}}
+
     /* ---- inner pages polish ---- */
     .tab-panel>h3{position:relative;padding-bottom:12px}
     .tab-panel>h3:after{content:"";position:absolute;left:0;bottom:0;width:60px;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--primary-color),var(--accent-color))}
@@ -222,25 +246,30 @@
         '<circle cx="380" cy="30" r="6" fill="var(--hx-a)"/></svg>';
 
     var showHtml = '<section class="hx-sec alt"><div class="hx-blob" style="width:300px;height:300px;right:-60px;bottom:-40px"></div><div class="hx-show">' +
-        '<div class="hx-reveal"><h2>Smart Automation, Real Results</h2><p>We turn manual, repetitive work into reliable digital workflows across CRM, ERP and web platforms.</p>' +
+        '<div class="hx-reveal l"><h2>Smart Automation, Real Results</h2><p>We turn manual, repetitive work into reliable digital workflows across CRM, ERP and web platforms.</p>' +
         '<ul class="hx-checks"><li>Less manual work, faster operations</li><li>Clear reporting and transparent processes</li><li>Practical implementation with responsive support</li></ul>' +
         '<button class="hx-btn pri" onclick="selectTab(\'enquire\')"><i class="fa-solid fa-paper-plane"></i> Start Your Project</button></div>' +
-        '<div class="hx-dash hx-reveal">' + dashSvg +
+        '<div class="hx-dash hx-reveal r">' + dashSvg +
         '<div class="hx-float f1"><i class="fa-solid fa-circle-check"></i> Workflow automated</div>' +
         '<div class="hx-float f2"><i class="fa-solid fa-chart-line"></i> Efficiency improving</div></div></div></section>';
 
     var processHtml = '<section class="hx-sec"><h2 class="hx-title hx-reveal">How We Work</h2><p class="hx-sub hx-reveal">A simple, transparent approach from first conversation to long-term support.</p>' +
         '<div class="hx-grid hx-steps">' + steps.map(function (s, i) {
-            return '<div class="hx-step hx-reveal" style="transition-delay:' + (i * 120) + 'ms"><div class="n"><i class="fa-solid ' + s[0] + '"></i></div><h4><span>' + (i + 1) + '.</span> ' + s[1] + '</h4><p>' + s[2] + '</p></div>';
+            return '<div class="hx-step hx-reveal z" style="transition-delay:' + (i * 120) + 'ms"><div class="n"><i class="fa-solid ' + s[0] + '"></i></div><h4><span>' + (i + 1) + '.</span> ' + s[1] + '</h4><p>' + s[2] + '</p></div>';
         }).join('') + '</div></section>';
 
     var marqHtml = '<div class="hx-marq"><div class="hx-track">' + chipHtml() + chipHtml() + '</div></div>';
 
     var featHtml = '<section class="hx-sec alt" id="hxFeatured" style="display:none"><h2 class="hx-title hx-reveal">Featured Products</h2>' +
-        '<p class="hx-sub hx-reveal">Our latest products, fresh from the catalogue.</p><div class="hx-feat-row" id="hxFeatRow"></div>' +
+        '<p class="hx-sub hx-reveal">Our latest products, fresh from the catalogue.</p><div class="hx-scroller"><button class="hx-arrow l" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button><div class="hx-lane" id="hxFeatRow"></div><button class="hx-arrow r" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button></div>' +
         '<div style="text-align:center;margin-top:10px"><button class="hx-btn pri" onclick="selectTab(\'product\')">View All Products <i class="fa-solid fa-arrow-right"></i></button></div></section>';
 
-    var bannerHtml = '<section class="hx-banner"><span class="c" style="width:220px;height:220px;left:-60px;top:-60px"></span><span class="c" style="width:160px;height:160px;right:8%;bottom:-50px;animation-delay:2s"></span>' +
+    var jobsHtml = '<section class="hx-sec" id="hxJobs" style="display:none"><h2 class="hx-title hx-reveal">Join Our Team</h2>' +
+        '<p class="hx-sub hx-reveal">Open positions at Dhami Group - click a role to see its full details.</p>' +
+        '<div class="hx-scroller"><button class="hx-arrow l" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button><div class="hx-lane" id="hxJobRow"></div><button class="hx-arrow r" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button></div>' +
+        '<div style="text-align:center;margin-top:10px"><button class="hx-btn pri" onclick="selectTab(\'career\')">View All Openings <i class="fa-solid fa-arrow-right"></i></button></div></section>';
+
+    var bannerHtml = '<section class="hx-banner" data-hx-label="Contact Us"><span class="c" style="width:220px;height:220px;left:-60px;top:-60px"></span><span class="c" style="width:160px;height:160px;right:8%;bottom:-50px;animation-delay:2s"></span>' +
         '<h2>Ready to Automate Your Business?</h2><p>Tell us what you need - from CRM and ERP to websites and green initiatives - and we will suggest the right solution.</p>' +
         '<div class="hx-cta-row" style="margin-top:0"><button class="hx-btn ghost" onclick="selectTab(\'enquire\')"><i class="fa-solid fa-clipboard-list"></i> Send Enquiry</button>' +
         '<a class="hx-btn ghost" href="https://wa.me/919716938334?text=Hello%20Dhami%20Group,%20I%20want%20to%20know%20more." target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp Us</a></div></section>';
@@ -264,7 +293,7 @@
         var top = document.createElement('div');
         top.innerHTML = statsHtml + servicesHtml + showHtml;
         var bottom = document.createElement('div');
-        bottom.innerHTML = processHtml + marqHtml + featHtml + bannerHtml;
+        bottom.innerHTML = processHtml + marqHtml + featHtml + jobsHtml + bannerHtml;
         if (core) {
             core.parentNode.insertBefore(top, core);
             core.parentNode.insertBefore(bottom, core.nextSibling);
@@ -304,12 +333,161 @@
             home.querySelectorAll('[data-count]').forEach(function (el) { el.textContent = el.getAttribute('data-count') + (el.getAttribute('data-suffix') || ''); });
         }
 
+        initChrome(home);
         loadFeatured();
+        loadJobs();
         extras();
+    }
+
+    // ---------- Salesforce hand-off (OFF for now - switch on later) ----------
+    // Later: set  window.SF_CONFIG = { enabled: true, orgId: '00Dxxxxxxxxxxxx' }  (e.g. in index.html before this script).
+    // Enquiry + contact forms are then ALSO posted to Salesforce Web-to-Lead. A Support form (Web-to-Case) and a Career
+    // form can use the same pattern.
+    window.SF_CONFIG = window.SF_CONFIG || { enabled: false, orgId: '', retUrl: '' };
+    function sfSubmit(type, f) {
+        var c = window.SF_CONFIG;
+        if (!c || !c.enabled || !c.orgId) return;
+        var frame = document.createElement('iframe');
+        frame.name = 'sf_' + Date.now(); frame.style.display = 'none';
+        var form = document.createElement('form');
+        form.method = 'POST'; form.target = frame.name;
+        form.action = 'https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8';
+        var parts = String(f.name || '').trim().split(/\s+/);
+        var data = { oid: c.orgId, retURL: c.retUrl || location.href, first_name: parts.length > 1 ? parts.slice(0, -1).join(' ') : '',
+            last_name: parts[parts.length - 1] || '-', email: f.email || '', mobile: f.mobile || '', company: f.company || 'Individual',
+            description: '[' + type + '] ' + (f.service ? f.service + ' - ' : '') + f.message, lead_source: 'Website' };
+        Object.keys(data).forEach(function (k) { var i = document.createElement('input'); i.type = 'hidden'; i.name = k; i.value = data[k]; form.appendChild(i); });
+        document.body.appendChild(frame); document.body.appendChild(form);
+        form.submit();
+        setTimeout(function () { form.remove(); frame.remove(); }, 8000);
+    }
+
+    // ---------- Home page: click an object -> its content opens on its own page ----------
+    var reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    window.hxOpenProduct = function (id) { window.__pendingFocus = { type: 'product', id: String(id) }; if (typeof selectTab === 'function') selectTab('product'); };
+    window.hxOpenJob = function (id) { window.__pendingFocus = { type: 'job', id: String(id) }; if (typeof selectTab === 'function') selectTab('career'); };
+
+    // ---------- Multi scrollers: arrows, drag, auto-play ----------
+    function makeScroller(wrap) {
+        var lane = wrap.querySelector('.hx-lane');
+        if (!lane || lane.__hx) return;
+        lane.__hx = true;
+        var paused = false;
+        function step(dir) {
+            var card = lane.firstElementChild, w = card ? card.getBoundingClientRect().width + 18 : 280;
+            var max = lane.scrollWidth - lane.clientWidth;
+            if (dir > 0 && lane.scrollLeft >= max - 4) lane.scrollTo({ left: 0, behavior: 'smooth' });
+            else if (dir < 0 && lane.scrollLeft <= 4) lane.scrollTo({ left: max, behavior: 'smooth' });
+            else lane.scrollBy({ left: dir * w, behavior: 'smooth' });
+        }
+        var l = wrap.querySelector('.hx-arrow.l'), r = wrap.querySelector('.hx-arrow.r');
+        if (l) l.onclick = function () { step(-1); };
+        if (r) r.onclick = function () { step(1); };
+        var down = false, moved = false, sx = 0, sl = 0;
+        lane.addEventListener('mousedown', function (ev) { down = true; moved = false; sx = ev.pageX; sl = lane.scrollLeft; lane.classList.add('drag'); });
+        window.addEventListener('mouseup', function () { down = false; lane.classList.remove('drag'); });
+        lane.addEventListener('mousemove', function (ev) { if (!down) return; var dx = ev.pageX - sx; if (Math.abs(dx) > 5) moved = true; lane.scrollLeft = sl - dx; });
+        lane.addEventListener('click', function (ev) { if (moved) { ev.stopPropagation(); ev.preventDefault(); moved = false; } }, true);   // a drag must not count as a click
+        wrap.addEventListener('mouseenter', function () { paused = true; });
+        wrap.addEventListener('mouseleave', function () { paused = false; });
+        wrap.addEventListener('touchstart', function () { paused = true; }, { passive: true });
+        wrap.addEventListener('touchend', function () { setTimeout(function () { paused = false; }, 4000); });
+        if (!reduced) setInterval(function () { if (!paused && !document.hidden && lane.offsetParent !== null) step(1); }, 3600);
+    }
+
+    // ---------- Section dots + scroll progress ----------
+    function refreshDots() {
+        var home = document.getElementById('homePage');
+        if (!home) return;
+        var wrap = document.getElementById('hxDots');
+        if (!wrap) { wrap = document.createElement('div'); wrap.id = 'hxDots'; wrap.className = 'hx-dots'; document.body.appendChild(wrap); }
+        var items = Array.prototype.slice.call(home.querySelectorAll('.hero, .hx-sec, .core-offerings-section, .hx-banner'))
+            .filter(function (el) { return el.style.display !== 'none'; });
+        wrap.innerHTML = items.map(function (el, i) {
+            var h2 = el.querySelector('h2');
+            var lab = el.getAttribute('data-hx-label') || (el.classList.contains('hero') ? 'Home' : (h2 ? h2.textContent.trim() : 'Section ' + (i + 1)));
+            return '<a><span>' + lab + '</span></a>';
+        }).join('');
+        wrap.__items = items;
+        Array.prototype.forEach.call(wrap.querySelectorAll('a'), function (a, i) {
+            a.onclick = function () { window.scrollTo({ top: items[i].getBoundingClientRect().top + window.pageYOffset - 80, behavior: 'smooth' }); };
+        });
+        annotate(wrap);
+        onScroll();
+    }
+    function onScroll() {
+        var de = document.documentElement, max = de.scrollHeight - de.clientHeight;
+        var bar = document.getElementById('hxProgress');
+        if (bar) bar.style.width = (max > 0 ? Math.min(100, window.pageYOffset / max * 100) : 0) + '%';
+        var wrap = document.getElementById('hxDots'), home = document.getElementById('homePage');
+        if (!wrap || !home) return;
+        var visible = home.getClientRects().length > 0;
+        wrap.style.display = visible ? 'flex' : 'none';
+        if (!visible || !wrap.__items) return;
+        var cur = 0, line = window.innerHeight * 0.4;
+        wrap.__items.forEach(function (el, i) { if (el.getBoundingClientRect().top <= line) cur = i; });
+        var links = wrap.querySelectorAll('a');
+        for (var i = 0; i < links.length; i++) links[i].className = i === cur ? 'on' : '';
+    }
+
+    function initChrome(home) {
+        if (!document.getElementById('hxProgress')) {
+            var pb = document.createElement('div'); pb.id = 'hxProgress'; pb.className = 'hx-progress'; document.body.appendChild(pb);
+        }
+        var hero = home.querySelector('.hero');
+        if (hero && !hero.querySelector('.hx-scrollhint')) {
+            var hint = document.createElement('div'); hint.className = 'hx-scrollhint'; hint.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+            hint.onclick = function () { var t = home.querySelector('.hx-stats-wrap') || home.querySelector('.hx-sec'); if (t) window.scrollTo({ top: t.getBoundingClientRect().top + window.pageYOffset - 80, behavior: 'smooth' }); };
+            hero.appendChild(hint);
+        }
+        Array.prototype.forEach.call(home.querySelectorAll('.hx-scroller'), makeScroller);
+        refreshDots();
+        var ticking = false;
+        window.addEventListener('scroll', function () { if (ticking) return; ticking = true; requestAnimationFrame(function () { ticking = false; onScroll(); }); }, { passive: true });
+        window.addEventListener('resize', onScroll);
+
+        // 3D tilt on cards (mouse devices only)
+        if (!reduced && window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+            document.addEventListener('mousemove', function (ev) {
+                var c = ev.target.closest && ev.target.closest('.hx-card');
+                if (!c) return;
+                var r = c.getBoundingClientRect(), x = (ev.clientX - r.left) / r.width - 0.5, y = (ev.clientY - r.top) / r.height - 0.5;
+                c.style.transform = 'perspective(800px) rotateX(' + (-y * 8) + 'deg) rotateY(' + (x * 10) + 'deg) translateY(-6px)';
+            });
+            document.addEventListener('mouseout', function (ev) {
+                var c = ev.target.closest && ev.target.closest('.hx-card');
+                if (c && !c.contains(ev.relatedTarget)) c.style.transform = '';
+            });
+        }
+    }
+
+    // ---------- Open job positions (click -> Careers page, that job highlighted) ----------
+    function loadJobs() {
+        try {
+            if (typeof sb === 'undefined' || !sb) return;
+            sb.from('jobs').select('*').order('created_at', { ascending: false }).limit(12).then(function (res) {
+                var list = (res.data || []).filter(function (j) { return j.status !== 'Inactive' && j.status !== 'Hidden'; }).slice(0, 8);
+                var wrap = document.getElementById('hxJobs'), rowEl = document.getElementById('hxJobRow');
+                if (!wrap || !rowEl || list.length === 0) return;
+                var esc = typeof escapeHtml === 'function' ? escapeHtml : function (x) { return String(x); };
+                rowEl.innerHTML = list.map(function (j) {
+                    var d = String(j.description || ''); if (d.length > 120) d = d.slice(0, 120) + '...';
+                    return '<div class="hx-card hx-job" onclick="hxOpenJob(\'' + esc(j.id) + '\')"><div class="hx-ico"><i class="fa-solid fa-briefcase"></i></div>' +
+                        '<h3>' + esc(j.title) + '</h3><div class="hx-chips"><span><i class="fa-solid fa-user-group"></i> ' + esc(j.openings || 1) + '</span>' +
+                        '<span><i class="fa-solid fa-award"></i> ' + esc(j.exp || '-') + '</span><span><i class="fa-solid fa-location-dot"></i> ' + esc(j.location || 'Delhi') + '</span></div>' +
+                        '<p>' + esc(d) + '</p><span class="hx-link">View details <i class="fa-solid fa-arrow-right"></i></span></div>';
+                }).join('');
+                wrap.style.display = 'block';
+                annotate(wrap);
+                Array.prototype.forEach.call(wrap.querySelectorAll('.hx-scroller'), makeScroller);
+                refreshDots();
+            });
+        } catch (err) { console.warn('Jobs unavailable:', err); }
     }
 
     // ---------- Extras: partners, support, WhatsApp, contact + enquiry forms ----------
     function sendEnquiry(type, f) {
+        try { sfSubmit(type, f); } catch (err) { console.warn('Salesforce hand-off failed', err); }
         var tasks = [];
         // 1) save in the database (Admin > Messages)
         if (typeof sb !== 'undefined' && sb) {
@@ -419,12 +597,13 @@
                     var src = imgs.length ? (typeof formatImageUrl === 'function' ? formatImageUrl(imgs[0]) : imgs[0]) : '';
                     var price = parseFloat(p.price) > 0 ? (typeof fmtINR === 'function' ? fmtINR(parseFloat(p.price)) : 'Rs ' + p.price) : 'Price on request';  // translated by annotate()
                     var esc = typeof escapeHtml === 'function' ? escapeHtml : function (x) { return String(x); };
-                    return '<div class="hx-card hx-prod" onclick="selectTab(\'product\')"><div class="im">' +
+                    return '<div class="hx-card hx-prod" onclick="hxOpenProduct(\'' + esc(p.id) + '\')"><div class="im">' +
                         (src ? '<img src="' + esc(src) + '" alt="' + esc(p.name) + '" onerror="this.style.display=\'none\'">' : '<i class="fa-solid fa-boxes-stacked" style="font-size:40px;color:var(--hx-p)"></i>') +
                         '</div><div class="bd"><h4>' + esc(p.name) + '</h4><div class="pr">' + price + '</div></div></div>';
                 }).join('');
                 wrap.style.display = 'block';
                 annotate(rowEl);
+                refreshDots();
             });
         } catch (e) { console.warn('Featured products unavailable:', e); }
     }
