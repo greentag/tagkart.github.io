@@ -121,7 +121,7 @@ async function fetchPublicData() {
             if (activeJobs.length > 0) {
                 activeJobs.forEach(j => {
                     jobContainer.innerHTML += `
-                        <div style="border-left: 5px solid var(--primary-color, #1b8a4f); background: var(--bg-main, #f0f7f3); padding: 22px; margin-top: 18px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                        <div id="job-${escapeHtml(String(j.id))}" style="border-left: 5px solid var(--primary-color, #1b8a4f); background: var(--bg-main, #f0f7f3); padding: 22px; margin-top: 18px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
                             <h4 style="color: var(--primary-hover, #0d5c34); font-size: 18px; margin-bottom: 6px;">${escapeHtml(j.title)}</h4>
                             <p style="font-size: 13.5px; margin-bottom: 8px; color: var(--text-main, #333);">
                                 <strong>Openings:</strong> ${escapeHtml(j.openings || 1)} &nbsp;|&nbsp;
@@ -137,6 +137,7 @@ async function fetchPublicData() {
                 jobContainer.innerHTML = '<p style="color: #666; font-size: 14px;">No active openings right now. Send your CV to careers@dhamigroup.com.</p>';
             }
         }
+        focusPendingItem('job');
     } catch (e) {
         console.error("Jobs render error:", e);
     }
@@ -383,6 +384,7 @@ function applyFilters() {
 
     const countEl = document.getElementById('shopCount');
     if (countEl) countEl.textContent = `${filtered.length} product${filtered.length === 1 ? '' : 's'} found`;
+    focusPendingItem('product');
 }
 
 function renderProductCards(products) {
@@ -433,6 +435,7 @@ function renderProductCards(products) {
             : '';
 
         let pid = escapeHtml(String(p.id));
+        let hasDetails = !!(p.description || p.color);
         // One button only:
         //   in stock + has price  -> Shop Now
         //   out of stock OR no price -> Get Quote
@@ -442,7 +445,7 @@ function renderProductCards(products) {
             : `<button class="shop-btn" style="background:#1b8a4f;" onclick="addToCart('${pid}')"><i class="fa-solid fa-cart-plus"></i> Shop Now</button>`;
 
         return `
-            <div style="display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #dbe8e0; border-radius:12px; padding:18px 24px; box-shadow:0 3px 10px rgba(0,0,0,0.04); gap:24px; flex-wrap:wrap;">
+            <div id="prod-${pid}" style="display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #dbe8e0; border-radius:12px; padding:18px 24px; box-shadow:0 3px 10px rgba(0,0,0,0.04); gap:24px; flex-wrap:wrap;">
                 <div style="display:flex; align-items:center; gap:22px; flex:1; min-width:260px;">
                     <div style="position:relative;">
                         ${isNewProduct(p) ? '<span style="position:absolute; top:-6px; left:-6px; background:#1b8a4f; color:#fff; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px;">NEW</span>' : ''}
@@ -456,6 +459,13 @@ function renderProductCards(products) {
                             <span style="background:#f0f7f3; color:#1b8a4f; font-size:11px; padding:2px 8px; border-radius:4px; font-weight:600;">${escapeHtml(p.category || 'General')}</span>
                             <span style="background:#f0f7f3; color:#555; font-size:11px; padding:2px 8px; border-radius:4px;">Qty: ${escapeHtml(p.qty || 0)}</span>
                         </div>
+                        ${hasDetails ? `
+                        <button class="shop-btn" id="pdbtn-${pid}" style="background:#0d5c34; margin-top:10px; padding:6px 12px; font-size:12px;" onclick="toggleProductDetails('${pid}')">Details <i class="fa-solid fa-chevron-down"></i></button>
+                        <div id="pd-${pid}" style="display:none; margin-top:10px; padding:12px 14px; background:#f7faf8; border:1px solid #dbe8e0; border-radius:8px; font-size:12.5px; color:#444; line-height:1.6; max-width:640px;">
+                            ${p.description ? '<p style="margin:0 0 6px;"><strong>Description:</strong> ' + escapeHtml(p.description).replace(/\n/g, '<br>') + '</p>' : ''}
+                            ${p.color ? '<p style="margin:0 0 6px;"><strong>Color / Variant:</strong> ' + escapeHtml(p.color) + '</p>' : ''}
+                            ${imgs.length > 1 ? '<p style="margin:0;"><strong>Photos:</strong> ' + imgs.length + ' (click the image to view them)</p>' : ''}
+                        </div>` : ''}
                     </div>
                 </div>
                 <div style="text-align:right; min-width:160px;">
@@ -591,6 +601,51 @@ function lbGo(i) {
 
 function lbToggleZoom() {
     document.getElementById('lbImg').classList.toggle('zoomed');
+}
+
+// ====================================================
+// 2B-3. OPEN AN ITEM CLICKED ON THE HOME PAGE (product / job)
+// ====================================================
+function injectFocusStyles() {
+    if (document.getElementById('focusStyles')) return;
+    const st = document.createElement('style');
+    st.id = 'focusStyles';
+    st.textContent = `
+        @keyframes hlPulse { 0% { box-shadow: 0 0 0 0 var(--primary-color, #1b8a4f); } 70% { box-shadow: 0 0 0 20px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
+        .hl { outline: 3px solid var(--primary-color, #1b8a4f); outline-offset: 4px; animation: hlPulse 1.2s ease-out 3; }
+    `;
+    document.head.appendChild(st);
+}
+
+function toggleProductDetails(id, forceOpen) {
+    const box = document.getElementById('pd-' + id);
+    const btn = document.getElementById('pdbtn-' + id);
+    if (!box) return;
+    const open = forceOpen === true ? true : box.style.display === 'none';
+    box.style.display = open ? 'block' : 'none';
+    if (btn) btn.innerHTML = open ? 'Hide details <i class="fa-solid fa-chevron-up"></i>' : 'Details <i class="fa-solid fa-chevron-down"></i>';
+}
+
+// window.__pendingFocus is set by the home page ({type:'product'|'job', id}); once the list is drawn we scroll to it and highlight it
+function focusPendingItem(kind) {
+    const f = window.__pendingFocus;
+    if (!f || (kind && f.type !== kind)) return;   // jobs are drawn after products: wait for the right list
+    const el = document.getElementById((f.type === 'job' ? 'job-' : 'prod-') + f.id);
+    if (!el) {
+        // product hidden by the current filters -> clear the filters once and redraw
+        if (f.type === 'product' && !f.retried && allProductsCache.some(p => String(p.id) === f.id)) {
+            f.retried = true;
+            resetFilters();
+        }
+        return;
+    }
+    window.__pendingFocus = null;
+    if (f.type === 'product') toggleProductDetails(f.id, true);
+    setTimeout(() => {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('hl');
+        setTimeout(() => el.classList.remove('hl'), 4000);
+    }, 300);
 }
 
 // ====================================================
@@ -1107,6 +1162,7 @@ function loadDefaultTheme() {
 // 7. INITIALIZE ON DOM READY
 // ====================================================
 window.addEventListener('DOMContentLoaded', () => {
+    injectFocusStyles();
     loadDefaultTheme();
     loadCart();
     if (typeof changeLanguage === 'function') {
