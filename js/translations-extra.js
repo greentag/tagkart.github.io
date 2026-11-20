@@ -17,7 +17,8 @@
         'hx_p1', 'hx_p2', 'hx_p3', 'hx_pn4', 'hx_p4', 'hx_call', 'hx_chat_team',
         'hx_ph_name', 'hx_ph_email', 'hx_ph_mobile', 'hx_ph_company', 'hx_ph_msg', 'hx_svc_ph', 'hx_other',
         'hx_m_fill', 'hx_m_phone', 'hx_sending', 'hx_m_ok', 'hx_m_fail',
-        'hx_jb_t', 'hx_jb_s', 'hx_jb_b', 'hx_view'
+        'hx_jb_t', 'hx_jb_s', 'hx_jb_b', 'hx_view',
+        'hx_h1a', 'hx_h1b', 'hx_h_sub', 'hx_h_hint', 'hx_pop_p', 'hx_pop_j', 'hx_pop_open'
     ];
 
     var T = {
@@ -85,7 +86,14 @@
             'Join Our Team',
             'Open positions at Dhami Group - click a role to see its full details.',
             'View All Openings',
-            'View details'
+            'View details',
+            'Smart Technology.',
+            'Sustainable Growth.',
+            'Salesforce, SAP Business One, websites and business automation - built around your business process.',
+            'Click any object to explore',
+            'Latest products',
+            'Open positions',
+            'Open page'
         ],
         hi: [
             'उत्पाद देखें',
@@ -151,7 +159,14 @@
             'हमारी टीम से जुड़ें',
             'धामी ग्रुप में खुली भूमिकाएँ - पूरा विवरण देखने के लिए किसी भूमिका पर क्लिक करें।',
             'सभी रिक्तियाँ देखें',
-            'विवरण देखें'
+            'विवरण देखें',
+            'स्मार्ट तकनीक।',
+            'टिकाऊ विकास।',
+            'सेल्सफोर्स, SAP बिजनेस वन, वेबसाइट और बिज़नेस ऑटोमेशन - आपकी व्यावसायिक प्रक्रिया के अनुसार।',
+            'देखने के लिए किसी भी ऑब्जेक्ट पर क्लिक करें',
+            'नवीनतम उत्पाद',
+            'खुली भूमिकाएँ',
+            'पेज खोलें'
         ],
         es: [
             'Explorar Productos',
@@ -217,7 +232,14 @@
             'Únase a Nuestro Equipo',
             'Puestos abiertos en Dhami Group: haga clic en un puesto para ver todos los detalles.',
             'Ver Todas las Vacantes',
-            'Ver detalles'
+            'Ver detalles',
+            'Tecnología Inteligente.',
+            'Crecimiento Sostenible.',
+            'Salesforce, SAP Business One, sitios web y automatización de negocios, creados en torno a su proceso de negocio.',
+            'Haga clic en cualquier objeto para explorar',
+            'Últimos productos',
+            'Puestos abiertos',
+            'Abrir página'
         ],
         fr: [
             'Découvrir les Produits',
@@ -283,7 +305,14 @@
             'Rejoignez Notre Équipe',
             'Postes ouverts chez Dhami Group : cliquez sur un poste pour voir tous les détails.',
             'Voir Toutes les Offres',
-            'Voir les détails'
+            'Voir les détails',
+            'Technologie Intelligente.',
+            'Croissance Durable.',
+            "Salesforce, SAP Business One, sites web et automatisation des processus, conçus autour de votre processus métier.",
+            'Cliquez sur un objet pour explorer',
+            'Derniers produits',
+            'Postes ouverts',
+            'Ouvrir la page'
         ],
         de: [
             'Produkte Entdecken',
@@ -349,7 +378,14 @@
             'Werden Sie Teil Unseres Teams',
             'Offene Stellen bei der Dhami Group – klicken Sie auf eine Stelle, um alle Details zu sehen.',
             'Alle Stellen Ansehen',
-            'Details ansehen'
+            'Details ansehen',
+            'Smarte Technologie.',
+            'Nachhaltiges Wachstum.',
+            'Salesforce, SAP Business One, Websites und Prozessautomatisierung – ausgerichtet an Ihrem Geschäftsprozess.',
+            'Klicken Sie auf ein Objekt, um mehr zu erfahren',
+            'Neueste Produkte',
+            'Offene Stellen',
+            'Seite öffnen'
         ],
         zh: [
             '浏览产品',
@@ -415,7 +451,14 @@
             '加入我们的团队',
             'Dhami Group 的开放职位——点击职位查看完整详情。',
             '查看全部职位',
-            '查看详情'
+            '查看详情',
+            '智能科技。',
+            '可持续增长。',
+            'Salesforce、SAP Business One、网站和业务自动化——围绕您的业务流程打造。',
+            '点击任意对象开始探索',
+            '最新产品',
+            '开放职位',
+            '打开页面'
         ]
     };
 
