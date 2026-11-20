@@ -640,11 +640,13 @@ function focusPendingItem(kind) {
         return;
     }
     window.__pendingFocus = null;
-    if (f.type === 'product') toggleProductDetails(f.id, true);
     setTimeout(() => {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el.classList.add('hl');
-        setTimeout(() => el.classList.remove('hl'), 4000);
+        // look the item up again: the list may have been redrawn in the meantime
+        const cur = document.getElementById((f.type === 'job' ? 'job-' : 'prod-') + f.id) || el;
+        if (f.type === 'product') toggleProductDetails(f.id, true);
+        cur.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        cur.classList.add('hl');
+        setTimeout(() => cur.classList.remove('hl'), 4000);
     }, 300);
 }
 
@@ -964,7 +966,7 @@ function showHome() {
 
     let bgAbout = document.getElementById('aboutFullscreenBg');
     if (bgAbout) bgAbout.style.display = 'none';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollPageTop();
 }
 
 function selectTab(tabName) {
@@ -1004,7 +1006,7 @@ function selectTab(tabName) {
                 item.style.animation = null;
             });
         }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        scrollPageTop();
     }
 }
 
@@ -1079,7 +1081,7 @@ function handleCardClick(tabName) {
 // 5. SCROLL TO TOP & HERO AUTO-SLIDER
 // ====================================================
 let topBtn = document.getElementById("scrollTopBtn");
-window.onscroll = function() {
+const onPageScroll = function() {
     if (!topBtn) topBtn = document.getElementById("scrollTopBtn");
     if (!topBtn) return;
     if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
@@ -1089,8 +1091,16 @@ window.onscroll = function() {
     }
 };
 
-function scrollToTop() {
+document.addEventListener('scroll', onPageScroll, true);   // <body> is the scrolling element on this site, so listen in the capture phase
+
+// scrolls to the top whichever element (window / html / body) is the scroller
+function scrollPageTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    [document.body, document.documentElement].forEach(el => { if (el && el.scrollTo) el.scrollTo({ top: 0, behavior: 'smooth' }); });
+}
+
+function scrollToTop() {
+    scrollPageTop();
 }
 
 let currentHeroSlide = 1;
