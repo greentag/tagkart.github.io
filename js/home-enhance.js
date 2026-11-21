@@ -318,15 +318,6 @@
 
     var marqHtml = '<div class="hx-marq"><div class="hx-track">' + chipHtml() + chipHtml() + '</div></div>';
 
-    var featHtml = '<section class="hx-sec alt" id="hxFeatured" style="display:none"><h2 class="hx-title hx-reveal">Featured Products</h2>' +
-        '<p class="hx-sub hx-reveal">Our latest products, fresh from the catalogue.</p><div class="hx-scroller"><button class="hx-arrow l" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button><div class="hx-lane" id="hxFeatRow"></div><button class="hx-arrow r" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button></div>' +
-        '<div style="text-align:center;margin-top:10px"><button class="hx-btn pri" onclick="selectTab(\'product\')">View All Products <i class="fa-solid fa-arrow-right"></i></button></div></section>';
-
-    var jobsHtml = '<section class="hx-sec" id="hxJobs" style="display:none"><h2 class="hx-title hx-reveal">Join Our Team</h2>' +
-        '<p class="hx-sub hx-reveal">Open positions at Dhami Group - click a role to see its full details.</p>' +
-        '<div class="hx-scroller"><button class="hx-arrow l" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button><div class="hx-lane" id="hxJobRow"></div><button class="hx-arrow r" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button></div>' +
-        '<div style="text-align:center;margin-top:10px"><button class="hx-btn pri" onclick="selectTab(\'career\')">View All Openings <i class="fa-solid fa-arrow-right"></i></button></div></section>';
-
     var bannerHtml = '<section class="hx-banner" data-hx-label="Contact Us"><span class="c" style="width:220px;height:220px;left:-60px;top:-60px"></span><span class="c" style="width:160px;height:160px;right:8%;bottom:-50px;animation-delay:2s"></span>' +
         '<h2>Ready to Automate Your Business?</h2><p>Tell us what you need - from CRM and ERP to websites and green initiatives - and we will suggest the right solution.</p>' +
         '<div class="hx-cta-row" style="margin-top:0"><button class="hx-btn ghost" onclick="selectTab(\'enquire\')"><i class="fa-solid fa-clipboard-list"></i> Send Enquiry</button>' +
@@ -351,7 +342,7 @@
         var top = document.createElement('div');
         top.innerHTML = statsHtml + servicesHtml + showHtml;
         var bottom = document.createElement('div');
-        bottom.innerHTML = processHtml + marqHtml + featHtml + jobsHtml + bannerHtml;
+        bottom.innerHTML = processHtml + marqHtml + bannerHtml;
         if (core) {
             core.parentNode.insertBefore(top, core);
             core.parentNode.insertBefore(bottom, core.nextSibling);
@@ -394,8 +385,7 @@
         }
 
         initChrome(home);
-        loadFeatured();
-        loadJobs();
+        loadOrbitData();
         extras();
     }
 
@@ -596,30 +586,18 @@
         }
     }
 
-    // ---------- Open job positions (click -> Careers page, that job highlighted) ----------
-    function loadJobs() {
+    // ---------- Product / Career objects: live counter + preview card (data from the same Supabase client as main.js) ----------
+    function loadOrbitData() {
         try {
             if (typeof sb === 'undefined' || !sb) return;
-            sb.from('jobs').select('*').order('created_at', { ascending: false }).limit(50).then(function (res) {
-                var active = (res.data || []).filter(function (j) { return j.status !== 'Inactive' && j.status !== 'Hidden'; });
-                fillOrbit('jobs', active);
-                var list = active.slice(0, 8);
-                var wrap = document.getElementById('hxJobs'), rowEl = document.getElementById('hxJobRow');
-                if (!wrap || !rowEl || list.length === 0) return;
-                var esc = typeof escapeHtml === 'function' ? escapeHtml : function (x) { return String(x); };
-                rowEl.innerHTML = list.map(function (j) {
-                    var d = String(j.description || ''); if (d.length > 120) d = d.slice(0, 120) + '...';
-                    return '<div class="hx-card hx-job" onclick="hxOpenJob(\'' + esc(j.id) + '\')"><div class="hx-ico"><i class="fa-solid fa-briefcase"></i></div>' +
-                        '<h3>' + esc(j.title) + '</h3><div class="hx-chips"><span><i class="fa-solid fa-user-group"></i> ' + esc(j.openings || 1) + '</span>' +
-                        '<span><i class="fa-solid fa-award"></i> ' + esc(j.exp || '-') + '</span><span><i class="fa-solid fa-location-dot"></i> ' + esc(j.location || 'Delhi') + '</span></div>' +
-                        '<p>' + esc(d) + '</p><span class="hx-link">View details <i class="fa-solid fa-arrow-right"></i></span></div>';
-                }).join('');
-                wrap.style.display = 'block';
-                annotate(wrap);
-                Array.prototype.forEach.call(wrap.querySelectorAll('.hx-scroller'), makeScroller);
-                refreshDots();
+            ['products', 'jobs'].forEach(function (kind) {
+                sb.from(kind).select('*').order('created_at', { ascending: false }).limit(50).then(function (res) {
+                    var active = (res.data || []).filter(function (x) { return x.status !== 'Inactive' && x.status !== 'Hidden'; });
+                    fillOrbit(kind, active);
+                    refreshDots();
+                });
             });
-        } catch (err) { console.warn('Jobs unavailable:', err); }
+        } catch (err) { console.warn('Orbit data unavailable:', err); }
     }
 
     // ---------- Extras: partners, support, WhatsApp, contact + enquiry forms ----------
@@ -719,32 +697,6 @@
             };
             fetch(fr.getAttribute('src'), { method: 'HEAD' }).then(function (r) { if (!r.ok) build(); }).catch(build);
         }
-    }
-
-    // Featured products (uses the same Supabase client as main.js)
-    function loadFeatured() {
-        try {
-            if (typeof sb === 'undefined' || !sb) return;
-            sb.from('products').select('*').order('created_at', { ascending: false }).limit(50).then(function (res) {
-                var active = (res.data || []).filter(function (p) { return p.status !== 'Hidden' && p.status !== 'Inactive'; });
-                fillOrbit('products', active);
-                var list = active.slice(0, 8);
-                var wrap = document.getElementById('hxFeatured'), rowEl = document.getElementById('hxFeatRow');
-                if (!wrap || !rowEl || list.length === 0) return;
-                rowEl.innerHTML = list.map(function (p) {
-                    var imgs = typeof getProductImages === 'function' ? getProductImages(p) : (p.image_url ? [p.image_url] : []);
-                    var src = imgs.length ? (typeof formatImageUrl === 'function' ? formatImageUrl(imgs[0]) : imgs[0]) : '';
-                    var price = parseFloat(p.price) > 0 ? (typeof fmtINR === 'function' ? fmtINR(parseFloat(p.price)) : 'Rs ' + p.price) : 'Price on request';  // translated by annotate()
-                    var esc = typeof escapeHtml === 'function' ? escapeHtml : function (x) { return String(x); };
-                    return '<div class="hx-card hx-prod" onclick="hxOpenProduct(\'' + esc(p.id) + '\')"><div class="im">' +
-                        (src ? '<img src="' + esc(src) + '" alt="' + esc(p.name) + '" onerror="this.style.display=\'none\'">' : '<i class="fa-solid fa-boxes-stacked" style="font-size:40px;color:var(--hx-p)"></i>') +
-                        '</div><div class="bd"><h4>' + esc(p.name) + '</h4><div class="pr">' + price + '</div></div></div>';
-                }).join('');
-                wrap.style.display = 'block';
-                annotate(rowEl);
-                refreshDots();
-            });
-        } catch (e) { console.warn('Featured products unavailable:', e); }
     }
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
